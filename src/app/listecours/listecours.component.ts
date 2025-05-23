@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Ue } from '../models/ue';
+import { UeService } from '../ue.service';
 
 @Component({
   selector: 'app-listecours',
@@ -7,7 +9,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListecoursComponent implements OnInit {
 
-  constructor() { }
+  UeArray !: Ue[]
+  
+  constructor(public servUe : UeService) { 
+    this.UeArray = this.servUe.get_ue()
+  }
 
   ngOnInit(): void {
   }

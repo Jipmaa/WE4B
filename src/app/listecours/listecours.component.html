@@ -1,1 +1,5 @@
-<p>listecours works!</p>
+<div class="container">
+  <div class="row row-cols-3 ">
+    <app-cours *ngFor="let loopvar of UeArray" [ue]="loopvar"></app-cours>
+  </div>
+</div>
