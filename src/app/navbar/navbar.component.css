@@ -1,0 +1,218 @@
+
+body {
+    background-color: #f4f4f9;
+    font-family: Arial, sans-serif;
+    display : flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+.content{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+/*menu de navigation*/
+
+.menu-nav {
+    /*menu de navigation*/
+    background-color: #3498db;
+    align-items: center;
+    display: flex; /*centre verticalement les éléments*/
+    justify-content: space-between;
+    height: 4em;
+
+    padding: 0 1em;
+}
+
+.menu-gauche {
+    display: flex;/*met en ligne le logo et le menu*/
+    align-items: center;/*aligne au centre*/
+    flex-grow: 1;
+}
+
+.lien-nav  {
+    display: flex;
+    background-color: #3498db;
+    text-wrap: nowrap;
+    list-style-type: none;
+    flex-wrap: nowrap; /* Empêche les éléments de passer à la ligne */
+    overflow: hidden; /* Cache les liens qui débordent */
+    height: 4em;
+    justify-content: center;
+    align-items: center;
+}
+
+.entre {
+    /* display: inline-block; */
+    width: 3px; /* Épaisseur du trait */
+    height: 20px; /* Hauteur du trait */
+    background-color: white; /* Couleur du trait */
+    margin: 0 10px; /* Espacement autour du trait */
+    vertical-align: middle;
+}
+
+.menu-nav ul.lien-nav li a, .menu-nav ul.lien-nav li p {
+    text-decoration: none; /* Désouligne les liens*/
+    color: white;
+    padding: 1.4em 0.5em;
+    font-size: 16px;
+}
+
+
+.menu-nav ul.lien-nav li:hover a { /* Survol des liens*/
+    text-decoration: none;
+    color: black;
+    background-color: white;
+
+}
+
+.button {
+    border: none;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Logo */
+.menu-nav .logo-blanc img {
+    /*taille logo barre de navigation*/
+    height: 3em;
+    margin: 0 1em ;
+}
+
+#auth-status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+}
+#auth-status img{
+    cursor:pointer;
+}
+
+#menu-lateral{
+    display: none;
+}
+
+
+#bouton-lateral{
+    display: flex;
+    flex-direction: column;
+}
+
+#formulaire-lateral {
+    visibility: hidden; /* Caché par défaut */
+    position: absolute;
+    top: 4em;
+    right: 0em;
+    background-color: #82c4ef;
+    border: 0.1em solid lightgrey;
+    border-right: none;
+    border-radius: 0em 0em 0em 2em;
+    padding: 0 1.2em;
+    max-height: 0; /* Hauteur initiale fermée */
+    overflow: hidden; /* Cache le contenu débordant */
+    opacity: 0; /* Rendre invisible */
+    transition: max-height 0.5s ease, opacity 0.5s ease; /* Transition fluide */
+}
+
+#formulaire-lateral.active {
+    visibility: visible; /* Affiché quand la classe 'active' est ajoutée */
+    max-height: 80vh; /* Hauteur maximale lorsqu'il est ouvert */
+    opacity: 0.99; /* Rendre visible */
+    padding: 1.2em; /* Ajoute le padding lors de l'ouverture */
+}
+
+#formulaire-lateral form{
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+}
+
+#formulaire-lateral h2{
+    text-align: center;
+    margin: 0.5em 0;
+    color: white;
+}
+
+#formulaire-lateral .section{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.7em;
+}
+
+#formulaire-lateral .section label{
+    color: white;
+    margin: 0.5em 0;
+}
+
+#formulaire-lateral ion-icon {
+    color: white;
+}
+
+/* Style pour le bouton de choix de fichiers */
+#formulaire-lateral input[type="file"] {
+    /*background-color: #007bff; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    /*border: 1px solid white; /* Bordure */
+    border-radius: 5px; /* Coins arrondis */
+    padding: 5px 10px; /* Espacement interne */
+    cursor: pointer; /* Curseur en forme de main */
+}
+
+
+
+
+#formulaire-lateral .input-container{
+    display: flex;
+    width: 100%;
+    height: 2em;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.3em ;
+}
+#formulaire-lateral ion-icon{
+    margin: 0;
+}
+
+
+.bouton{
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border-radius: 0.3em;
+    height: 100%;
+    width: 7em;
+    border: white solid 1px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+}
+
+.bouton:hover {
+    border: black solid 1px;
+}
+
+#deco{
+    background-color: red;
+}
+
+#formulaire-lateral form input[type="text"],
+#formulaire-lateral input[type="password"]{
+    border-radius: 0.3em;
+    border: 1px solid #ccc;
+    height : 2em;
+    width: 100%;
+}
+
+
+
