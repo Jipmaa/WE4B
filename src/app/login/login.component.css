@@ -1,0 +1,149 @@
+body {
+    background-color: #f4f4f9;
+    font-family: Arial, sans-serif;
+    display : flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+
+main{
+    background-color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Utilisation de toute la hauteur de la fenêtre */
+}
+
+form {
+    background-color: #fff;
+    padding: 2vh;
+    border-radius: 2vh;
+    box-shadow: 1vh 1vh 3vh 2vh rgba(0, 0, 0, 0.2);
+    width: 55vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+}
+
+h1 {
+    color: #0a0a0a;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+
+.section{
+    margin-bottom: 2em;
+    width: 100%;
+
+}
+
+label {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+}
+
+.logo-utbm{
+    padding: 1em 5em;
+    margin-bottom: 0.5em;
+}
+
+input[type="text"],
+input[type="password"]{
+    width: 100%;
+    padding: 1em;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    align-content: flex-start;
+    margin-top: 0.5em;
+}
+
+input[type="submit"]{
+    background-color: dodgerblue;
+    color: white;
+    border: none;
+    padding: 1em;
+    border-radius: 5px;
+    cursor: pointer;/* Rend le curseur en forme de main */
+    text-align: center;
+    margin: auto;
+    width: 8em;
+}
+
+input[type="submit"]:hover{
+    background-color: royalblue;
+}
+
+
+.input-container{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+}
+
+ion-icon {
+    position: static; /* Supprime l'alignement absolu */
+    right: 1.5em;
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    align-self: center; /* Centre verticalement l'icône avec l'input */
+    color: #0a0a0a;
+    margin-left: 0.5em;
+}
+
+.hidden-label {
+    position: absolute;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    margin: -2em;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.creation{
+    display: flex;
+    flex-direction: column;
+}
+
+#mdp{
+    text-decoration: none;
+    color: dodgerblue;
+    display: block;     /* Met le lien sur une ligne séparée */
+    text-align: center;
+    margin-top: 1em;
+}
+
+#mdp:hover{
+    text-decoration: underline;
+    color: royalblue;
+}
+
+.input-container img{
+    margin: 1em;
+}
+
+.formulaire{
+    margin: 0 2.5em 1em 2.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
