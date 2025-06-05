@@ -8,6 +8,10 @@
             <li><a href="#">Mes cours</a></li>
             <div class="entre"></div>
             <li><a href="https://utbm.sharepoint.com/sites/Portail/SitePages/Liens-utiles.aspx">My UTBM</a></li>
+            <div class="entre"></div>
+            <li id="auth-status"><a href="#">Mon compte</a></li>
+            <div class="entre"></div>
+            <li><a href="#" (click)="logout()">Déconnexion</a></li>
             <!--<div class="entre" style="display: block;" {% else %} style="display: none;" {% endif %}></div>
             <li id="admin-gestion" style="display: block;" {% else %} style="display: none;" {% endif %}>
                 
@@ -16,10 +20,13 @@
         </ul>
     </div>
 
-    <ul class="lien-nav">
-        <li id="auth-status"><a href="#">Mon compte</a></li>
-        <li><a href="#" (click)="logout()">Déconnexion</a></li>
-    </ul>
-    <div id="notification-container"></div>
+    <div *ngIf="user">
+        <div class="user-container">
+            <p>{{user.lastName}} {{user.firstName}}</p>
+            <img [src]="user.avatar" alt="Avatar" class="avatar">
+        </div>
+
+    </div>
+
 
 </nav>

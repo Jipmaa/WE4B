@@ -1,14 +1,17 @@
-const express = require('express'); 
-const mongoose = require('mongoose'); 
-const cors = require('cors'); 
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express(); // crée l'application express
 app.use(cors()); // active cors pour permettre à angular d'accéder à l'API
 app.use(express.json()); // active le parsing JSON pour lire les données envoyées par en json
 
 //connecte le serveur node.js à la base de données MongoDB
-mongoose.connect('mongodb://localhost:27017/we4b_project', {
-}).then(() => console.log('MongoDB connecté'));
+//mongoose.connect('mongodb://localhost:27017/we4b_project', {
+//}).then(() => console.log('MongoDB connecté'));
+mongoose.connect('mongodb+srv://we4buser:we4bpassword@we4b-project.ra47djv.mongodb.net/we4b-project?retryWrites=true&w=majority&appName=we4b-project')
+    .then(() => console.log('MongoDB connecté'))
+    .catch(err => console.error('Erreur de connexion MongoDB:', err));
 
 const options = { discriminatorKey: 'type' };
 
@@ -38,6 +41,7 @@ app.post('/users', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log('Tentative de connexion:', email, password);
     // Cherche l'utilisateur par email
     const user = await User.findOne({ email });
     if (!user) {

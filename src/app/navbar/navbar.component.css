@@ -25,7 +25,6 @@ body {
     display: flex; /*centre verticalement les éléments*/
     justify-content: space-between;
     height: 4em;
-
     padding: 0 1em;
 }
 
@@ -33,6 +32,7 @@ body {
     display: flex;/*met en ligne le logo et le menu*/
     align-items: center;/*aligne au centre*/
     flex-grow: 1;
+    padding-top: 0.75em;
 }
 
 .lien-nav  {
@@ -214,5 +214,19 @@ body {
     width: 100%;
 }
 
+.avatar {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+}
 
+.user-container{
+    display: flex;
+    flex-direction: row;
+}
 
+.user-container p{
+    color: white;
+    padding-top: 0.75em;
+    padding-right: 1em;
+}
