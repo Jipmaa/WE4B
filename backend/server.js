@@ -8,8 +8,6 @@ app.use(express.json()); // active le parsing JSON pour lire les données envoy�
 
 //connecte le serveur node.js à la base de données MongoDB
 mongoose.connect('mongodb://localhost:27017/we4b_project', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
 }).then(() => console.log('MongoDB connecté'));
 
 const options = { discriminatorKey: 'type' };
@@ -25,35 +23,17 @@ const userSchema = new mongoose.Schema({
     password: String,
     roles: [String], // Ceci est la bonne syntaxe Mongoose pour un tableau de chaînes de caractères
     type: String,
-    avatar: String
+    avatar: String,
+    department: String // facultatif, sera undefined si non fourni
 }, options);
 
 const User = mongoose.model('User', userSchema);
 
-const studentSchema = new mongoose.Schema({
-    department: String,
-    id_student: Number
-});
-
-const teacherSchema = new mongoose.Schema({
-    id_teacher: Number
-});
-
-const Student = User.discriminator('Student', studentSchema);
-const Teacher = User.discriminator('Teacher', teacherSchema);
-
-// Ajouter un étudiant
-app.post('/students', async (req, res) => {
-    const student = new Student(req.body);
-    await student.save();
-    res.json(student);
-});
-
-// Ajouter un enseignant
-app.post('/teachers', async (req, res) => {
-    const teacher = new Teacher(req.body);
-    await teacher.save();
-    res.json(teacher);
+// Ajouter un utilisateur
+app.post('/users', async (req, res) => {
+    const user = new User(req.body);
+    await user.save();
+    res.json(user);
 });
 
 app.post('/login', async (req, res) => {
@@ -77,32 +57,27 @@ app.post('/login', async (req, res) => {
         phoneNumber: user.phoneNumber,
         roles: user.roles,
         type: user.type,
-        avatar: user.avatar
+        avatar: user.avatar,
+        department: user.department
     });
 });
 
-// crée une route get pour récupérer tous les étudiants
-app.get('/students', async (req, res) => {
-    const students = await Student.find();
-    res.json(students);
+// crée une route get pour récupérer tous les utilisateurs
+app.get('/users', async (req, res) => {
+    const users = await User.find();
+    res.json(users);
 });
 
-// Récupérer tous les enseignants
-app.get('/teachers', async (req, res) => {
-    const teachers = await Teacher.find();
-    res.json(teachers);
+// Mettre à jour un utilisateur
+app.put('/users/:id', async (req, res) => {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(user);
 });
 
-// Mettre à jour un étudiant
-app.put('/students/:id', async (req, res) => {
-    const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(student);
-});
-
-// Supprimer un étudiant
-app.delete('/students/:id', async (req, res) => {
-    await Student.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Étudiant supprimé' });
+// Supprimer un utilisateur
+app.delete('/users/:id', async (req, res) => {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Utilisateur supprimé' });
 });
 
 app.listen(3000, () => console.log('Serveur backend sur http://localhost:3000'));

@@ -9,7 +9,8 @@ export class User {
         public password: string,
         public roles: string[],
         public type: string,
-        public avatar: string
+        public avatar: string,
+        public department?: string, // optionnel, seulement pour les students
     ) {
         this.id = id;
         this.firstName = firstName;
@@ -21,5 +22,6 @@ export class User {
         this.roles = roles;
         this.type = type;
         this.avatar = avatar;
+        this.department = department || ''; // définit une valeur par défaut si department n'est pas fourni
     }
 }
