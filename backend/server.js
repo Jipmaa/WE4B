@@ -32,7 +32,19 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Ajouter un utilisateur
+//définit un modèle Ue
+const ueSchema = new mongoose.Schema({
+    id: Number,
+    capacity: Number,
+    name: String,
+    type: String,
+    code: String,
+    img_path: String
+}, options);
+
+const Ue = mongoose.model('Ue', ueSchema);
+
+// AJOUTER UN UTILISATEUR
 app.post('/users', async (req, res) => {
     const user = new User(req.body);
     await user.save();
@@ -82,6 +94,31 @@ app.put('/users/:id', async (req, res) => {
 app.delete('/users/:id', async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: 'Utilisateur supprimé' });
+});
+
+// AJOUTER UNE UE
+app.post('//ues', async (req, res) => {
+    const ue = new Ue(req.body);
+    await ue.save();
+    res.json(ue);
+});
+
+// crée une route get pour récupérer toutes les ues
+app.get('/ues', async (req, res) => {
+    const ues = await Ue.find();
+    res.json(ues);
+});
+
+// Mettre à jour une ue
+app.put('/ues/:id', async (req, res) => {
+    const ue = await Ue.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(ue);
+});
+
+// Supprimer une ue
+app.delete('/ues/:id', async (req, res) => {
+    await Ue.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Ue supprimée' });
 });
 
 app.listen(3000, () => console.log('Serveur backend sur http://localhost:3000'));

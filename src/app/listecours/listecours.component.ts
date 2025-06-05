@@ -12,10 +12,16 @@ export class ListecoursComponent implements OnInit {
   UeArray !: Ue[]
   
   constructor(public servUe : UeService) { 
-    this.UeArray = this.servUe.get_ue()
+    this.servUe.get_ue().subscribe(
+      data => {
+         console.log(data);
+        this.UeArray = data
+      }
+    )
   }
 
   ngOnInit(): void {
+    
   }
 
 }
