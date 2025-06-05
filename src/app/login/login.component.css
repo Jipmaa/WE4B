@@ -1,7 +1,7 @@
 body {
     background-color: #f4f4f9;
     font-family: Arial, sans-serif;
-    display : flex;
+    display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
@@ -9,7 +9,7 @@ body {
 }
 
 
-main{
+main {
     background-color: #FFFFFF;
     margin: 0;
     padding: 0;
@@ -17,7 +17,8 @@ main{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* Utilisation de toute la hauteur de la fenêtre */
+    height: 100vh;
+    /* Utilisation de toute la hauteur de la fenêtre */
 }
 
 form {
@@ -43,7 +44,7 @@ h1 {
     margin-bottom: 0.5em;
 }
 
-.section{
+.section {
     margin-bottom: 2em;
     width: 100%;
 
@@ -56,13 +57,13 @@ label {
     white-space: nowrap;
 }
 
-.logo-utbm{
+.logo-utbm {
     padding: 1em 5em;
     margin-bottom: 0.5em;
 }
 
 input[type="text"],
-input[type="password"]{
+input[type="password"] {
     width: 100%;
     padding: 1em;
     border-radius: 4px;
@@ -72,40 +73,32 @@ input[type="password"]{
     margin-top: 0.5em;
 }
 
-input[type="submit"]{
+input[type="submit"] {
     background-color: dodgerblue;
     color: white;
     border: none;
     padding: 1em;
     border-radius: 5px;
-    cursor: pointer;/* Rend le curseur en forme de main */
+    cursor: pointer;
+    /* Rend le curseur en forme de main */
     text-align: center;
     margin: auto;
     width: 8em;
 }
 
-input[type="submit"]:hover{
+input[type="submit"]:hover {
     background-color: royalblue;
 }
 
 
-.input-container{
+.input-container {
     display: flex;
     justify-content: flex-start;
     width: 100%;
     height: 100%;
 }
 
-ion-icon {
-    position: static; /* Supprime l'alignement absolu */
-    right: 1.5em;
-    width: 2em;
-    height: 2em;
-    cursor: pointer;
-    align-self: center; /* Centre verticalement l'icône avec l'input */
-    color: #0a0a0a;
-    margin-left: 0.5em;
-}
+
 
 .hidden-label {
     position: absolute;
@@ -119,31 +112,66 @@ ion-icon {
     border: 0;
 }
 
-.creation{
+.creation {
     display: flex;
     flex-direction: column;
 }
 
-#mdp{
+#mdp {
     text-decoration: none;
     color: dodgerblue;
-    display: block;     /* Met le lien sur une ligne séparée */
+    display: block;
+    /* Met le lien sur une ligne séparée */
     text-align: center;
     margin-top: 1em;
 }
 
-#mdp:hover{
+#mdp:hover {
     text-decoration: underline;
     color: royalblue;
 }
 
-.input-container img{
+.input-container img {
     margin: 1em;
 }
 
-.formulaire{
+.formulaire {
     margin: 0 2.5em 1em 2.5em;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-container input {
+    width: 100%;
+    padding-right: 3em;
+    /* Espace pour l'icône */
+    height: 3em;
+    /* Hauteur explicite pour l'alignement */
+    box-sizing: border-box;
+}
+
+.password-container ion-icon {
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    cursor: pointer;
+    color: #0a0a0a;
+    font-size: 1em;
+    /* Taille de l'icône */
+    align-self: center;
+    width: 2em;
+    height: 2em;
+    padding-top: 0.3em;
 }
