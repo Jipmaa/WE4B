@@ -5,12 +5,13 @@ import { HttpClient } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { CoursComponent } from './cours/cours.component';
-import { ListecoursComponent } from './listecours/listecours.component';
-import { LoginComponent } from './login/login.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { CoursComponent } from './components/cours/cours.component';
+import { ListecoursComponent } from './components/listecours/listecours.component';
+import { LoginComponent } from './components/login/login.component';
 
 import { FormsModule } from '@angular/forms';
+import { UserformComponent } from './components/userform/userform.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { FormsModule } from '@angular/forms';
     NavbarComponent,
     CoursComponent,
     ListecoursComponent,
-    LoginComponent
+    LoginComponent,
+    UserformComponent
   ],
   imports: [
     BrowserModule,

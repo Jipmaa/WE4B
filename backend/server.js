@@ -13,8 +13,6 @@ mongoose.connect('mongodb+srv://we4buser:we4bpassword@we4b-project.ra47djv.mongo
     .then(() => console.log('MongoDB connecté'))
     .catch(err => console.error('Erreur de connexion MongoDB:', err));
 
-const options = { discriminatorKey: 'type' };
-
 //définit un modèle User
 const userSchema = new mongoose.Schema({
     id: Number,
@@ -25,10 +23,9 @@ const userSchema = new mongoose.Schema({
     phoneNumber: String,
     password: String,
     roles: [String], // Ceci est la bonne syntaxe Mongoose pour un tableau de chaînes de caractères
-    type: String,
     avatar: String,
     department: String // facultatif, sera undefined si non fourni
-}, options);
+});
 
 const User = mongoose.model('User', userSchema);
 
@@ -37,10 +34,9 @@ const ueSchema = new mongoose.Schema({
     id: Number,
     capacity: Number,
     name: String,
-    type: String,
     code: String,
     img_path: String
-}, options);
+});
 
 const Ue = mongoose.model('Ue', ueSchema);
 
@@ -72,7 +68,6 @@ app.post('/login', async (req, res) => {
         email: user.email,
         phoneNumber: user.phoneNumber,
         roles: user.roles,
-        type: user.type,
         avatar: user.avatar,
         department: user.department
     });

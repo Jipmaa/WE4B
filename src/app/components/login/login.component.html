@@ -12,10 +12,15 @@
                 aria-describedby="emailHelp" placeholder="prenom.nom@utbm.fr" required>
         </div>
         <div class="mb-3 password-container">
-            <label for="exampleInputPassword1" class="form-label">Mot de passe</label>
+            <div class="motdepasse"><label for="exampleInputPassword1" class="form-label">Mot de passe</label>
+                <a>Mot de passe oublié ?</a>
+            </div>
             <input type="password" [(ngModel)]="password" name="password" class="form-control"
                 id="exampleInputPassword1" placeholder="Mot de passe" required>
             <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"></ion-icon>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
         </div>
         <button type="submit" class="btn btn-primary">Connexion</button>
         <div *ngIf="error" class="text-danger">{{ error }}</div>

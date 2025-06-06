@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Ue } from '../models/ue';
-import { UeService } from '../services/ue.service';
+import { Ue } from '../../models/ue';
+import { UeService } from '../../services/ue.service';
 
 @Component({
   selector: 'app-listecours',

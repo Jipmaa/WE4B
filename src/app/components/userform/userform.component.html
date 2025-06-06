@@ -1,0 +1,54 @@
+<div class="userform">
+    <form class="row g-3">
+        <h1>Créer un utilisateur</h1>
+        <div class="col-12">
+            <label for="inputPrenom" class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="inputPrenom" name="prenom" placeholder="Ton prénom">
+        </div>
+        <div class="col-12">
+            <label for="inputNom" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="inputNom" name="nom" placeholder="Ton nom de famille">
+        </div>
+        <div class="mb-3">
+            <label for="birthDate" class="form-label">Date de naissance</label>
+            <input type="date" class="form-control" id="birthDate" name="birthDate">
+        </div>
+        <div class="col-12">
+            <label for="inputEmail4" class="form-label">Email</label>
+            <input type="email" class="form-control" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr">
+        </div>
+        <div class="col-12">
+            <label for="inputPhoneNumber" class="form-label">Numéro de téléphone</label>
+            <input type="text" class="form-control" id="inputPhoneNumber" name="phoneNumber" placeholder="+XX * ** ** ** **">
+        </div>
+
+        <label class="form-label">Rôles</label>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="student" id="roleStudent">
+            <label class="form-check-label" for="roleStudent">Student</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="teacher" id="roleTeacher">
+            <label class="form-check-label" for="roleTeacher">Teacher</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="admin" id="roleAdmin">
+            <label class="form-check-label" for="roleAdmin">Admin</label>
+        </div>
+
+        <div class="col-12 password-container">
+            <label for="inputPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="inputPassword" name="password">
+            <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"></ion-icon>
+        </div>
+
+        <label>Choisir un avatar</label>
+        <div class="input-group mb-3">
+            <input type="file" class="form-control" id="inputGroupFile02">
+        </div>
+        
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+        </div>
+    </form>
+</div>

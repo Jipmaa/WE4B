@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Ue } from '../models/ue';
+import { Ue } from '../../models/ue';
 
 @Component({
   selector: 'app-cours',

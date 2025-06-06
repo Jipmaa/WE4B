@@ -8,7 +8,6 @@ export class User {
         public phoneNumber: string,
         public password: string,
         public roles: string[],
-        public type: string,
         public avatar: string,
         public department?: string, // optionnel, seulement pour les students
     ) {
@@ -20,7 +19,6 @@ export class User {
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.roles = roles;
-        this.type = type;
         this.avatar = avatar;
         this.department = department || ''; // définit une valeur par défaut si department n'est pas fourni
     }
