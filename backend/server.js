@@ -6,6 +6,22 @@ const app = express(); // crée l'application express
 app.use(cors()); // active cors pour permettre à angular d'accéder à l'API
 app.use(express.json()); // active le parsing JSON pour lire les données envoyées par en json
 
+const multer = require('multer');
+const path = require('path');
+
+//Pour configurer le stockage des fichiers uploadés
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'backend/uploads/'); // dossier où seront stockés les fichiers
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // nom unique : date et heure + extension du fichier
+    }
+});
+const upload = multer({ storage: storage });
+
+app.use('/uploads', express.static('uploads'));
+
 //connecte le serveur node.js à la base de données MongoDB
 //mongoose.connect('mongodb://localhost:27017/we4b_project', {
 //}).then(() => console.log('MongoDB connecté'));
@@ -41,10 +57,32 @@ const ueSchema = new mongoose.Schema({
 const Ue = mongoose.model('Ue', ueSchema);
 
 // AJOUTER UN UTILISATEUR
-app.post('/users', async (req, res) => {
-    const user = new User(req.body);
-    await user.save();
-    res.json(user);
+app.post('/users', upload.single('avatar'), async (req, res) => {
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
+    try {
+        const { firstName, lastName, birthdate, email, phoneNumber, password, department } = req.body;
+        const roles = req.body['roles[]'] || [];
+        const avatar = req.file ? '/uploads/' + req.file.filename : '';
+
+        // Crée l'utilisateur avec l'avatar et les rôles
+        const user = new User({
+            firstName,
+            lastName,
+            birthdate,
+            email,
+            phoneNumber,
+            password,
+            roles: Array.isArray(roles) ? roles : [roles],
+            department: req.body.department || '', // facultatif, peut être vide
+            avatar
+        });
+
+        await user.save();
+        res.status(201).json({ message: "Utilisateur créé avec succès.", user });
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur lors de la création de l'utilisateur." });
+    }
 });
 
 app.post('/login', async (req, res) => {
