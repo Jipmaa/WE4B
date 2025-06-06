@@ -10,9 +10,8 @@ import { CoursComponent } from './components/cours/cours.component';
 import { ListecoursComponent } from './components/listecours/listecours.component';
 import { LoginComponent } from './components/login/login.component';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserformComponent } from './components/userform/userform.component';
-
 
 @NgModule({
   declarations: [
@@ -27,7 +26,8 @@ import { UserformComponent } from './components/userform/userform.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule // pour les formulaires
+    FormsModule, // pour les formulaires
+    ReactiveFormsModule, // pour les formulaires réactifs
   ],
   providers: [
     HttpClient

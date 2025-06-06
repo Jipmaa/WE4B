@@ -1,52 +1,159 @@
 <div class="userform">
-    <form class="row g-3">
+    <form [formGroup]="myForm" class="row g-3">
         <h1>Créer un utilisateur</h1>
+
+        <!-- FirstName -->
         <div class="col-12">
             <label for="inputPrenom" class="form-label">Prénom</label>
-            <input type="text" class="form-control" id="inputPrenom" name="prenom" placeholder="Ton prénom">
+            <input type="text" class="form-control" id="inputPrenom" name="prenom" placeholder="Ton prénom"
+                formControlName="firstName">
+            <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
+                <div *ngIf="myForm.get('firstName')?.errors?.['required']; else firstNameValid">
+                    ❌ Prénom requis
+                </div>
+                <ng-template #firstNameValid>
+                    <div class="text-success small">✅ Prénom valide</div>
+                </ng-template>
+            </ng-container>
         </div>
+
+        <!-- LastName -->
         <div class="col-12">
             <label for="inputNom" class="form-label">Nom</label>
-            <input type="text" class="form-control" id="inputNom" name="nom" placeholder="Ton nom de famille">
+            <input type="text" class="form-control" id="inputNom" name="nom" placeholder="Ton nom de famille"
+                formControlName="lastName">
+            <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
+                <div *ngIf="myForm.get('lastName')?.errors?.['required']; else lastNameValid">
+                    ❌ Nom requis
+                </div>
+                <ng-template #lastNameValid>
+                    <div class="text-success small">✅ Nom valide</div>
+                </ng-template>
+            </ng-container>
         </div>
+
+        <!-- BirthDate -->
         <div class="mb-3">
             <label for="birthDate" class="form-label">Date de naissance</label>
-            <input type="date" class="form-control" id="birthDate" name="birthDate">
+            <input type="date" class="form-control" id="birthDate" name="birthDate" formControlName="birthdate">
+            <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
+                <div *ngIf="myForm.get('birthdate')?.errors?.['required']" class="text-danger small">
+                    ❌ Date de naissance requise
+                </div>
+                <div *ngIf="!myForm.get('birthdate')?.invalid" class="text-success small">
+                    ✅ Date de naissance valide
+                </div>
+            </ng-container>
         </div>
+
+        <!-- Email -->
         <div class="col-12">
             <label for="inputEmail4" class="form-label">Email</label>
-            <input type="email" class="form-control" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr">
+            <input type="email" class="form-control" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr"
+                formControlName="email">
+            <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
+                <div *ngIf="myForm.get('email')?.errors?.['required']" class="text-danger small">❌ L'email est resquis
+                </div>
+                <div *ngIf="myForm.get('email')?.errors?.['email']" class="text-danger small">❌ L'email n'est pas valide
+                </div>
+                <div *ngIf="!myForm.get('email')?.invalid" class="text-success small">✅ L'email est valide</div>
+            </ng-container>
         </div>
+
+        <!-- Phone Number -->
         <div class="col-12">
             <label for="inputPhoneNumber" class="form-label">Numéro de téléphone</label>
-            <input type="text" class="form-control" id="inputPhoneNumber" name="phoneNumber" placeholder="+XX * ** ** ** **">
+            <input type="text" class="form-control" id="inputPhoneNumber" name="phoneNumber"
+                placeholder="+XX * ** ** ** **" formControlName="phoneNumber">
+            <ng-container *ngIf="myForm.get('phoneNumber')?.dirty || myForm.get('phoneNumber')?.touched">
+                <div *ngIf="myForm.get('phoneNumber')?.errors?.['phoneFormat']; else phoneNumberValid">
+                    ❌ Le numéro de téléphone doit avoir 10 chiffres
+                </div>
+                <ng-template #phoneNumberValid>
+                    <div class="text-success small">✅ Numéro de téléphone valide</div>
+                </ng-template>
+            </ng-container>
         </div>
 
-        <label class="form-label">Rôles</label>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="student" id="roleStudent">
-            <label class="form-check-label" for="roleStudent">Student</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="teacher" id="roleTeacher">
-            <label class="form-check-label" for="roleTeacher">Teacher</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="admin" id="roleAdmin">
-            <label class="form-check-label" for="roleAdmin">Admin</label>
+        <!-- Rôles -->
+        <div class="mb-3">
+            <label class="form-label">Rôles</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="student" id="roleStudent" name="roles"
+                    (change)="onRoleChange($event)" [checked]="myForm.value.roles.includes('student')">
+                <label class="form-check-label" for="roleStudent">Student</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="teacher" id="roleTeacher" name="roles"
+                    (change)="onRoleChange($event)" [checked]="myForm.value.roles.includes('teacher')">
+                <label class="form-check-label" for="roleTeacher">Teacher</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="admin" id="roleAdmin" name="roles"
+                    (change)="onRoleChange($event)" [checked]="myForm.value.roles.includes('admin')">
+                <label class="form-check-label" for="roleAdmin">Admin</label>
+            </div>
+            <ng-container *ngIf="myForm.get('roles')?.touched">
+                <div *ngIf="myForm.get('roles')?.errors?.['rolesRequired']" class="text-danger small">
+                    ❌ Au moins un rôle doit être sélectionné
+                </div>
+                <div *ngIf="myForm.get('roles')?.errors?.['rolesInvalid']" class="text-danger small">
+                    ❌ Combinaison de rôles non autorisée
+                </div>
+            </ng-container>
         </div>
 
-        <div class="col-12 password-container">
-            <label for="inputPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="inputPassword" name="password">
-            <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"></ion-icon>
+
+        <!-- Password -->
+        <div class="col-12">
+            <div class="col-12 password-container">
+                <label for="inputPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="inputPassword" name="password"
+                    formControlName="password" placeholder="Mot de passe">
+                <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"></ion-icon>
+            </div>
+            <ng-container *ngIf="myForm.get('password')?.dirty || myForm.get('password')?.touched">
+                <div *ngIf="myForm.get('password')?.errors?.['minLength']; else minLengthValid"
+                    class="text-danger small">
+                    ❌ Password must be at least 10 characters
+                </div>
+                <ng-template #minLengthValid>
+                    <div class="text-success small">✅ Length OK</div>
+                </ng-template>
+
+                <div *ngIf="myForm.get('password')?.errors?.['uppercase']; else uppercaseValid"
+                    class="text-danger small">
+                    ❌ Must have 2 uppercase letters
+                </div>
+                <ng-template #uppercaseValid>
+                    <div class="text-success small">✅ Uppercase OK</div>
+                </ng-template>
+
+                <div *ngIf="myForm.get('password')?.errors?.['number']; else numberValid" class="text-danger small">
+                    ❌ Must include a number
+                </div>
+                <ng-template #numberValid>
+                    <div class="text-success small">✅ Number OK</div>
+                </ng-template>
+                <!--specialChars nom des erreurs définit dans le .ts-->
+                <div *ngIf="myForm.get('password')?.errors?.['specialChars']; else specialValid"
+                    class="text-danger small">
+                    ❌ Must include 2 special characters
+                </div>
+                <ng-template #specialValid>
+                    <div class="text-success small">✅ Special characters OK</div>
+                </ng-template>
+            </ng-container>
         </div>
 
+
+        <!-- Photo de profil -->
         <label>Choisir un avatar</label>
         <div class="input-group mb-3">
-            <input type="file" class="form-control" id="inputGroupFile02">
+            <input type="file" class="form-control" id="inputGroupFile02" name="avatar"
+                (change)="onFileSelected($event)">
         </div>
-        
+
         <div class="col-12">
             <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
         </div>
