@@ -1,5 +1,5 @@
 <div class="userform">
-    <form [formGroup]="myForm" class="row g-3">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="row g-3">
         <h1>Créer un utilisateur</h1>
 
         <!-- FirstName -->

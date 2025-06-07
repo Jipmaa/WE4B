@@ -12,7 +12,7 @@ const path = require('path');
 //Pour configurer le stockage des fichiers uploadés
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'backend/uploads/'); // dossier où seront stockés les fichiers
+        cb(null, 'uploads/'); // dossier où seront stockés les fichiers
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname)); // nom unique : date et heure + extension du fichier
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     id: Number,
     firstName: String,
     lastName: String,
-    birthdate: Date,
+    birthdate: String,
     email: String,
     phoneNumber: String,
     password: String,
@@ -65,6 +65,7 @@ app.post('/users', upload.single('avatar'), async (req, res) => {
         const roles = req.body['roles[]'] || [];
         const avatar = req.file ? '/uploads/' + req.file.filename : '';
 
+        console.log('roles reçu:', roles, typeof roles);
         // Crée l'utilisateur avec l'avatar et les rôles
         const user = new User({
             firstName,

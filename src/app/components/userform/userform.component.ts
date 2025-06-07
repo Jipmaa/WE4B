@@ -32,7 +32,9 @@ export class UserformComponent implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
+      this.selectedFile = file; // pour l'envoi du fichier
+      this.myForm.get('avatar')?.setValue(file); // pour le FormControl
+      this.myForm.get('avatar')?.updateValueAndValidity();
     }
   }
 
@@ -49,12 +51,23 @@ export class UserformComponent implements OnInit {
 
   onSubmit() {
     const formData = new FormData();
+    console.log(this.myForm.value, this.myForm.errors, this.myForm.status);
+
+    if (this.myForm.invalid) {
+      this.myForm.markAllAsTouched();
+      console.log(this.myForm.value, this.myForm.errors, this.myForm.status);
+      alert('Formulaire invalide');
+      return;
+    }
+
     // Ajoute tous les champs du formulaire sauf le rôle
-    Object.entries(this.myForm.value).forEach(([key, value]) => {
-      if (key !== 'roles' && key !== 'avatar') {
-        formData.append(key, value as string);
-      }
-    });
+    formData.append('firstName', this.myForm.value.firstName);
+    formData.append('lastName', this.myForm.value.lastName);
+    formData.append('birthdate', this.myForm.value.birthdate);
+    formData.append('email', this.myForm.value.email);
+    formData.append('phoneNumber', this.myForm.value.phoneNumber);
+    formData.append('password', this.myForm.value.password);
+    formData.append('department', this.myForm.value.department || '');
     // Ajoute les rôles (tableau)
     this.myForm.value.roles.forEach((role: string) => formData.append('roles[]', role));
     // Ajoute le fichier
@@ -95,14 +108,15 @@ export class UserformComponent implements OnInit {
 function passwordValidator(control: AbstractControl): ValidationErrors | null {
 
   const errors: any = {}  //dictionary to store all the errors
+  const value = control.value || '';
 
-  if (control.value.length < 10)
+  if (value.length < 10)
     errors["minLength"] = 'ok'
-  if ((control.value.match(/[A-Z]/g) || []).length < 2)
+  if ((value.match(/[A-Z]/g) || []).length < 2)
     errors["uppercase"] = 'ok'
   if (!/\d/.test(control.value))
     errors["number"] = 'ok'
-  if ((control.value.match(/[!@#$%^&*()_+\-=\[\]{} ':"\\|,.<>\/?]/g) || []).length < 2)
+  if ((value.match(/[!@#$%^&*()_+\-=\[\]{} ':"\\|,.<>\/?]/g) || []).length < 2)
     errors["specialChars"] = 'ok'
 
   return Object.keys(errors).length ? errors : null;
@@ -121,7 +135,14 @@ function phoneNumberValidator(control: AbstractControl): ValidationErrors | null
 }
 
 function rolesValidator(control: AbstractControl): ValidationErrors | null {
-  const value = control.value || [];
+  //const value = control.value || [];
+  let value = control.value || [];
+  // Normalise en tableau si plusieurs rôles
+  if (typeof value === 'string') {
+    value = [value];
+  }
+  value = value || [];
+
   const allowed = [
     ['student'],
     ['teacher'],
