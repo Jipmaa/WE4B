@@ -152,16 +152,8 @@
             <label>Choisir un avatar</label>
             <div class="input-group mb-3">
                 <input type="file" class="form-control" id="inputGroupFile02" name="avatar"
-                    (change)="onFileSelected($event)" (click)="onFileClick()">
+                    (change)="onFileSelected($event)" >
             </div>
-            <ng-container *ngIf="myForm.get('avatar')?.dirty || myForm.get('avatar')?.touched">
-                <div *ngIf="myForm.get('avatar')?.errors?.['required']" class="text-danger small">
-                    ❌ Image requise
-                </div>
-                <div *ngIf="!myForm.get('avatar')?.invalid" class="text-success small">
-                    ✅ Image valide
-                </div>
-            </ng-container>
         </div>
 
         <div class="col-12">

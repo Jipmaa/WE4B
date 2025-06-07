@@ -8,7 +8,7 @@ export class User {
         public phoneNumber: string,
         public password: string,
         public roles: string[],
-        public avatar: string,
+        public avatar?: string,
         public department?: string, // optionnel, seulement pour les students
     ) {
         this.id = id;
@@ -19,7 +19,7 @@ export class User {
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.roles = roles;
-        this.avatar = avatar;
+        this.avatar = avatar || ''; // définit une valeur par défaut si avatar n'est pas fourni
         this.department = department || ''; // définit une valeur par défaut si department n'est pas fourni
     }
 }

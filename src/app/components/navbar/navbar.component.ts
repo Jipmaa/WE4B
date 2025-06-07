@@ -11,7 +11,7 @@ import { User } from '../../models/user';
 export class NavbarComponent implements OnInit {
 
   user: User | null = null;
-  constructor(public loginService: LoginService, private router: Router ) { }
+  constructor(public loginService: LoginService, private router: Router) { }
 
   ngOnInit(): void {
     const userStr = localStorage.getItem('user');
@@ -21,8 +21,15 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
-  this.loginService.logout();
-  this.router.navigate(['/']);
-}
+    this.loginService.logout();
+    this.router.navigate(['/']);
+  }
+
+  getInitiales(): string {
+    if (this.user) {
+      return this.user.firstName.charAt(0).toUpperCase() + this.user.lastName.charAt(0).toUpperCase();
+    }
+    return '';
+  }
 
 }

@@ -19,7 +19,7 @@ export class UserformComponent implements OnInit {
     phoneNumber: new FormControl('', [Validators.required, phoneNumberValidator]),
     roles: new FormControl([], [rolesValidator]),
     password: new FormControl('', [Validators.required, passwordValidator]),
-    avatar: new FormControl('', Validators.required)
+    avatar: new FormControl('')
   });
 
   selectedFile: File | null = null;
@@ -37,14 +37,7 @@ export class UserformComponent implements OnInit {
     }else{
       this.myForm.get('avatar')?.setValue(null);
     }
-    this.myForm.get('avatar')?.markAsTouched();
-    this.myForm.get('avatar')?.markAsDirty();
     this.myForm.get('avatar')?.updateValueAndValidity();
-  }
-
-  onFileClick() {
-    this.myForm.get('avatar')?.markAsTouched();
-    this.myForm.get('avatar')?.markAsDirty();
   }
 
   onRoleChange(event: any) {
