@@ -56,11 +56,11 @@ input[type="password"] {
     margin-top: 0.5em;
 }
 
-input[type="submit"] {
-    background-color: dodgerblue;
+button[type="submit"] {
+    background-color: #37A0C9;
     color: white;
     border: none;
-    padding: 1em;
+    padding: 0.5em;
     border-radius: 5px;
     cursor: pointer;
     /* Rend le curseur en forme de main */
@@ -69,8 +69,8 @@ input[type="submit"] {
     width: 8em;
 }
 
-input[type="submit"]:hover {
-    background-color: royalblue;
+button[type="submit"]:hover {
+    background-color: #56c6f3;
 }
 
 .login {

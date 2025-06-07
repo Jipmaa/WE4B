@@ -20,7 +20,7 @@ body {
 
 .menu-nav {
     /*menu de navigation*/
-    background-color: #3498db;
+    background-color: #37A0C9;
     align-items: center;
     display: flex; /*centre verticalement les éléments*/
     justify-content: space-between;
@@ -37,7 +37,7 @@ body {
 
 .lien-nav  {
     display: flex;
-    background-color: #3498db;
+    background-color: #37A0C9;
     text-wrap: nowrap;
     list-style-type: none;
     flex-wrap: nowrap; /* Empêche les éléments de passer à la ligne */
