@@ -131,10 +131,27 @@ app.delete('/users/:id', async (req, res) => {
 });
 
 // AJOUTER UNE UE
-app.post('//ues', async (req, res) => {
-    const ue = new Ue(req.body);
-    await ue.save();
-    res.json(ue);
+app.post('/ues', upload.single('img_path'), async (req, res) => {
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
+    try {
+        const { name, code, type, capacity} = req.body;
+        const img_path = req.file ? '/uploads/' + req.file.filename : '';
+
+        // Crée l'ue 
+        const ue = new Ue({
+            name,
+            code,            
+            type,
+            capacity,
+            img_path
+        });
+
+        await ue.save();
+        res.status(201).json({ message: "Ue créé avec succès.", ue });
+    } catch (error) {
+        res.status(500).json({ message: "Erreur serveur lors de la création de l'ue." });
+    }
 });
 
 // crée une route get pour récupérer toutes les ues
