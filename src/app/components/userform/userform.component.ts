@@ -33,9 +33,18 @@ export class UserformComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file; // pour l'envoi du fichier
-      this.myForm.get('avatar')?.setValue(file); // pour le FormControl
-      this.myForm.get('avatar')?.updateValueAndValidity();
+      this.myForm.get('avatar')?.setValue(file); // pour le FormControl      
+    }else{
+      this.myForm.get('avatar')?.setValue(null);
     }
+    this.myForm.get('avatar')?.markAsTouched();
+    this.myForm.get('avatar')?.markAsDirty();
+    this.myForm.get('avatar')?.updateValueAndValidity();
+  }
+
+  onFileClick() {
+    this.myForm.get('avatar')?.markAsTouched();
+    this.myForm.get('avatar')?.markAsDirty();
   }
 
   onRoleChange(event: any) {

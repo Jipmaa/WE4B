@@ -12,6 +12,7 @@ import { LoginComponent } from './components/login/login.component';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserformComponent } from './components/userform/userform.component';
+import { UeformComponent } from './components/ueform/ueform.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { UserformComponent } from './components/userform/userform.component';
     CoursComponent,
     ListecoursComponent,
     LoginComponent,
-    UserformComponent
+    UserformComponent,
+    UeformComponent
   ],
   imports: [
     BrowserModule,

@@ -13,6 +13,10 @@ export class UeService {
   constructor(public http: HttpClient) { }
 
   get_ue(): Observable<Ue[]> {
-      return this.http.get<Ue[]>(this.apiUrl);
-    }
+    return this.http.get<Ue[]>(this.apiUrl);
+  }
+
+  createUe(formData: FormData): Observable<Ue> {
+    return this.http.post<Ue>(this.apiUrl, formData);
+  }
 }
