@@ -62,7 +62,7 @@ app.post('/users', upload.single('avatar'), async (req, res) => {
     console.log('req.file:', req.file);
     try {
         const { firstName, lastName, birthdate, email, phoneNumber, password, department } = req.body;
-        const roles = req.body['roles[]'] || [];
+        const roles = req.body['roles'] || [];
         const avatar = req.file ? '/uploads/' + req.file.filename : '';
 
         console.log('roles reçu:', roles, typeof roles);
