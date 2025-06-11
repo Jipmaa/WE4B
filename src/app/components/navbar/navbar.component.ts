@@ -6,7 +6,7 @@ import { User } from '../../models/user';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: []
 })
 export class NavbarComponent implements OnInit {
 

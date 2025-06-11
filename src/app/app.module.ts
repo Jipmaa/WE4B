@@ -13,6 +13,7 @@ import { LoginComponent } from './components/login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserformComponent } from './components/userform/userform.component';
 import { UeformComponent } from './components/ueform/ueform.component';
+import { NavbarItemComponent } from './components/navbar-item/navbar-item.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { UeformComponent } from './components/ueform/ueform.component';
     ListecoursComponent,
     LoginComponent,
     UserformComponent,
-    UeformComponent
+    UeformComponent,
+    NavbarItemComponent
   ],
   imports: [
     BrowserModule,
