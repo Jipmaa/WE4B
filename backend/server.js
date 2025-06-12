@@ -1,6 +1,10 @@
 const express = require('express');
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express(); // crée l'application express
 app.use(cors()); // active cors pour permettre à angular d'accéder à l'API
@@ -23,9 +27,7 @@ const upload = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
 
 //connecte le serveur node.js à la base de données MongoDB
-//mongoose.connect('mongodb://localhost:27017/we4b_project', {
-//}).then(() => console.log('MongoDB connecté'));
-mongoose.connect('mongodb+srv://we4buser:we4bpassword@we4b-project.ra47djv.mongodb.net/we4b-project?retryWrites=true&w=majority&appName=we4b-project')
+mongoose.connect(process.env.DATABASE_URL)
     .then(() => console.log('MongoDB connecté'))
     .catch(err => console.error('Erreur de connexion MongoDB:', err));
 
@@ -138,10 +140,10 @@ app.post('/ues', upload.single('img_path'), async (req, res) => {
         const { name, code, type, capacity} = req.body;
         const img_path = req.file ? '/uploads/' + req.file.filename : '';
 
-        // Crée l'ue 
+        // Crée l'ue
         const ue = new Ue({
             name,
-            code,            
+            code,
             type,
             capacity,
             img_path

@@ -1,0 +1,128 @@
+<!-- ui-form-input.component.html -->
+<div class="w-full flex flex-col gap-1.5">
+
+  <div class="flex justify-between items-baseline">
+    <!-- Label (if provided) -->
+    <label
+      *ngIf="label"
+      [for]="id"
+      class="justify-start text-black text-sm font-medium leading-tight">
+      {{ label }}
+      <span *ngIf="required" class="text-red-500 ml-1" aria-label="required">*</span>
+    </label>
+
+    <!-- Content (if provided) -->
+    <ng-content></ng-content>
+  </div>
+
+  <!-- Input Container -->
+  <div
+    [class]="containerClasses"
+    (click)="onContainerClick()"
+    [attr.data-validation-error]="hasError || null"
+    [attr.data-validation-warning]="hasWarning || null"
+    [attr.data-validation-success]="hasSuccess || null"
+    [attr.data-focused]="isFocused || null">
+
+    <!-- Before Icon -->
+    <button
+      *ngIf="beforeIcon"
+      type="button"
+      class="flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
+      [class.cursor-not-allowed]="_isDisabled"
+      [class.opacity-50]="_isDisabled"
+      [disabled]="_isDisabled"
+      (click)="onBeforeIconClick($event)"
+      [attr.aria-label]="'Icon button before input ' + (ariaLabel || label || placeholder)">
+      <lucide-icon
+        [name]="beforeIcon"
+        [size]="16"
+        class="pointer-events-none"></lucide-icon>
+    </button>
+
+    <!-- Input Element - Fixed with proper value binding -->
+    <input
+      [value]="value"
+      (input)="handleInput($event)"
+      [type]="type"
+      [placeholder]="placeholder"
+      [name]="name"
+      [id]="id"
+      [required]="required"
+      [readonly]="readonly"
+      [disabled]="_isDisabled"
+      [autocomplete]="autocomplete"
+      [maxLength]="maxlength"
+      [minLength]="minlength"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [pattern]="pattern"
+      [class]="inputClasses"
+      [attr.aria-label]="ariaLabel || null"
+      [attr.aria-labelledby]="ariaLabelledBy || null"
+      [attr.aria-describedby]="ariaDescribedByValue || null"
+      [attr.aria-invalid]="hasError || null"
+      [attr.aria-required]="required || null"
+      (focus)="onFocus($event)"
+      (blur)="onBlur($event)"
+      (keyup)="onKeyUp($event)"
+      (keydown)="onKeyDown($event)" />
+
+    <!-- After Icon -->
+    <button
+      *ngIf="afterIcon"
+      type="button"
+      class="flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
+      [class.cursor-not-allowed]="_isDisabled"
+      [class.opacity-50]="_isDisabled"
+      [disabled]="_isDisabled"
+      (click)="onAfterIconClick($event)"
+      [attr.aria-label]="'Icon button after input ' + (ariaLabel || label || placeholder)">
+      <lucide-icon
+        [name]="afterIcon"
+        [size]="16"
+        class="pointer-events-none"></lucide-icon>
+    </button>
+
+  </div>
+
+  <!-- Help Text -->
+  <p
+    *ngIf="helpText && !hasError"
+    [id]="id + '-help'"
+    class="mt-1 text-xs text-gray-600">
+    {{ helpText }}
+  </p>
+
+  <!-- Error Message -->
+  <p
+    *ngIf="errorText && hasError"
+    [id]="id + '-error'"
+    class="mt-1 text-xs text-red-600"
+    role="alert"
+    aria-live="polite">
+    <lucide-icon name="alert-circle" [size]="12" class="inline mr-1"></lucide-icon>
+    {{ errorText }}
+  </p>
+
+  <!-- Warning Message -->
+  <p
+    *ngIf="errorText && hasWarning && !hasError"
+    [id]="id + '-warning'"
+    class="mt-1 text-xs text-yellow-600"
+    role="alert"
+    aria-live="polite">
+    <lucide-icon name="alert-triangle" [size]="12" class="inline mr-1"></lucide-icon>
+    {{ errorText }}
+  </p>
+
+  <!-- Success Message -->
+  <p
+    *ngIf="errorText && hasSuccess && !hasError && !hasWarning"
+    [id]="id + '-success'"
+    class="mt-1 text-xs text-green-600">
+    <lucide-icon name="check-circle" [size]="12" class="inline mr-1"></lucide-icon>
+    {{ errorText }}
+  </p>
+</div>

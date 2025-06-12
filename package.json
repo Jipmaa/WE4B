@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "@tailwindcss/typography": "^0.5.16",
+    "lucide-angular": "^0.514.0",
     "rxjs": "~7.5.0",
     "tailwindcss-animate": "^1.0.7",
     "tslib": "^2.3.0",

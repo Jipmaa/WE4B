@@ -14,6 +14,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserformComponent } from './components/userform/userform.component';
 import { UeformComponent } from './components/ueform/ueform.component';
 import { NavbarItemComponent } from './components/navbar-item/navbar-item.component';
+import { UiFormInputComponent } from './components/ui-form-input/ui-form-input.component';
+import {icons, LucideAngularModule} from "lucide-angular";
+import { ButtonComponent } from './components/button/button.component';
 
 @NgModule({
   declarations: [
@@ -24,14 +27,17 @@ import { NavbarItemComponent } from './components/navbar-item/navbar-item.compon
     LoginComponent,
     UserformComponent,
     UeformComponent,
-    NavbarItemComponent
+    NavbarItemComponent,
+    UiFormInputComponent,
+    ButtonComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule, // pour les formulaires
-    ReactiveFormsModule, // pour les formulaires réactifs
+    FormsModule, // for forms
+    ReactiveFormsModule, // for reactive forms
+    LucideAngularModule.pick(icons),  // for icons
   ],
   providers: [
     HttpClient

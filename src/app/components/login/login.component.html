@@ -1,28 +1,67 @@
-<div class="login">
-    <form (ngSubmit)="onLogin()">
-        <div class="titre">
-            <h1>Connexion</h1>
-            <img src="assets/logo_utbm.png" alt="logo utbm" class="logo-utbm">
-            <p>Bienvenue sur le Moodle de l'UTBM! Connecte-toi pour accéder au contenu.</p>
-        </div>
+<div class="w-full h-full bg-background flex justify-center items-center">
+  <form
+    (ngSubmit)="onLogin($event)"
+    class="p-6 bg-white rounded-3xl inline-flex flex-col justify-start items-start gap-6 max-w-md w-full mx-4"
+    novalidate
+  >
+    <img class="h-7" src="assets/logo_utbm.png" alt="logo utbm" />
 
-        <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Adresse e-mail</label>
-            <input type="email" [(ngModel)]="email" name="email" class="form-control" id="exampleInputEmail1"
-                aria-describedby="emailHelp" placeholder="prenom.nom@utbm.fr" required>
-        </div>
-        <div class="mb-3 password-container">
-            <div class="motdepasse"><label for="exampleInputPassword1" class="form-label">Mot de passe</label>
-                <a>Mot de passe oublié ?</a>
-            </div>
-            <input type="password" [(ngModel)]="password" name="password" class="form-control"
-                id="exampleInputPassword1" placeholder="Mot de passe" required>
-            <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"></ion-icon>
-        </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-        </div>
-        <button type="submit" class="btn btn-primary">Connexion</button>
-        <div *ngIf="error" class="text-danger">{{ error }}</div>
-    </form>
+    <div class="self-stretch flex flex-col justify-start items-start gap-2">
+      <h1 class="justify-start text-black text-2xl font-semibold leading-normal">Connexion</h1>
+      <p class="max-w-96 opacity-60 justify-start text-black text-sm font-normal leading-tight">
+        Bienvenu sur le Moodle de l'UTBM! Connecte-toi pour accéder au contenu.
+      </p>
+    </div>
+
+    <!-- Error message -->
+    <div *ngIf="error" class="w-full p-3 bg-red-50 border border-red-200 rounded-lg">
+      <p class="text-red-600 text-sm">{{ error }}</p>
+    </div>
+
+    <!-- Email Input -->
+    <div class="w-full">
+      <app-ui-form-input
+        placeholder="john@doe.fr"
+        label="Adresse e-mail"
+        type="email"
+        [(ngModel)]="email"
+        name="email"
+        [required]="true"
+        autocomplete="email"
+        (valueChange)="clearError()"
+        class="w-full"
+      ></app-ui-form-input>
+    </div>
+
+    <!-- Password Input -->
+    <div class="w-full">
+      <app-ui-form-input
+        placeholder="••••••••••••"
+        label="Mot de passe"
+        [type]="showPassword ? 'text' : 'password'"
+        [(ngModel)]="password"
+        name="password"
+        [required]="true"
+        autocomplete="current-password"
+        [afterIcon]="showPassword ? 'eye-off' : 'eye'"
+        (afterIconClick)="togglePasswordVisibility()"
+        (valueChange)="clearError()"
+        class="w-full"
+      >
+        <span class="text-right justify-end text-black text-xs font-normal leading-tight underline-offset-2 cursor-pointer hover:underline focus:underline">
+          Mot de passe oublié ?
+        </span>
+      </app-ui-form-input>
+    </div>
+
+    <!-- Submit Button -->
+    <app-button
+      type="submit"
+      [fullWidth]="true"
+      [disabled]="false &&( isLoading || !email || !password)"
+    >
+      <span *ngIf="isLoading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      {{ isLoading ? 'Connexion...' : 'Connexion' }}
+    </app-button>
+  </form>
 </div>
