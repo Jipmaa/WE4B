@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 // Import routes
 import userRoutes from './routes/user-routes';
 import courseUnitRoutes from './routes/course-unit-routes';
+import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
 
 // Import middleware
@@ -59,8 +60,23 @@ class Server {
 	}
 
 	private initializeMiddlewares(): void {
-		// Security middleware
-		this.app.use(helmet());
+		// Security middleware with development-friendly configuration
+		if (process.env.NODE_ENV === 'production') {
+			this.app.use(helmet({
+				hsts: {
+					maxAge: 31536000,
+					includeSubDomains: true,
+					preload: true
+				}
+			}));
+		} else {
+			// Development configuration - don't force HTTPS
+			this.app.use(helmet({
+				hsts: false,
+				contentSecurityPolicy: false,
+				crossOriginEmbedderPolicy: false
+			}));
+		}
 
 		// Rate limiting
 		const limiter = rateLimit({
@@ -106,6 +122,11 @@ class Server {
 	}
 
 	private initializeRoutes(): void {
+		if (process.env.NODE_ENV === 'development') {
+			// Setup routes (no authentication required)
+			this.app.use('/setup', setupRoutes);
+		}
+
 		// API routes
 		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/course-units', courseUnitRoutes);
@@ -118,6 +139,8 @@ class Server {
 				version: '1.0.0',
 				endpoints: {
 					health: '/health',
+					setup: '/setup/user',
+					setupStats: '/setup/user/stats',
 					auth: '/api/accounts',
 					users: '/api/users'
 				}
@@ -138,6 +161,8 @@ class Server {
 			console.log(`🚀 Server running on port ${this.port}`);
 			console.log(`📖 Environment: ${process.env.NODE_ENV || 'development'}`);
 			console.log(`🔗 API URL: http://localhost:${this.port}`);
+			console.log(`👤 Setup User: http://localhost:${this.port}/setup/user`);
+			console.log(`📊 User Stats: http://localhost:${this.port}/setup/user/stats`);
 		});
 	}
 }
