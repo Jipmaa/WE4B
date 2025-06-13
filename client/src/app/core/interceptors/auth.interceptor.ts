@@ -15,7 +15,7 @@ export const authInterceptor: HttpInterceptorFn = (
   const token = authService.token();
 
   // Skip adding token for accounts endpoints (login, register, etc.)
-  const authEndpoints = ['/accounts/login', '/accounts/register'];
+  const authEndpoints = ['/api/accounts/login', '/api/accounts/register'];
   const isAuthEndpoint = authEndpoints.some(endpoint => req.url.includes(endpoint));
 
   // Clone the request and add the authorization header if token exists

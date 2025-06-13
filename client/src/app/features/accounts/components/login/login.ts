@@ -62,8 +62,6 @@ export class Login implements OnInit {
     }).subscribe({
       next: (user) => {
         this.isLoading = false;
-        // Stocke l'utilisateur (localStorage ou service)
-        localStorage.setItem('user', JSON.stringify(user));
         // Redirige vers la page des cours
         this.router.navigate(['/listecours']);
       },

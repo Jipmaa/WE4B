@@ -90,7 +90,11 @@ class Server {
 
 		// CORS configuration
 		this.app.use(cors({
-			origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+			origin: [
+				'http://localhost:4200',  // Angular dev server
+				'http://localhost:3000',  // Your backend (if needed)
+				process.env.CORS_ORIGIN   // Environment variable for production
+			].filter(Boolean), // Remove any undefined values
 			credentials: true,
 			methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
 			allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -101,7 +105,7 @@ class Server {
 
 		// Logging middleware
 		if (process.env.NODE_ENV === 'development') {
-			this.app.use(morgan('dev'));
+			this.app.use(morgan(':method :url :status :res[content-length] - :response-time ms :date[clf]'));
 		} else {
 			this.app.use(morgan('combined'));
 		}

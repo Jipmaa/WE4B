@@ -22,7 +22,7 @@ import { ApiResponse } from '../models/_shared.models';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly baseUrl = `${environment.apiUrl}/auth`;
+  private readonly baseUrl = `${environment.apiUrl}/accounts`;
 
   // Storage keys
   private readonly TOKEN_KEY = 'auth_token';
