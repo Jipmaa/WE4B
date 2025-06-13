@@ -3,15 +3,15 @@
     <span class="justify-start text-md font-medium">Mooodle</span>
     <nav class="flex justify-start items-center gap-3">
       <app-header-item [label]="'Accueil'" [link]="'/dashboard'"/>
-      <app-header-item [label]="'Mes cours'" [link]="'/listecours'"/>
+      <app-header-item [label]="'Mes cours'" [link]="'/courses'"/>
       <app-header-item [label]="'Forum'" [link]="'/forum'"/>
-      <app-header-item [label]="'Administration'" [link]="'/admin'"/>
+      <app-header-item [label]="'Administration'" [link]="'/administration'"/>
       <!-- TODO: À supprimer, pout tests uniquement -->
       <div class="w-4 h-1"></div>
       <app-header-item [label]="'Mon compte'" [disabled]="true"/>
       <app-header-item (click)="logout()" [label]="'Déconnexion'" [disabled]="false"/>
-      <app-header-item [label]="'Add user'" [link]="'/userform'"/>
-      <app-header-item [label]="'Add ue'" [link]="'/ueform'"/>
+      <app-header-item [label]="'Add user'" [link]="'/administration'"/>
+      <app-header-item [label]="'Add ue'" [link]="'/courses'"/>
       <!-- Fin À supprimer, pout tests uniquement -->
     </nav>
   </div>
