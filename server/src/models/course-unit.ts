@@ -37,7 +37,19 @@ const courseUnitSchema = new Schema<CourseUnit>({
 		default: null
 	}
 }, {
-	timestamps: true
+	timestamps: true,
+	toJSON: {
+		transform: function(doc, ret) {
+			delete ret.__v;
+			return ret;
+		}
+	},
+	toObject: {
+		transform: function(doc, ret) {
+			delete ret.__v;
+			return ret;
+		}
+	}
 });
 
 courseUnitSchema.index({ slug: 1 });
