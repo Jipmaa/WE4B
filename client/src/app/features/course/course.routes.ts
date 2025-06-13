@@ -9,11 +9,11 @@ export const courseRoutes: Routes = [
     component: CoursesPage
   },
   {
-    path: '/course/:slug',
+    path: '/:slug',
     component: CoursePage
   },
   {
-    path: '/course/:slug/members',
+    path: '/:slug/members',
     component: CourseMembersPage
   }
 ]
