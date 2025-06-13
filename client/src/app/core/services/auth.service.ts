@@ -11,10 +11,10 @@ import {
   ChangePasswordRequest,
   AuthState,
   JwtPayload,
-  ApiResponse,
   UserRole
 } from '@/core/models/auth.models';
 import { environment } from '../../../environments/environment';
+import { ApiResponse } from '../models/_shared.models';
 
 @Injectable({
   providedIn: 'root'

@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 
 // Import routes
 import userRoutes from './routes/user-routes';
+import courseUnitRoutes from './routes/course-unit-routes';
 import authRoutes from './routes/auth-routes';
 
 // Import middleware
@@ -107,6 +108,7 @@ class Server {
 	private initializeRoutes(): void {
 		// API routes
 		this.app.use('/api/accounts', authRoutes);
+		this.app.use('/api/course-units', courseUnitRoutes);
 		this.app.use('/api/users', userRoutes);
 
 		// Root endpoint

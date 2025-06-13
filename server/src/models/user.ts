@@ -23,15 +23,6 @@ export interface IUser extends Document {
 	isTeacher(): boolean;
 }
 
-type ClientUserOmittedFields =
-	| 'password'
-	| 'comparePassword'
-	| 'getFullName'
-	| 'hasRole'
-	| 'isAdmin'
-	| 'isTeacher';
-export type ClientUser = Omit<IUser, ClientUserOmittedFields>
-
 const userSchema = new Schema<IUser>({
 	birthdate: {
 		type: Date,

@@ -1,21 +1,12 @@
-export type UserRole = 'student' | 'teacher' | 'admin';
+export type {
+  User,
+  UserRole
+} from './user.models';
 
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  avatar?: string;
-  roles: UserRole[];
-  department?: string;
-  birthdate: Date;
-  isActive: boolean;
-  isEmailVerified: boolean;
-  lastLogin?: Date;
-  createdAt: Date;
-  updatedAt?: Date;
-}
+import {
+  User,
+  UserRole
+} from './user.models';
 
 export interface LoginRequest {
   email: string;
@@ -62,22 +53,6 @@ export interface JwtPayload {
   userId: string;
   iat: number; // issued at
   exp: number; // expires at
-}
-
-// API Response structure based on your backend
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
-
-export interface ApiError {
-  success: false;
-  error: {
-    message: string;
-    status: number;
-    details?: any;
-  };
 }
 
 // Utility types
