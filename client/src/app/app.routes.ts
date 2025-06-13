@@ -18,6 +18,11 @@ export const routes: Routes = [
     canActivate: [guestGuard],
     loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes)
   },
+  {
+    path: 'courses',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./features/course/course.routes').then(m => m.courseRoutes)
+  },
 
   {
     path: '',
