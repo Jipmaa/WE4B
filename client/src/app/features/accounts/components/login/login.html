@@ -22,6 +22,7 @@
 
     <!-- Email Input -->
     <div class="w-full">
+      <!--
       <app-input
         placeholder="john@doe.fr"
         label="Adresse e-mail"
@@ -33,10 +34,22 @@
         (valueChange)="clearError()"
         class="w-full"
       ></app-input>
+      -->
+
+      <input
+        type="email"
+        placeholder="john@doe.fr"
+        [(ngModel)]="email"
+        name="email"
+        required
+        autocomplete="email"
+        class="w-full border border-border"
+      >
     </div>
 
     <!-- Password Input -->
     <div class="w-full">
+      <!--
       <app-input
         placeholder="••••••••••••"
         label="Mot de passe"
@@ -60,6 +73,16 @@
         </ng-content>
 
       </app-input>
+      -->
+      <input
+        type="password"
+        placeholder="••••••••••••"
+        [(ngModel)]="password"
+        name="password"
+        required
+        autocomplete="current-password"
+        class="w-full border border-border"
+      >
     </div>
 
     <!-- Submit Button -->
