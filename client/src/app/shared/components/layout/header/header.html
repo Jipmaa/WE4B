@@ -1,0 +1,30 @@
+<header class="w-full px-4 py-2 bg-primary inline-flex justify-between items-center">
+  <div class="flex justify-start items-center gap-3 text-white">
+    <span class="justify-start text-md font-medium">Mooodle</span>
+    <nav class="flex justify-start items-center gap-3">
+      <app-header-item [label]="'Accueil'" [link]="'/dashboard'"/>
+      <app-header-item [label]="'Mes cours'" [link]="'/listecours'"/>
+      <app-header-item [label]="'Forum'" [link]="'/forum'"/>
+      <app-header-item [label]="'Administration'" [link]="'/admin'"/>
+      <!-- TODO: À supprimer, pout tests uniquement -->
+      <div class="w-4 h-1"></div>
+      <app-header-item [label]="'Mon compte'" [disabled]="true"/>
+      <app-header-item (click)="logout()" [label]="'Déconnexion'" [disabled]="false"/>
+      <app-header-item [label]="'Add user'" [link]="'/userform'"/>
+      <app-header-item [label]="'Add ue'" [link]="'/ueform'"/>
+      <!-- Fin À supprimer, pout tests uniquement -->
+    </nav>
+  </div>
+  <div class="flex justify-center items-center gap-4">
+    <div class="size-8 relative">
+      <div class="inset-0 absolute bg-zinc-300 rounded-full"></div>
+      @if (!user || !user.avatar) {
+        <div class="left-1/2 top-1/2 absolute justify-start text-black text-xs font-normal text-center transform -translate-x-1/2 -translate-y-1/2">
+          {{ authService.getInitiales() }}
+        </div>
+      } @else {
+        <img [ngSrc]="user.avatar" alt="avatar" class="absolute inset-0 rounded-full">
+      }
+    </div>
+  </div>
+</header>

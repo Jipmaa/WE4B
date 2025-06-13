@@ -6,8 +6,8 @@ export interface IUser extends Document {
 	birthdate: Date;
 	email: string;
 	password: string;
-	firstName?: string;
-	lastName?: string;
+	firstName: string;
+	lastName: string;
 	avatar?: string;
 	roles: Array<'student' | 'teacher' | 'admin'>;
 	department?: string;
@@ -22,6 +22,15 @@ export interface IUser extends Document {
 	isAdmin(): boolean;
 	isTeacher(): boolean;
 }
+
+type ClientUserOmittedFields =
+	| 'password'
+	| 'comparePassword'
+	| 'getFullName'
+	| 'hasRole'
+	| 'isAdmin'
+	| 'isTeacher';
+export type ClientUser = Omit<IUser, ClientUserOmittedFields>
 
 const userSchema = new Schema<IUser>({
 	birthdate: {
@@ -44,11 +53,13 @@ const userSchema = new Schema<IUser>({
 	},
 	firstName: {
 		type: String,
+		required: [true, 'First name is required'],
 		trim: true,
 		maxlength: [50, 'First name must be less than 50 characters']
 	},
 	lastName: {
 		type: String,
+		required: [true, 'Last name is required'],
 		trim: true,
 		maxlength: [50, 'Last name must be less than 50 characters']
 	},
@@ -135,10 +146,7 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
 
 // Instance method to get full name
 userSchema.methods.getFullName = function(): string {
-	if (this.firstName && this.lastName) {
 		return `${this.firstName} ${this.lastName}`;
-	}
-	return this.firstName || this.lastName || this.email.split('@')[0];
 };
 
 // Instance method to check if user has a specific role

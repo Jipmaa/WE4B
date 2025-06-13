@@ -1,0 +1,75 @@
+<div class="w-full h-dvh bg-background flex justify-center items-center">
+  <form
+    (ngSubmit)="onLogin($event)"
+    class="p-6 bg-white rounded-3xl inline-flex flex-col justify-start items-start gap-6 max-w-md w-full mx-4"
+    novalidate
+  >
+    <img class="h-7" src="logo_utbm.png" alt="logo utbm" />
+
+    <div class="self-stretch flex flex-col justify-start items-start gap-2">
+      <h1 class="justify-start text-black text-2xl font-semibold leading-normal">Connexion</h1>
+      <p class="max-w-96 opacity-60 justify-start text-black text-sm font-normal leading-tight">
+        Bienvenu sur le Moodle de l'UTBM! Connecte-toi pour accéder au contenu.
+      </p>
+    </div>
+
+    <!-- Error message -->
+    @if (error) {
+      <div class="w-full p-3 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-600 text-sm">{{ error }}</p>
+      </div>
+    }
+
+    <!-- Email Input -->
+    <div class="w-full">
+      <app-input
+        placeholder="john@doe.fr"
+        label="Adresse e-mail"
+        type="email"
+        [(ngModel)]="email"
+        name="email"
+        [required]="true"
+        autocomplete="email"
+        (valueChange)="clearError()"
+        class="w-full"
+      ></app-input>
+    </div>
+
+    <!-- Password Input -->
+    <div class="w-full">
+      <app-input
+        placeholder="••••••••••••"
+        label="Mot de passe"
+        [type]="showPassword ? 'text' : 'password'"
+        [(ngModel)]="password"
+        name="password"
+        [required]="true"
+        autocomplete="current-password"
+        (afterIconClick)="togglePasswordVisibility()"
+        (valueChange)="clearError()"
+        class="w-full"
+      >
+        <ng-content select="[slot=content]">
+          <span class="text-right justify-end text-black text-xs font-normal leading-tight underline-offset-2 cursor-pointer hover:underline focus:underline">
+          Mot de passe oublié ?
+        </span>
+        </ng-content>
+
+        <ng-content select="[slot=trailing]">
+          <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="20" class="cursor-pointer" (click)="togglePasswordVisibility()"></lucide-icon>
+        </ng-content>
+
+      </app-input>
+    </div>
+
+    <!-- Submit Button -->
+    <app-button
+      type="submit"
+      [fullWidth]="true"
+      [disabled]="isLoading || !email || !password"
+      [loading]="isLoading"
+    >
+      Connexion
+    </app-button>
+  </form>
+</div>

@@ -37,12 +37,10 @@ const registerValidation = [
 		 .toDate()
 		 .withMessage('Please provide a valid birthdate'),
 	body('firstName')
-		 .optional()
 		 .isLength({ max: 50 })
 		 .withMessage('First name must be less than 50 characters')
 		 .trim(),
 	body('lastName')
-		 .optional()
 		 .isLength({ max: 50 })
 		 .withMessage('Last name must be less than 50 characters')
 		 .trim(),
@@ -83,7 +81,7 @@ const changePasswordValidation = [
 		 .withMessage('New password must be at least 6 characters long')
 ];
 
-// @route   POST /api/auth/register
+// @route   POST /api/accounts/register
 // @desc    Register a new user
 // @access  Public
 router.post('/register', registerValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
@@ -138,7 +136,7 @@ router.post('/register', registerValidation, validateRequest, asyncHandler(async
 	});
 }));
 
-// @route   POST /api/auth/login
+// @route   POST /api/accounts/login
 // @desc    Login user
 // @access  Public
 router.post('/login', loginValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
@@ -191,7 +189,7 @@ router.post('/login', loginValidation, validateRequest, asyncHandler(async (req:
 	});
 }));
 
-// @route   GET /api/auth/me
+// @route   GET /api/accounts/me
 // @desc    Get current user profile
 // @access  Private
 router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
@@ -224,7 +222,7 @@ router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Respons
 	});
 }));
 
-// @route   PUT /api/auth/profile
+// @route   PUT /api/accounts/profile
 // @desc    Update user profile
 // @access  Private
 router.put('/profile', authMiddleware, [
@@ -291,7 +289,7 @@ router.put('/profile', authMiddleware, [
 	});
 }));
 
-// @route   PUT /api/auth/change-password
+// @route   PUT /api/accounts/change-password
 // @desc    Change user password
 // @access  Private
 router.put('/change-password', authMiddleware, changePasswordValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
@@ -318,7 +316,7 @@ router.put('/change-password', authMiddleware, changePasswordValidation, validat
 	});
 }));
 
-// @route   POST /api/auth/logout
+// @route   POST /api/accounts/logout
 // @desc    Logout user (client-side token removal)
 // @access  Private
 router.post('/logout', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
@@ -331,7 +329,7 @@ router.post('/logout', authMiddleware, asyncHandler(async (req: Request, res: Re
 	});
 }));
 
-// @route   DELETE /api/auth/delete-account
+// @route   DELETE /api/accounts/delete-account
 // @desc    Delete user account
 // @access  Private
 router.delete('/delete-account', authMiddleware, asyncHandler(async (req: Request, res: Response) => {

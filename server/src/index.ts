@@ -106,7 +106,7 @@ class Server {
 
 	private initializeRoutes(): void {
 		// API routes
-		this.app.use('/api/auth', authRoutes);
+		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/users', userRoutes);
 
 		// Root endpoint
@@ -116,7 +116,7 @@ class Server {
 				version: '1.0.0',
 				endpoints: {
 					health: '/health',
-					auth: '/api/auth',
+					auth: '/api/accounts',
 					users: '/api/users'
 				}
 			});

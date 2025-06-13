@@ -1,0 +1,132 @@
+<!-- ui-form-input.component.html -->
+<div class="w-full flex flex-col gap-1.5">
+
+  <div class="flex justify-between items-baseline">
+    <!-- Label (if provided) -->
+    @if (label()) {
+      <label
+        [for]="computedId()"
+        class="justify-start text-foreground text-sm font-medium leading-tight">
+        {{ label() }}
+        @if (required()) {
+          <span class="text-destructive ml-1" aria-label="required">*</span>
+        }
+      </label>
+    }
+
+    <!-- Content (if provided) -->
+    <ng-content select="[slot=content]"></ng-content>
+  </div>
+
+  <!-- Input Container -->
+  <div
+    [class]="containerClasses()"
+    (click)="onContainerClick()"
+    [attr.data-validation-error]="hasError() || null"
+    [attr.data-validation-warning]="hasWarning() || null"
+    [attr.data-validation-success]="hasSuccess() || null"
+    [attr.data-focused]="isFocused() || null">
+
+    <!-- Before Slot -->
+    <ng-content select="[slot=leading]"></ng-content>
+
+    <!-- Before Icon -->
+    @if (beforeIcon()) {
+      <button
+        type="button"
+        class="flex items-center justify-center p-0 border-0 bg-transparent cursor-pointer"
+        (click)="onBeforeIconClick($event)"
+        [attr.aria-label]="'Before icon: ' + beforeIcon()">
+        <lucide-icon [name]="beforeIcon()!" [size]="16" class="text-muted-foreground"></lucide-icon>
+      </button>
+    }
+
+    <!-- Input Element -->
+    <input
+      #inputRef
+      [value]="value()"
+      (input)="handleInput($event)"
+      [type]="type()"
+      [placeholder]="placeholder()"
+      [name]="computedName()"
+      [id]="computedId()"
+      [required]="required()"
+      [readonly]="readonly()"
+      [disabled]="isDisabled()"
+      [autocomplete]="autocomplete()"
+      [maxLength]="maxlength()"
+      [minLength]="minlength()"
+      [min]="min()"
+      [max]="max()"
+      [step]="step()"
+      [pattern]="pattern()"
+      [class]="inputClasses()"
+      [attr.aria-label]="ariaLabel() || null"
+      [attr.aria-labelledby]="ariaLabelledBy() || null"
+      [attr.aria-describedby]="ariaDescribedByValue() || null"
+      [attr.aria-invalid]="hasError() || null"
+      [attr.aria-required]="required() || null"
+      (focus)="onFocus($event)"
+      (blur)="onBlur($event)"
+      (keyup)="onKeyUp($event)"
+      (keydown)="onKeyDown($event)" />
+
+    <!-- After Icon -->
+    @if (afterIcon()) {
+      <button
+        type="button"
+        class="flex items-center justify-center p-0 border-0 bg-transparent cursor-pointer"
+        (click)="onAfterIconClick($event)"
+        [attr.aria-label]="'After icon: ' + afterIcon()">
+        <lucide-icon [name]="afterIcon()!" [size]="16" class="text-muted-foreground"></lucide-icon>
+      </button>
+    }
+
+    <!-- After Slot -->
+    <ng-content select="[slot=trailing]"></ng-content>
+
+  </div>
+
+  <!-- Help Text -->
+  @if (helpText() && !hasError()) {
+    <p
+      [id]="computedId() + '-help'"
+      class="mt-1 text-xs text-muted-foreground">
+      {{ helpText() }}
+    </p>
+  }
+
+  <!-- Error Message -->
+  @if (errorText() && hasError()) {
+    <p
+      [id]="computedId() + '-error'"
+      class="mt-1 text-xs text-destructive"
+      role="alert"
+      aria-live="polite">
+      <lucide-icon name="alert-circle" [size]="12" class="inline mr-1"></lucide-icon>
+      {{ errorText() }}
+    </p>
+  }
+
+  <!-- Warning Message -->
+  @if (errorText() && hasWarning() && !hasError()) {
+    <p
+      [id]="computedId() + '-warning'"
+      class="mt-1 text-xs text-yellow-600"
+      role="alert"
+      aria-live="polite">
+      <lucide-icon name="alert-triangle" [size]="12" class="inline mr-1"></lucide-icon>
+      {{ errorText() }}
+    </p>
+  }
+
+  <!-- Success Message -->
+  @if (errorText() && hasSuccess() && !hasError() && !hasWarning()) {
+    <p
+      [id]="computedId() + '-success'"
+      class="mt-1 text-xs text-green-600">
+      <lucide-icon name="check-circle" [size]="12" class="inline mr-1"></lucide-icon>
+      {{ errorText() }}
+    </p>
+  }
+</div>
