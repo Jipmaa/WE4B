@@ -150,7 +150,7 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onMenuItemKeydown(event: KeyboardEvent) {
+  onMenuItemKeydown(event: KeyboardEvent, index: number) {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
