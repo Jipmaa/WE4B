@@ -1,5 +1,5 @@
 import {
-  ApplicationConfig,
+  ApplicationConfig, ErrorHandler,
   importProvidersFrom,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection
@@ -14,8 +14,15 @@ import { authInterceptor } from '@/core/interceptors/auth.interceptor';
 // Other dependencies
 import {icons, LucideAngularModule} from 'lucide-angular';
 
+export class GlobalErrorHandler implements ErrorHandler {
+  handleError(error: any): void {
+    console.error('Global error caught:', error);
+  }
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
