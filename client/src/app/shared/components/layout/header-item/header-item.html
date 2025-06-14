@@ -1,13 +1,27 @@
 @if (link && !isDisabled) {
-  <a [href]="link">
-    <button class="px-1.5 py-1 rounded-xs flex justify-start items-start gap-2.5 cursor-pointer hover:bg-white/20">
+  <a
+    #focusableElement
+    [href]="link"
+    [attr.role]="menuRole"
+    [attr.tabindex]="menuRole ? tabIndex : null"
+    [attr.aria-disabled]="isDisabled"
+    (focus)="onFocus()"
+    (keydown)="onKeydown($event)"
+    (click)="onActivate()"
+    [class]="componentClasses">
       <span class="justify-start font-normal">{{ label }}</span>
-    </button>
   </a>
 } @else {
   <button
-    class="px-1.5 py-1 rounded-xs flex justify-start items-start gap-2.5 cursor-pointer hover:bg-white/20 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:opacity-40"
-    [disabled]="isDisabled">
+    #focusableElement
+    [attr.role]="menuRole"
+    [attr.tabindex]="menuRole ? tabIndex : null"
+    [attr.aria-disabled]="isDisabled"
+    [disabled]="isDisabled"
+    (focus)="onFocus()"
+    (keydown)="onKeydown($event)"
+    (click)="onActivate()"
+    [class]="componentClasses">
     <span class="justify-start font-normal">{{ label }}</span>
   </button>
 }
