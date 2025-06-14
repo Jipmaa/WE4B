@@ -92,8 +92,8 @@ class Server {
 		this.app.use(cors({
 			origin: [
 				'http://localhost:4200',  // Angular dev server
-				'http://localhost:3000',  // Your backend (if needed)
-				process.env.CORS_ORIGIN   // Environment variable for production
+				'http://localhost:3000',  // The backend (for setup)
+				process.env.CORS_ORIGIN!   // Environment variable for production
 			].filter(Boolean), // Remove any undefined values
 			credentials: true,
 			methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
