@@ -5,6 +5,7 @@ import {FormsModule} from '@angular/forms';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {LucideAngularModule} from 'lucide-angular';
+import {InputWrapperComponent} from '@/shared/components/ui/input-test';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,8 @@ import {LucideAngularModule} from 'lucide-angular';
     FormsModule,
     ButtonComponent,
     InputComponent,
-    LucideAngularModule
+    LucideAngularModule,
+    InputWrapperComponent
   ],
   templateUrl: './login.html',
 })

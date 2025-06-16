@@ -22,7 +22,6 @@
 
     <!-- Email Input -->
     <div class="w-full">
-      <!--
       <app-input
         placeholder="john@doe.fr"
         label="Adresse e-mail"
@@ -33,23 +32,11 @@
         autocomplete="email"
         (valueChange)="clearError()"
         class="w-full"
-      ></app-input>
-      -->
-
-      <input
-        type="email"
-        placeholder="john@doe.fr"
-        [(ngModel)]="email"
-        name="email"
-        required
-        autocomplete="email"
-        class="w-full border border-border"
-      >
+      />
     </div>
 
     <!-- Password Input -->
     <div class="w-full">
-      <!--
       <app-input
         placeholder="••••••••••••"
         label="Mot de passe"
@@ -58,31 +45,25 @@
         name="password"
         [required]="true"
         autocomplete="current-password"
-        (afterIconClick)="togglePasswordVisibility()"
         (valueChange)="clearError()"
         class="w-full"
       >
-        <ng-content select="[slot=content]">
-          <span class="text-right justify-end text-black text-xs font-normal leading-tight underline-offset-2 cursor-pointer hover:underline focus:underline">
+          <span
+            slot="label-hint"
+            class="text-right justify-end text-black text-xs font-normal leading-tight underline-offset-2 cursor-pointer hover:underline focus:underline"
+          >
           Mot de passe oublié ?
         </span>
-        </ng-content>
 
-        <ng-content select="[slot=trailing]">
-          <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="20" class="cursor-pointer" (click)="togglePasswordVisibility()"></lucide-icon>
-        </ng-content>
+          <div
+            slot="trailing"
+            (click)="togglePasswordVisibility()"
+            class="cursor-pointer p-1 rounded-sm hover:bg-gray-100"
+          >
+            <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="12"></lucide-icon>
+          </div>
 
       </app-input>
-      -->
-      <input
-        type="password"
-        placeholder="••••••••••••"
-        [(ngModel)]="password"
-        name="password"
-        required
-        autocomplete="current-password"
-        class="w-full border border-border"
-      >
     </div>
 
     <!-- Submit Button -->
