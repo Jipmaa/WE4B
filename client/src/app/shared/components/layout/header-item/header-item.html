@@ -9,7 +9,7 @@
     (keydown)="onKeydown($event)"
     (click)="onActivate()"
     [class]="componentClasses">
-      <span class="justify-start font-normal">{{ label }}</span>
+      <span class="justify-start font-normal min-w-max">{{ label }}</span>
   </a>
 } @else {
   <button
@@ -22,6 +22,6 @@
     (keydown)="onKeydown($event)"
     (click)="onActivate()"
     [class]="componentClasses">
-    <span class="justify-start font-normal">{{ label }}</span>
+    <span class="justify-start font-normal min-w-max">{{ label }}</span>
   </button>
 }
