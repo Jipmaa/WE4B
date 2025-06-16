@@ -63,7 +63,7 @@ export class Login implements OnInit {
       next: (user) => {
         this.isLoading = false;
         // Redirige vers la page des cours
-        this.router.navigate(['/listecours']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         this.isLoading = false;

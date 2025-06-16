@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, catchError, tap, throwError, of } from 'rxjs';
+import {Observable, catchError, tap, throwError, of, finalize, timeout} from 'rxjs';
 import {
   User,
   LoginRequest,
@@ -97,7 +97,10 @@ export class AuthService {
             this.setAuthData(response.data.user, response.data.token);
           }
         }),
-        catchError(error => this.handleError(error)),
+        catchError(error => {
+          console.error('❌ Login error:', error);
+          return this.handleLoginError(error);
+        }),
         tap(() => this._isLoading.set(false))
       );
   }
@@ -113,7 +116,7 @@ export class AuthService {
             this.setAuthData(response.data.user, response.data.token);
           }
         }),
-        catchError(error => this.handleError(error)),
+        catchError(error => this.handleAuthError(error)),
         tap(() => this._isLoading.set(false))
       );
   }
@@ -121,20 +124,56 @@ export class AuthService {
   logout(): Observable<ApiResponse<any>> {
     this._isLoading.set(true);
 
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/logout`, {})
-      .pipe(
-        tap(() => {
+    // If no token, just clear local data
+    if (!this._token()) {
+      this.clearAuthData();
+      this.router.navigate(['/accounts/login']);
+      this._isLoading.set(false);
+      return of({ success: true, message: 'Logged out locally', data: null });
+    }
+
+    const logoutRequest = this.http.post<ApiResponse<any>>(`${this.baseUrl}/logout`, {}, {
+      headers: {
+        'Authorization': `Bearer ${this._token()}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return logoutRequest.pipe(
+      timeout(10000), // 10 second timeout
+      tap({
+        next: (response) => {
           this.clearAuthData();
-          this.router.navigate(['/auth/login']);
-        }),
-        catchError(error => {
-          // Even if logout fails on server, clear local data
-          this.clearAuthData();
-          this.router.navigate(['/auth/login']);
-          return of({ success: true, message: 'Logged out locally', data: null });
-        }),
-        tap(() => this._isLoading.set(false))
-      );
+          this.router.navigate(['/accounts/login']);
+        },
+        error: (error) => {
+          console.error('❌ Server logout error (before catchError):', error);
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.warn('⚠️ Logout failed on server, clearing local data anyway');
+        console.error('🚫 Server error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
+
+        // Always clear local data even if server call fails
+        this.clearAuthData();
+        this.router.navigate(['/accounts/login']);
+
+        // Return success since local logout worked
+        return of({
+          success: true,
+          message: 'Logged out locally after server error',
+          data: null
+        });
+      }),
+      finalize(() => {
+        this._isLoading.set(false);
+      })
+    );
   }
 
   // Profile Methods
@@ -249,11 +288,23 @@ export class AuthService {
     this.saveToStorage(user, token);
   }
 
+  /**
+   * Clear local session data without server call - used by interceptor
+   * ⚠️ Shouldn't be called elsewhere
+   */
+  _clearLocalSession(): void {
+    console.log('🧹 Clearing local session (interceptor triggered)');
+    this.clearAuthData();
+    this.router.navigate(['/accounts/login']);
+  }
+
   private clearAuthData(): void {
     this._user.set(null);
     this._token.set(null);
     this._error.set(null);
-    this.clearStorage();
+
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
   }
 
   private saveToStorage(user: User, token: string): void {
@@ -280,11 +331,6 @@ export class AuthService {
     }
   }
 
-  private clearStorage(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-  }
-
   private initializeFromStorage(): void {
     const token = this.getTokenFromStorage();
     const user = this.getUserFromStorage();
@@ -297,8 +343,53 @@ export class AuthService {
     }
   }
 
-  // Error Handling
+  // Enhanced Error Handling
+  private handleLoginError(error: HttpErrorResponse): Observable<never> {
+    console.error('🚫 Login error details:', error);
+
+    let errorMessage = 'Login failed. Please try again.';
+
+    // Extract error message from response
+    if (error.error?.error?.message) {
+      errorMessage = error.error.error.message;
+    } else if (error.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error.status === 401) {
+      errorMessage = 'Invalid email or password. Please check your credentials.';
+    } else if (error.status === 0) {
+      errorMessage = 'Unable to connect to server. Please check your internet connection.';
+    } else if (error.status >= 500) {
+      errorMessage = 'Server error. Please try again later.';
+    }
+
+    this._error.set(errorMessage);
+
+    // Don't call logout for login errors - just set the error
+    return throwError(() => error);
+  }
+
+  private handleAuthError(error: HttpErrorResponse): Observable<never> {
+    console.error('🚫 Auth error details:', error);
+
+    let errorMessage = 'An error occurred. Please try again.';
+
+    if (error.error?.error?.message) {
+      errorMessage = error.error.error.message;
+    } else if (error.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error.status === 400) {
+      errorMessage = 'Invalid request. Please check your input.';
+    } else if (error.status === 409) {
+      errorMessage = 'Email already exists. Please use a different email.';
+    }
+
+    this._error.set(errorMessage);
+    return throwError(() => error);
+  }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('🚫 General error details:', error);
+
     let errorMessage = 'An unknown error occurred';
 
     if (error.error?.error?.message) {
@@ -309,10 +400,11 @@ export class AuthService {
       errorMessage = error.message;
     }
 
-    // Handle authentication errors
-    if (error.status === 401) {
+    // Handle authentication errors - these should trigger logout
+    if (error.status === 401 && !error.url?.includes('/login')) {
+      console.log('🔒 401 error on authenticated endpoint, clearing auth data');
       this.clearAuthData();
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/accounts/login']);
     }
 
     this._error.set(errorMessage);

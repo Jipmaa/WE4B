@@ -81,8 +81,11 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async logout() {
-    this.authService.logout();
-    await this.router.navigate(['/']);
+    this.authService.logout().subscribe({
+      next: async () => {
+        await this.router.navigate(['/accounts/login']);
+      }
+    });
   }
 
   ngOnDestroy() {

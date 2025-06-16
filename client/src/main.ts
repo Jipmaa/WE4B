@@ -4,7 +4,7 @@ import { App } from '@/app';
 import {isDevMode} from '@angular/core';
 
 if (isDevMode()) {
-  console.log("Running in dev mode");
+  console.log("🏗️ Running in dev mode");
 }
 
 bootstrapApplication(App, appConfig)

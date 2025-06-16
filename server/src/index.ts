@@ -78,15 +78,14 @@ class Server {
 			}));
 		}
 
-		// Rate limiting
-		const limiter = rateLimit({
-			windowMs: 15 * 60 * 1000, // 15 minutes
-			max: 100, // limit each IP to 100 requests per windowMs
-			message: 'Too many requests from this IP, please try again later.',
-			standardHeaders: true,
-			legacyHeaders: false,
-		});
-		this.app.use(limiter);
+		// Logging middleware
+		if (process.env.NODE_ENV === 'development') {
+			morgan.token('origin', (req) => req.headers['origin'] || 'no-origin');
+			morgan.token('auth', (req) => req.headers['authorization'] ? 'Bearer-present' : 'no-auth');
+			this.app.use(morgan(':date[clf] :method :url — :status :res[content-length] :response-time ms | Origin: :origin | Auth: :auth'));
+		} else {
+			this.app.use(morgan('combined'));
+		}
 
 		// CORS configuration
 		this.app.use(cors({
@@ -100,15 +99,25 @@ class Server {
 			allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 		}));
 
+		// Handle preflight requests explicitly
+		this.app.options('*', cors());
+
+		// THEN rate limiting - much more lenient in development
+		const isDevelopment = process.env.NODE_ENV === 'development';
+
+		// Rate limiting
+		const limiter = rateLimit({
+			windowMs: 15 * 60 * 1000, // 15 minutes
+			limit: isDevelopment ? 1000 : 100, // limit each IP to 100 requests per windowMs
+			message: 'Too many requests from this IP, please try again later.',
+			standardHeaders: true,
+			legacyHeaders: false,
+			skip: (req) => isDevelopment && req.method === 'OPTIONS'
+		});
+		this.app.use(limiter);
+
 		// Compression middleware
 		this.app.use(compression());
-
-		// Logging middleware
-		if (process.env.NODE_ENV === 'development') {
-			this.app.use(morgan(':method :url :status :res[content-length] - :response-time ms :date[clf]'));
-		} else {
-			this.app.use(morgan('combined'));
-		}
 
 		// Body parsing middleware
 		this.app.use(express.json({ limit: '10mb' }));
@@ -157,7 +166,7 @@ class Server {
 		this.app.use(notFound);
 
 		// Global error handler
-		this.app.use(errorHandler);
+		this.app.use(errorHandler.bind(null, this.app));
 	}
 
 	public start(): void {

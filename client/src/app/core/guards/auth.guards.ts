@@ -14,7 +14,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   if (!isAuthenticated) {
     // Store the attempted URL for redirecting after login
-    router.navigate(['/auth/login'], {
+    router.navigate(['/accounts/login'], {
       queryParams: { returnUrl: state.url }
     });
     return false;
@@ -51,7 +51,7 @@ export const createRoleGuard = (requiredRoles: UserRole[]): CanActivateFn => {
 
     // First check if user is authenticated
     if (!authService.isAuthenticated()) {
-      router.navigate(['/auth/login'], {
+      router.navigate(['/accounts/login'], {
         queryParams: { returnUrl: state.url }
       });
       return false;
@@ -94,7 +94,7 @@ export const conditionalGuard: CanActivateFn = (route, state) => {
 
   // Check authentication first
   if (!authService.isAuthenticated()) {
-    router.navigate(['/auth/login'], {
+    router.navigate(['/accounts/login'], {
       queryParams: { returnUrl: state.url }
     });
     return false;
@@ -130,7 +130,7 @@ export const emailVerifiedGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    router.navigate(['/auth/login'], {
+    router.navigate(['/accounts/login'], {
       queryParams: { returnUrl: state.url }
     });
     return false;
@@ -153,7 +153,7 @@ export const activeUserGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    router.navigate(['/auth/login'], {
+    router.navigate(['/accounts/login'], {
       queryParams: { returnUrl: state.url }
     });
     return false;
@@ -177,7 +177,7 @@ export const fullAuthGuard: CanActivateFn = (route, state) => {
 
   // Check authentication
   if (!authService.isAuthenticated()) {
-    router.navigate(['/auth/login'], {
+    router.navigate(['/accounts/login'], {
       queryParams: { returnUrl: state.url }
     });
     return false;
