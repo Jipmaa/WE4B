@@ -10,4 +10,8 @@ import {Header} from '@/shared/components/layout/header/header';
 })
 export class App {
   readonly authService = inject(AuthService);
+
+  readonly mainClasses = this.authService.isAuthenticated()
+    ? 'bg-background w-dvw min-[calc(100vh - 48px)]'
+    : 'bg-background w-dvw min-h-dvh';
 }
