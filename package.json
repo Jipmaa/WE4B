@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "lucide-angular": "^0.515.0",
+    "tslib": "^2.8.1"
+  }
+}
