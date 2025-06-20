@@ -1,1 +1,124 @@
 <p>register works!</p>
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <h1 class="text-2xl font-bold text-gray-800">Créer un utilisateur</h1>
+
+        <!-- Prénom -->
+        <div>
+            <label for="inputPrenom" class="block text-sm font-medium text-gray-700">Prénom</label>
+            <input type="text" id="inputPrenom" name="prenom" placeholder="Ton prénom" formControlName="firstName"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+            <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
+                <div *ngIf="myForm.get('firstName')?.errors?.['required']; else firstNameValid"
+                    class="text-red-600 text-sm">❌ Prénom requis</div>
+                <ng-template #firstNameValid>
+                    <div class="text-green-600 text-sm">✅ Prénom valide</div>
+                </ng-template>
+            </ng-container>
+        </div>
+
+        <!-- Nom -->
+        <div>
+            <label for="inputNom" class="block text-sm font-medium text-gray-700">Nom</label>
+            <input type="text" id="inputNom" name="nom" placeholder="Ton nom de famille" formControlName="lastName"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+            <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
+                <div *ngIf="myForm.get('lastName')?.errors?.['required']; else lastNameValid"
+                    class="text-red-600 text-sm">❌ Nom requis</div>
+                <ng-template #lastNameValid>
+                    <div class="text-green-600 text-sm">✅ Nom valide</div>
+                </ng-template>
+            </ng-container>
+        </div>
+
+        <!-- Date de naissance -->
+        <div>
+            <label for="birthDate" class="block text-sm font-medium text-gray-700">Date de naissance</label>
+            <input type="date" id="birthDate" name="birthDate" formControlName="birthdate"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+            <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
+                <div *ngIf="myForm.get('birthdate')?.errors?.['required']" class="text-red-600 text-sm">❌ Date requise
+                </div>
+                <div *ngIf="!myForm.get('birthdate')?.invalid" class="text-green-600 text-sm">✅ Date valide</div>
+            </ng-container>
+        </div>
+
+        <!-- Email -->
+        <div>
+            <label for="inputEmail4" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr" formControlName="email"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+
+            <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
+                <div *ngIf="myForm.get('email')?.errors?.['required']" class="text-red-600 text-sm">❌ Email requis</div>
+                <div *ngIf="myForm.get('email')?.errors?.['email']" class="text-red-600 text-sm">❌ Email invalide</div>
+                <div *ngIf="!myForm.get('email')?.invalid" class="text-green-600 text-sm">✅ Email valide</div>
+            </ng-container>
+        </div>
+
+        <!-- Numéro de téléphone -->
+        <div>
+            <label for="inputPhoneNumber" class="block text-sm font-medium text-gray-700">Téléphone</label>
+            <input type="text" id="inputPhoneNumber" name="phoneNumber" placeholder="+33..."
+                formControlName="phoneNumber"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <!-- Rôles -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Rôles</label>
+            <div class="space-y-2 mt-1">
+                <div>
+                    <input type="checkbox" value="student" id="roleStudent" (change)="onRoleChange($event)"
+                        [checked]="myForm.value.roles?.includes('student')" class="mr-2">
+                    <label for="roleStudent">Student</label>
+                </div>
+                <div>
+                    <input type="checkbox" value="teacher" id="roleTeacher" (change)="onRoleChange($event)"
+                        [checked]="myForm.value.roles?.includes('teacher')" class="mr-2">
+                    <label for="roleTeacher">Teacher</label>
+                </div>
+                <div>
+                    <input type="checkbox" value="admin" id="roleAdmin" (change)="onRoleChange($event)"
+                        [checked]="myForm.value.roles?.includes('admin')" class="mr-2">
+                    <label for="roleAdmin">Admin</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mot de passe -->
+        <div>
+            <label for="inputPassword" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+            <div class="relative">
+                <input type="password" id="inputPassword" name="password" formControlName="password"
+                    placeholder="Mot de passe"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"
+                    class="absolute right-3 top-3 text-gray-400 cursor-pointer"></ion-icon>
+            </div>
+        </div>
+
+        <!-- Avatar -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Photo de profil</label>
+            <input type="file" class="block w-full text-sm text-gray-500
+             file:mr-4 file:py-2 file:px-4
+             file:rounded-full file:border-0
+             file:text-sm file:font-semibold
+             file:bg-blue-50 file:text-blue-700
+             hover:file:bg-blue-100" (change)="onFileSelected($event)">
+        </div>
+
+        <!-- Bouton -->
+        <div>
+            <button type="submit"
+                class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">
+                Enregistrer
+            </button>
+        </div>
+    </form>
+</div>

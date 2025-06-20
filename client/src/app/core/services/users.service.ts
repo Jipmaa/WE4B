@@ -2,8 +2,8 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats} from '../models/user.models';
-import {UpdateUserRequest} from '@/core/models/course-unit.models';
+import { User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats } from '../models/user.models';
+import { UpdateUserRequest } from '@/core/models/course-unit.models';
 import { ApiResponse } from '../models/_shared.models';
 
 @Injectable({
@@ -55,6 +55,25 @@ export class UsersService {
 
     return departments;
   });
+
+  // Create User
+  createUser(formData: FormData): Observable<ApiResponse<{ user: User }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.post<ApiResponse<{ user: User }>>(this.baseUrl, formData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Ajoute le nouvel utilisateur à la liste des utilisateurs
+            const currentUsers = this._users();
+            this._users.set([...currentUsers, response.data.user]);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
 
   // Users Methods
   getUsers(filters: UserFilters = {}): Observable<ApiResponse<UsersResponse>> {
