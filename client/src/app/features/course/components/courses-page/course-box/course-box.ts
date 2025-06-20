@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { CourseUnit } from '@/core/models/course-unit.models'; 
 
 @Component({
   standalone: true,
@@ -6,6 +7,13 @@ import { Component } from '@angular/core';
   imports: [],
   templateUrl: './course-box.html'
 })
-export class CourseBox {
+export class CourseBox implements OnInit{
+
+  @Input() course !: CourseUnit
+
+  constructor() {}
+
+  ngOnInit(): void {
+  }
 
 }

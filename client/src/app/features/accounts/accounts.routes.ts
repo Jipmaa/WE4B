@@ -7,5 +7,4 @@ export const accountsRoutes: Routes = [
     path: 'login',
     component: Login,
   }
-
 ]
