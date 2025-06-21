@@ -1,8 +1,32 @@
 <p>courses-page works!</p>
-<h2>Liste de mes cours</h2>
+
+<div class="self-stretch inline-flex justify-between items-center">
+    <div class="inline-flex justify-start items-center gap-3">
+        <h2 class="justify-start text-black text-2xl font-bold leading-normal">Liste de mes cours</h2>
+
+        <input placeholder="Commencer à chercher..."
+            class="w-60 px-3 py-2 rounded-lg outline outline-1 outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden" />
+
+        <div data-property-1="Default"
+            class="w-28 px-3 py-2 bg-white/40 rounded-lg flex justify-center items-center gap-2.5 overflow-hidden">
+            <div class="cursor-pointer justify-start text-black text-sm font-normal  leading-tight">Category 1</div>
+        </div>
+        <div data-property-1="Default"
+            class="w-28 px-3 py-2 bg-white/40 rounded-lg flex justify-center items-center gap-2.5 overflow-hidden">
+            <button class="cursor-pointer justify-start text-black text-sm font-normal  leading-tight">Category
+                2</button>
+        </div>
+        <div data-property-1="Default"
+            class="w-28 px-3 py-2 bg-white/40 rounded-lg flex justify-center items-center gap-2.5 overflow-hidden">
+            <button class="cursor-pointer justify-start text-black text-sm font-normal leading-tight">Tous</button>
+        </div>
+    </div>
+</div>
+
+<h3 class="self-stretch justify-start text-black text-xl font-bold leading-tight pb-2">Favoris</h3>
+
+<h3 class="self-stretch justify-start text-black text-xl font-bold leading-tight pb-2">Tous mes cours</h3>
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
     <app-course-box *ngFor="let course of CourseArray" [course]="course"></app-course-box>
 </div>
-<p>bonjour</p>
-
-
