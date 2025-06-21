@@ -267,6 +267,61 @@ export class CourseUnitsService {
       );
   }
 
+  updateCourseUnitImage(id: string, file: File): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return this.http.put<ApiResponse<{ courseUnit: CourseUnit }>>(`${this.baseUrl}/${id}/image`, formData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the course unit in the current list
+            const currentUnits = this._courseUnits();
+            const updatedUnits = currentUnits.map(unit =>
+              unit._id === id ? response.data.courseUnit : unit
+            );
+            this._courseUnits.set(updatedUnits);
+
+            // Update selected course unit if it's the same unit
+            if (this._selectedCourseUnit()?._id === id) {
+              this._selectedCourseUnit.set(response.data.courseUnit);
+            }
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+  removeCourseUnitImage(id: string): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.delete<ApiResponse<{ courseUnit: CourseUnit }>>(`${this.baseUrl}/${id}/image`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the course unit in the current list
+            const currentUnits = this._courseUnits();
+            const updatedUnits = currentUnits.map(unit =>
+              unit._id === id ? response.data.courseUnit : unit
+            );
+            this._courseUnits.set(updatedUnits);
+
+            // Update selected course unit if it's the same unit
+            if (this._selectedCourseUnit()?._id === id) {
+              this._selectedCourseUnit.set(response.data.courseUnit);
+            }
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
   // Utility Methods
   refreshCourseUnits(): void {
     const currentFilters = this._currentFilters();
@@ -365,9 +420,9 @@ export class CourseUnitsService {
       }
     }
 
-    if ('img_path' in data && data.img_path) {
+    if ('img' in data && data.img) {
       try {
-        new URL(data.img_path);
+        new URL(data.img);
       } catch {
         errors.push('Image path must be a valid URL');
       }

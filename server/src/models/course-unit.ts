@@ -38,8 +38,19 @@ const courseUnitSchema = new Schema<CourseUnit>({
 	},
 	code: {
 		type: String,
-		required: true
-		// TODO: add more validation
+		required: true,
+		unique: true,
+		trim: true,
+		uppercase: true,
+		validate: {
+			validator: function(value: string) {
+				// Course code format: 3-5 letters followed by 2-4 digits (e.g., CS101, MATH2021, WE4B)
+				return /^[A-Z]{2,5}\d{2,4}$/.test(value);
+			},
+			message: 'Course code must be 2-5 uppercase letters followed by 2-4 digits (e.g., CS101, MATH2021, WE4B)'
+		},
+		minlength: [4, 'Course code must be at least 4 characters'],
+		maxlength: [9, 'Course code must be at most 9 characters']
 	},
 	img: {
 		type: String,
@@ -95,6 +106,7 @@ const courseUnitSchema = new Schema<CourseUnit>({
 });
 
 courseUnitSchema.index({ slug: 1 });
+courseUnitSchema.index({ code: 1 });
 courseUnitSchema.index({ groups: 1 });
 
 const CourseUnit = mongoose.model<CourseUnit>('CourseUnit', courseUnitSchema);

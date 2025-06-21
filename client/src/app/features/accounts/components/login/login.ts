@@ -77,16 +77,6 @@ export class Login implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  // These methods can be used for debugging
-  onEmailChange(value: string) {
-    console.log('Email changed:', value);
-    this.email = value;
-  }
-
-  onPasswordChange(value: string) {
-    console.log('Password changed:', value);
-    this.password = value;
-  }
 
   // Clear error when user starts typing
   clearError() {

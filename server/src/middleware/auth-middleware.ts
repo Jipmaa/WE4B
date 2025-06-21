@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
+import BlacklistedToken from '../models/blacklisted-token';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
 
@@ -44,6 +45,12 @@ export const authMiddleware = asyncHandler(async (req: Request, res: Response, n
 		}
 
 		const decoded = jwt.verify(token, secret) as JwtPayload;
+
+		// Check if token is blacklisted
+		const isBlacklisted = await BlacklistedToken.isTokenBlacklisted(token);
+		if (isBlacklisted) {
+			throw new AppError('Token has been invalidated. Please log in again.', 401);
+		}
 
 		// Check if user still exists
 		const user = await User.findById(decoded.userId);

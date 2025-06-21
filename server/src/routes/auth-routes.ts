@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
+import BlacklistedToken from '../models/blacklisted-token';
 import { validateRequest } from '../middleware/validate-request';
 import { authMiddleware } from '../middleware/auth-middleware';
 import { AppError } from '../utils/app-error';
@@ -320,15 +321,41 @@ router.put('/change-password', authMiddleware, changePasswordValidation, validat
 }));
 
 // @route   POST /api/accounts/logout
-// @desc    Logout user (client-side token removal)
+// @desc    Logout user and blacklist token
 // @access  Private
 router.post('/logout', authMiddleware, asyncHandler(async (req: Request, res: Response) => {
-	// In a real application, you might want to maintain a blacklist of tokens
-	// or implement token versioning for proper logout functionality
-	res.json({
-		success: true,
-		message: 'Logged out successfully'
-	});
+	// Get token from header
+	const authHeader = req.headers.authorization;
+	if (!authHeader || !authHeader.startsWith('Bearer ')) {
+		throw new AppError('No token provided for logout', 400);
+	}
+
+	const token = authHeader.split(' ')[1];
+	
+	// Decode token to get expiration time
+	const secret = process.env.JWT_SECRET;
+	if (!secret) {
+		throw new Error('JWT_SECRET is not defined in environment variables');
+	}
+
+	try {
+		const decoded = jwt.verify(token, secret) as any;
+		const expiresAt = new Date(decoded.exp * 1000); // Convert from seconds to milliseconds
+
+		// Add token to blacklist
+		await BlacklistedToken.blacklistToken(token, req.user!.userId, expiresAt);
+
+		res.json({
+			success: true,
+			message: 'Logged out successfully'
+		});
+	} catch (error) {
+		// Even if token verification fails, respond successfully for security
+		res.json({
+			success: true,
+			message: 'Logged out successfully'
+		});
+	}
 }));
 
 // @route   DELETE /api/accounts/delete-account

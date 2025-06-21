@@ -33,7 +33,7 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly router = inject(Router);
   readonly authService = inject(AuthService);
-  protected readonly user: User | null = null;
+  protected readonly user = this.authService.user;
   private isOpen = false;
   private currentFocusedIndex = 0;
   private keydownListener?: (event: KeyboardEvent) => void;
