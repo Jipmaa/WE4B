@@ -7,9 +7,11 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   fullName: string;
   avatar?: string;
   roles: UserRole[];
+  password: string; 
   department?: string;
   birthdate?: Date;
   isActive: boolean;

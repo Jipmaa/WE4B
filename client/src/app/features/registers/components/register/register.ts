@@ -1,5 +1,6 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, ReactiveFormsModule  } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { UsersService } from '@/core/services/users.service';
 import { Router } from '@angular/router';
@@ -7,7 +8,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './register.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -38,7 +39,7 @@ export class Register implements OnInit {
     if (file) {
       this.selectedFile = file; // pour l'envoi du fichier
       this.myForm.get('avatar')?.setValue(file); // pour le FormControl      
-    }else{
+    } else {
       this.myForm.get('avatar')?.setValue(null);
     }
     this.myForm.get('avatar')?.updateValueAndValidity();
@@ -69,13 +70,19 @@ export class Register implements OnInit {
     // Ajoute tous les champs du formulaire sauf le rôle
     formData.append('firstName', this.myForm.value.firstName || '');
     formData.append('lastName', this.myForm.value.lastName || '');
+    formData.append('fullName', `${this.myForm.value.firstName} ${this.myForm.value.lastName}` || '');
     formData.append('birthdate', this.myForm.value.birthdate || '');
     formData.append('email', this.myForm.value.email || '');
     formData.append('phoneNumber', this.myForm.value.phoneNumber || '');
     formData.append('password', this.myForm.value.password || '');
+    formData.append('isActive', 'true');
+    formData.append('isEmailVerified', 'false');
+    formData.append('createdAt', new Date().toISOString());
+    formData.append('updatedAt', new Date().toISOString());
     //formData.append('department', this.myForm.value.department || '');
+
     // Ajoute les rôles (tableau)
-    (this.myForm.value.roles || []).forEach((role: string) => formData.append('roles[]', role));
+    (this.myForm.value.roles || []).forEach((role: string) => formData.append('roles', role));
     // Ajoute le fichier
     if (this.selectedFile) {
       formData.append('avatar', this.selectedFile);
@@ -86,7 +93,7 @@ export class Register implements OnInit {
         alert('Utilisateur créé avec succès !');
         this.myForm.reset();
         this.selectedFile = null;
-        this.router.navigate(['/listecours']);//SANS DOUTE A CHANGER
+        this.router.navigate(['/dashboard']);//SANS DOUTE A CHANGER
       },
       error: err => {
         /* gestion des erreurs */

@@ -62,10 +62,18 @@
 
         <!-- Numéro de téléphone -->
         <div>
-            <label for="inputPhoneNumber" class="block text-sm font-medium text-gray-700">Téléphone</label>
-            <input type="text" id="inputPhoneNumber" name="phoneNumber" placeholder="+33..."
+            <label for="inputPhoneNumber" class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
+            <input type="text" id="inputPhoneNumber" name="phoneNumber" placeholder="+XX * ** ** ** **"
                 formControlName="phoneNumber"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <ng-container *ngIf="myForm.get('phoneNumber')?.dirty || myForm.get('phoneNumber')?.touched">
+                <div *ngIf="myForm.get('phoneNumber')?.errors?.['phoneFormat']; else phoneNumberValid">
+                    ❌ Le numéro de téléphone doit avoir 10 chiffres
+                </div>
+                <ng-template #phoneNumberValid>
+                    <div class="text-success small">✅ Numéro de téléphone valide</div>
+                </ng-template>
+            </ng-container>
         </div>
 
         <!-- Rôles -->
@@ -87,6 +95,14 @@
                         [checked]="myForm.value.roles?.includes('admin')" class="mr-2">
                     <label for="roleAdmin">Admin</label>
                 </div>
+                <ng-container *ngIf="myForm.get('roles')?.touched">
+                <div *ngIf="myForm.get('roles')?.errors?.['rolesRequired']" class="text-danger small">
+                    ❌ Au moins un rôle doit être sélectionné
+                </div>
+                <div *ngIf="myForm.get('roles')?.errors?.['rolesInvalid']" class="text-danger small">
+                    ❌ Combinaison de rôles non autorisée
+                </div>
+            </ng-container>
             </div>
         </div>
 
@@ -100,6 +116,38 @@
                 <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"
                     class="absolute right-3 top-3 text-gray-400 cursor-pointer"></ion-icon>
             </div>
+            <ng-container *ngIf="myForm.get('password')?.dirty || myForm.get('password')?.touched">
+                <div *ngIf="myForm.get('password')?.errors?.['minLength']; else minLengthValid"
+                    class="text-danger small">
+                    ❌ Password must be at least 10 characters
+                </div>
+                <ng-template #minLengthValid>
+                    <div class="text-success small">✅ Length OK</div>
+                </ng-template>
+
+                <div *ngIf="myForm.get('password')?.errors?.['uppercase']; else uppercaseValid"
+                    class="text-danger small">
+                    ❌ Must have 2 uppercase letters
+                </div>
+                <ng-template #uppercaseValid>
+                    <div class="text-success small">✅ Uppercase OK</div>
+                </ng-template>
+
+                <div *ngIf="myForm.get('password')?.errors?.['number']; else numberValid" class="text-danger small">
+                    ❌ Must include a number
+                </div>
+                <ng-template #numberValid>
+                    <div class="text-success small">✅ Number OK</div>
+                </ng-template>
+                <!--specialChars nom des erreurs définit dans le .ts-->
+                <div *ngIf="myForm.get('password')?.errors?.['specialChars']; else specialValid"
+                    class="text-danger small">
+                    ❌ Must include 2 special characters
+                </div>
+                <ng-template #specialValid>
+                    <div class="text-success small">✅ Special characters OK</div>
+                </ng-template>
+            </ng-container>
         </div>
 
         <!-- Avatar -->
