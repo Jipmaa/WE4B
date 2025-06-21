@@ -53,7 +53,7 @@ export class RegisterCourseunits implements OnInit {
       formData.append('img_path', this.selectedFile);
     }
     // Envoie la requête POST via createUser du user.service.ts
-    this.courseUnitService.createCourseUnit(formData).subscribe({
+    this.courseUnitService.createUe(formData).subscribe({
       next: res => {
         alert('Ue créé avec succès !');
         this.myForm.reset();

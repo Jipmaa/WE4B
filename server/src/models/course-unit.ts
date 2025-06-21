@@ -1,11 +1,20 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+export enum CourseUnitType {
+	CS = 'CS',
+	TM = 'TM',
+	EC = 'EC',
+	QC = 'QC',
+	OM = 'OM'
+}
+
 export interface CourseUnit extends Document {
 	_id: mongoose.Types.ObjectId;
 	slug: string;
 	capacity: number;
 	name: string;
 	code: string;
+	type: CourseUnitType;
 	img_path?: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -32,6 +41,11 @@ const courseUnitSchema = new Schema<CourseUnit>({
 		required: true
 		// TODO: add more validation
 	},
+	type: {
+		type: String,
+		enum: Object.values(CourseUnitType),
+		required: true
+	},
 	img_path: {
 		type: String,
 		default: null
@@ -39,13 +53,13 @@ const courseUnitSchema = new Schema<CourseUnit>({
 }, {
 	timestamps: true,
 	toJSON: {
-		transform: function(doc, ret) {
+		transform: function (doc, ret) {
 			delete ret.__v;
 			return ret;
 		}
 	},
 	toObject: {
-		transform: function(doc, ret) {
+		transform: function (doc, ret) {
 			delete ret.__v;
 			return ret;
 		}

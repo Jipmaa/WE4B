@@ -271,7 +271,7 @@ router.get('/:id', courseUnitIdValidation, validateRequest, asyncHandler(async (
 // @desc    Create new course unit
 // @access  Private (Admin only)
 router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { name, code, slug, capacity, img_path } = req.body;
+	const { name, code, slug, capacity, type, img_path } = req.body;
 
 	// Check if course unit with same slug already exists
 	const existingCourseUnit = await CourseUnit.findOne({ slug });
@@ -290,6 +290,7 @@ router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, a
 		code,
 		slug,
 		capacity,
+		type,
 		img_path: img_path || null
 	});
 
@@ -305,6 +306,7 @@ router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, a
 				code: courseUnit.code,
 				slug: courseUnit.slug,
 				capacity: courseUnit.capacity,
+				type: courseUnit.type,
 				img_path: courseUnit.img_path,
 				createdAt: courseUnit.createdAt,
 				updatedAt: courseUnit.updatedAt
