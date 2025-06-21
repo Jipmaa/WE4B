@@ -135,11 +135,13 @@ export class CourseUnitsService {
       );
   }
 
-  createCourseUnit(courseUnitData: CreateCourseUnitRequest): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
+  //createCourseUnit(courseUnitData: CreateCourseUnitRequest): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
+  createCourseUnit(formData: FormData): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, courseUnitData)
+    //return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, courseUnitData)
+    return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, formData)
       .pipe(
         tap(response => {
           if (response.success) {
@@ -152,6 +154,25 @@ export class CourseUnitsService {
         tap(() => this._isLoading.set(false))
       );
   }
+
+  //Creer une UE
+  /*createUe(formData: FormData): Observable<ApiResponse<{ courseUnits: CourseUnit }>> {
+      this._isLoading.set(true);
+      this._error.set(null);
+  
+      return this.http.post<ApiResponse<{ courseUnits: CourseUnit }>>(this.baseUrl, formData)
+        .pipe(
+          tap(response => {
+            if (response.success) {
+              // Ajoute la nouvelle ue à la liste des ues
+              const currentUsers = this._courseUnits();
+              this._courseUnits.set([...currentUsers, response.data.courseUnits]);
+            }
+          }),
+          catchError(error => this.handleError(error)),
+          tap(() => this._isLoading.set(false))
+        );
+    }*/
 
   updateCourseUnit(id: string, courseUnitData: UpdateCourseUnitRequest): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
     this._isLoading.set(true);

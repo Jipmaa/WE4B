@@ -31,6 +31,12 @@ export const routes: Routes = [
   },
 
   {
+    path: 'courseunits',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./features/registers/components/register.routes').then(m => m.registersRoutes)
+  },
+
+  {
     path: '',
     redirectTo: '/dashboard',
     pathMatch: 'full'

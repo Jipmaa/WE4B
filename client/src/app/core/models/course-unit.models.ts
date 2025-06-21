@@ -7,6 +7,7 @@ export interface CourseUnit {
   capacity: number;
   name: string;
   code: string;
+  type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
   img_path?: string;
   createdAt: Date;
   updatedAt: Date;
