@@ -8,8 +8,6 @@
       <app-header-item [label]="'Administration'" [link]="'/administration'"/>
       <!-- TODO: À supprimer, pout tests uniquement -->
       <div class="w-4 h-1"></div>
-      <app-header-item [label]="'Mon compte'" [disabled]="true"/>
-      <app-header-item (click)="logout()" [label]="'Déconnexion'" [disabled]="false"/>
       <app-header-item [label]="'Add user'" [link]="'/administration'"/>
       <app-header-item [label]="'Add ue'" [link]="'/courses'"/>
       <!-- Fin À supprimer, pout tests uniquement -->
@@ -139,32 +137,9 @@
     (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
     (menuActivate)="onMenuItemActivate()"/>
 
-  <app-header-item
-    #menuItem
-    [label]="'Mon compte'"
-    [disabled]="true"
-    [variant]="'mobile'"
-    [menuRole]="'menuitem'"
-    [menuIndex]="4"
-    (menuFocus)="onMenuItemFocus($event)"
-    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
-    (menuActivate)="onMenuItemActivate()"/>
-
-  <app-header-item
-    #menuItem
-    (click)="logout()"
-    [label]="'Déconnexion'"
-    [disabled]="false"
-    [variant]="'mobile'"
-    [menuRole]="'menuitem'"
-    [menuIndex]="5"
-    (menuFocus)="onMenuItemFocus($event)"
-    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
-    (menuActivate)="logout(); onCloseMenu()"/>
-</nav>
-
 <!-- User Profile Popup -->
 <app-user-profile-popup
   [isOpen]="isProfilePopupOpen"
   (closePopup)="onProfilePopupClose()">
 </app-user-profile-popup>
+</nav>
