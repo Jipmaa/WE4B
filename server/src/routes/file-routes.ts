@@ -7,7 +7,7 @@ import { asyncHandler } from '../utils/async-handler';
 import { minioClient, getFileInfo } from '../services/minio-service';
 import User from '../models/user';
 import CourseUnit from '../models/course-unit';
-import CourseActivity from '../models/course-activity';
+import {CourseActivityModel} from '../models/course-activity';
 import CourseGroup from '../models/course-group';
 import DepositedFile from '../models/deposited-files';
 
@@ -120,7 +120,7 @@ router.get('/activity-files/:filename', [
 	}
 
 	// Find the activity that contains this file
-	const activity = await CourseActivity.findOne({ 
+	const activity = await CourseActivityModel.findOne({ 
 		$or: [
 			{ 'files.filename': filename },
 			{ 'files.originalName': filename }
@@ -216,7 +216,7 @@ router.get('/deposited-files/:filename', [
 	}
 
 	// Check if user is the file owner
-	if (depositedFile.uploadedBy.toString() === userId) {
+	if (depositedFile.user.toString() === userId) {
 		const stream = await minioClient.getObject(bucket, filename);
 		
 		res.set({
@@ -235,7 +235,11 @@ router.get('/deposited-files/:filename', [
 	}
 
 	// Get the course activity and course unit
-	const courseActivity = depositedFile.courseActivity as any;
+	const courseActivity = await CourseActivityModel.findById(depositedFile.courseActivity);
+	if (!courseActivity) {
+		throw new AppError('Course activity not found', 404);
+	}
+	
 	const courseUnit = await CourseUnit.findById(courseActivity.courseUnit);
 
 	if (!courseUnit) {

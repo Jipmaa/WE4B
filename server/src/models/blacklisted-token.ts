@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
 export interface BlacklistedToken extends Document {
 	_id: mongoose.Types.ObjectId;
@@ -6,9 +6,12 @@ export interface BlacklistedToken extends Document {
 	userId: mongoose.Types.ObjectId;
 	blacklistedAt: Date;
 	expiresAt: Date;
+}
 
-	// Static method to blacklist a token
+export interface BlacklistedTokenModel extends Model<BlacklistedToken> {
+	isTokenBlacklisted(token: string): Promise<boolean>;
 	blacklistToken(token: string, userId: string, expiresAt: Date): Promise<void>;
+	cleanupExpiredTokens(): Promise<number>;
 }
 
 const blacklistedTokenSchema = new Schema<BlacklistedToken>({
@@ -86,6 +89,6 @@ blacklistedTokenSchema.statics.cleanupExpiredTokens = async function(): Promise<
 	return result.deletedCount || 0;
 };
 
-const BlacklistedToken = mongoose.model<BlacklistedToken>('BlacklistedToken', blacklistedTokenSchema);
+const BlacklistedToken = mongoose.model<BlacklistedToken, BlacklistedTokenModel>('BlacklistedToken', blacklistedTokenSchema);
 
 export default BlacklistedToken;

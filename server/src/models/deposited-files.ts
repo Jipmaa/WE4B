@@ -9,6 +9,8 @@ export interface DepositedFiles extends Document {
 	activity: Types.ObjectId;
 	user: Types.ObjectId;
 	files: string[]; // MinIO object keys
+	courseUnit: Types.ObjectId;
+	courseActivity: Types.ObjectId;
 	getFileUrls(): Promise<string[]>;
 }
 
@@ -23,6 +25,16 @@ const depositedFilesSchema = new Schema<DepositedFiles>({
 		type: Schema.Types.ObjectId,
 		ref: 'User',
 		required: [true, 'User reference is required.'],
+	},
+	courseUnit: {
+		type: Schema.Types.ObjectId,
+		ref: 'CourseUnit',
+		required: [true, 'Course unit reference is required.'],
+	},
+	courseActivity: {
+		type: Schema.Types.ObjectId,
+		ref: 'CourseActivity',
+		required: [true, 'Course activity reference is required.'],
 	},
 	files: {
 		type: [String],

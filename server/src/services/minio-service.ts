@@ -24,6 +24,23 @@ export const BUCKETS = {
 	GENERAL: 'general'
 } as const;
 
+// Common image types and extensions
+export const COMMON_IMAGE_TYPES = [
+	'image/jpeg',
+	'image/jpg',
+	'image/png',
+	'image/gif',
+	'image/webp'
+] as const;
+
+export const COMMON_IMAGE_EXTENSIONS = [
+	'.jpg',
+	'.jpeg',
+	'.png',
+	'.gif',
+	'.webp'
+] as const;
+
 // File type configurations
 export const FILE_CONFIGS = {
 	avatar: {
@@ -266,7 +283,7 @@ export const validateFile = (
 	}
 
 	// Check MIME type
-	if (!config.allowedTypes.includes(file.mimetype)) {
+	if (!(config.allowedTypes as readonly string[]).includes(file.mimetype)) {
 		return {
 			isValid: false,
 			error: `File type ${file.mimetype} is not allowed`
@@ -275,7 +292,7 @@ export const validateFile = (
 
 	// Check file extension
 	const ext = path.extname(file.originalname).toLowerCase();
-	if (!config.allowedExtensions.includes(ext)) {
+	if (!(config.allowedExtensions as readonly string[]).includes(ext)) {
 		return {
 			isValid: false,
 			error: `File extension ${ext} is not allowed`
