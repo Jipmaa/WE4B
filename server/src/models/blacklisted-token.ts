@@ -6,6 +6,9 @@ export interface BlacklistedToken extends Document {
 	userId: mongoose.Types.ObjectId;
 	blacklistedAt: Date;
 	expiresAt: Date;
+
+	// Static method to blacklist a token
+	blacklistToken(token: string, userId: string, expiresAt: Date): Promise<void>;
 }
 
 const blacklistedTokenSchema = new Schema<BlacklistedToken>({

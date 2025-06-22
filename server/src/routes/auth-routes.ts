@@ -7,6 +7,7 @@ import { validateRequest } from '../middleware/validate-request';
 import { authMiddleware } from '../middleware/auth-middleware';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
+import {FILE_CONFIGS, getPublicUrl} from "../services/minio-service";
 
 const router = Router();
 
@@ -178,6 +179,7 @@ router.post('/login', loginValidation, validateRequest, asyncHandler(async (req:
 			user: {
 				id: user._id,
 				email: user.email,
+				avatar: user.avatar ? getPublicUrl(FILE_CONFIGS.avatar.bucket, user.avatar) : undefined,
 				firstName: user.firstName,
 				lastName: user.lastName,
 				fullName: user.getFullName(),
@@ -209,10 +211,10 @@ router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Respons
 			user: {
 				id: user._id,
 				email: user.email,
+				avatar: user.avatar ? getPublicUrl(FILE_CONFIGS.avatar.bucket, user.avatar) : undefined,
 				firstName: user.firstName,
 				lastName: user.lastName,
 				fullName: user.getFullName(),
-				avatar: user.avatar,
 				roles: user.roles,
 				department: user.department,
 				birthdate: user.birthdate,
@@ -281,7 +283,7 @@ router.put('/profile', authMiddleware, [
 				firstName: user.firstName,
 				lastName: user.lastName,
 				fullName: user.getFullName(),
-				avatar: user.avatar,
+				avatar: user.avatar ? getPublicUrl(FILE_CONFIGS.avatar.bucket, user.avatar) : undefined,
 				roles: user.roles,
 				department: user.department,
 				birthdate: user.birthdate,

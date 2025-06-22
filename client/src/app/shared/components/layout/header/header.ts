@@ -12,17 +12,18 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { HeaderItem } from '@/shared/components/layout/header-item/header-item';
-import { User } from '@/core/models/auth.models';
-import { NgOptimizedImage } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
+import { UserProfilePopup } from '@/shared/components/layout/user-profile-popup/user-profile-popup';
+import { AuthImageComponent } from '../../ui/auth-image/auth-image.component';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
   imports: [
     HeaderItem,
-    NgOptimizedImage,
-    LucideAngularModule
+    LucideAngularModule,
+    UserProfilePopup,
+    AuthImageComponent
   ]
 })
 export class Header implements OnInit, AfterViewInit, OnDestroy {
@@ -37,6 +38,9 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
   private isOpen = false;
   private currentFocusedIndex = 0;
   private keydownListener?: (event: KeyboardEvent) => void;
+
+  // Profile popup state
+  isProfilePopupOpen = false;
 
   onToggleMenu() {
     if (this.isOpened) {
@@ -199,6 +203,15 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
     if (event.key === 'Escape' && this.isOpened) {
       this.onCloseMenu();
     }
+  }
+
+  // Profile popup functions
+  onAvatarClick() {
+    this.isProfilePopupOpen = true;
+  }
+
+  onProfilePopupClose() {
+    this.isProfilePopupOpen = false;
   }
 
   private navigateToNextItem() {

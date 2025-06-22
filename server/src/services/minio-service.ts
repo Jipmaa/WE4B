@@ -211,13 +211,17 @@ export const getPresignedUrl = async (
 	}
 };
 
-// Get public URL for public buckets
+// Get public URL for public buckets (now uses Express proxy)
 export const getPublicUrl = (bucket: string, objectName: string): string => {
-	const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
-	const endpoint = process.env.MINIO_ENDPOINT || 'localhost';
-	const port = process.env.MINIO_PORT || '9000';
+	const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+	const endpoint = process.env.NODE_ENV === 'production' 
+		? process.env.API_HOST || 'localhost'
+		: 'localhost';
+	const port = process.env.NODE_ENV === 'production' 
+		? (process.env.PORT || '3000')
+		: '3000';
 
-	return `${protocol}://${endpoint}:${port}/${bucket}/${objectName}`;
+	return `${protocol}://${endpoint}:${port}/api/files/${bucket}/${objectName}`;
 };
 
 // List files in bucket

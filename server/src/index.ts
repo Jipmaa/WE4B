@@ -12,6 +12,7 @@ import userRoutes from './routes/user-routes';
 import courseUnitRoutes from './routes/course-unit-routes';
 import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
+import fileRoutes from './routes/file-routes';
 
 // Import middleware
 import { errorHandler } from './middleware/error-handler';
@@ -169,6 +170,7 @@ class Server {
 		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/course-units', courseUnitRoutes);
 		this.app.use('/api/users', userRoutes);
+		this.app.use('/api/files', fileRoutes);
 
 		// Root endpoint
 		this.app.get('/', (req, res) => {

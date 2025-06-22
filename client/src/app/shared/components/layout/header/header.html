@@ -16,16 +16,25 @@
     </nav>
   </div>
   <div class="flex justify-center items-center gap-4">
-    <div class="size-8 relative">
+    <button
+      (click)="onAvatarClick()"
+      class="size-8 relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-full hover:opacity-80 transition-opacity cursor-pointer"
+      aria-label="Ouvrir le menu profil">
       <div class="inset-0 absolute bg-zinc-300 rounded-full"></div>
-      @if (!user || !user.avatar) {
+      @if (!user() || !user()?.avatar) {
         <div class="left-1/2 top-1/2 absolute justify-start text-black text-xs font-normal text-center transform -translate-x-1/2 -translate-y-1/2">
           {{ authService.getInitiales() }}
         </div>
       } @else {
-        <img [ngSrc]="user.avatar" alt="avatar" class="absolute inset-0 rounded-full">
+        <app-auth-image
+          [src]="user()!.avatar!"
+          [width]="32"
+          [height]="32"
+          alt="avatar"
+          class="absolute inset-0 rounded-full">
+        </app-auth-image>
       }
-    </div>
+    </button>
   </div>
 </header>
 
@@ -45,16 +54,25 @@
   <span class="justify-start text-md font-medium text-white">Mooodle</span>
 
   <div class="flex justify-center items-center gap-4">
-    <div class="size-8 relative">
+    <button
+      (click)="onAvatarClick()"
+      class="size-8 relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-full hover:opacity-80 transition-opacity"
+      aria-label="Ouvrir le menu profil">
       <div class="inset-0 absolute bg-zinc-300 rounded-full"></div>
-      @if (!user || !user.avatar) {
+      @if (!user() || !user()?.avatar) {
         <div class="left-1/2 top-1/2 absolute justify-start text-black text-xs font-normal text-center transform -translate-x-1/2 -translate-y-1/2">
           {{ authService.getInitiales() }}
         </div>
       } @else {
-        <img [ngSrc]="user.avatar" alt="avatar" class="absolute inset-0 rounded-full">
+        <app-auth-image
+          [src]="user()!.avatar!"
+          [width]="32"
+          [height]="32"
+          alt="avatar"
+          class="absolute inset-0 rounded-full">
+        </app-auth-image>
       }
-    </div>
+    </button>
   </div>
 </header>
 
@@ -144,3 +162,9 @@
     (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
     (menuActivate)="logout(); onCloseMenu()"/>
 </nav>
+
+<!-- User Profile Popup -->
+<app-user-profile-popup
+  [isOpen]="isProfilePopupOpen"
+  (closePopup)="onProfilePopupClose()">
+</app-user-profile-popup>
