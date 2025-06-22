@@ -54,6 +54,123 @@ const userIdValidation = [
 		 .withMessage('Invalid user ID format')
 ];
 
+const createUserValidation = [
+	body('email')
+		 .isEmail()
+		 .withMessage('Please provide a valid email address')
+		 .normalizeEmail()
+		 .toLowerCase()
+		 .trim(),
+	body('password')
+		 .isLength({ min: 6 })
+		 .withMessage('Password must be at least 6 characters long'),
+	body('firstName')
+		 .notEmpty()
+		 .withMessage('First name is required')
+		 .isLength({ max: 50 })
+		 .withMessage('First name must be less than 50 characters')
+		 .trim(),
+	body('lastName')
+		 .notEmpty()
+		 .withMessage('Last name is required')
+		 .isLength({ max: 50 })
+		 .withMessage('Last name must be less than 50 characters')
+		 .trim(),
+	body('birthdate')
+		 .isISO8601()
+		 .toDate()
+		 .withMessage('Please provide a valid birthdate'),
+	body('roles')
+		 .optional()
+		 .isArray()
+		 .withMessage('Roles must be an array')
+		 .custom((roles) => {
+			 const validRoles = ['student', 'teacher', 'admin'];
+			 return roles.every((role: string) => validRoles.includes(role)) && roles.length > 0;
+		 })
+		 .withMessage('Roles must contain valid values: student, teacher, admin and cannot be empty'),
+	body('department')
+		 .optional()
+		 .isLength({ max: 100 })
+		 .withMessage('Department must be less than 100 characters')
+		 .trim(),
+	body('avatar')
+		 .optional()
+		 .isURL()
+		 .withMessage('Avatar must be a valid URL'),
+	body('isActive')
+		 .optional()
+		 .isBoolean()
+		 .withMessage('isActive must be a boolean'),
+	body('isEmailVerified')
+		 .optional()
+		 .isBoolean()
+		 .withMessage('isEmailVerified must be a boolean')
+];
+
+// @route   POST /api/users
+// @desc    Create a new user
+// @access  Private (Admin only)
+router.post('/', adminMiddleware, createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const {
+		email,
+		password,
+		firstName,
+		lastName,
+		birthdate,
+		roles,
+		department,
+		avatar,
+		isActive,
+		isEmailVerified
+	} = req.body;
+
+	// Check if user already exists
+	const existingUser = await User.findOne({ email });
+	if (existingUser) {
+		throw new AppError('User with this email already exists', 400);
+	}
+
+	// Create new user
+	const userData: any = {
+		email,
+		password,
+		firstName,
+		lastName,
+		birthdate,
+		roles: roles || ['student'], // Default to student role if not provided
+		department: department || undefined,
+		avatar: avatar || undefined,
+		isActive: isActive !== undefined ? isActive : true, // Default to active
+		isEmailVerified: isEmailVerified !== undefined ? isEmailVerified : false // Default to unverified
+	};
+
+	const user = new User(userData);
+	await user.save();
+
+	res.status(201).json({
+		success: true,
+		message: 'User created successfully',
+		data: {
+			user: {
+				id: user._id,
+				email: user.email,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				fullName: user.getFullName(),
+				department: user.department,
+				birthdate: user.birthdate,
+				avatar: user.avatar,
+				roles: user.roles,
+				isActive: user.isActive,
+				isEmailVerified: user.isEmailVerified,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt
+			}
+		}
+	});
+}));
+
 // @route   GET /api/users
 // @desc    Get all users with pagination and filters
 // @access  Private (Admin only)
