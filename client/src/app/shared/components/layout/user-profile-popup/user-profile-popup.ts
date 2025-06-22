@@ -23,6 +23,7 @@ import { AuthImageComponent } from '../../ui/auth-image/auth-image.component';
 })
 export class UserProfilePopup implements OnInit, OnDestroy {
   @Input() isOpen = false;
+  
   @Output() closePopup = new EventEmitter<void>();
 
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;

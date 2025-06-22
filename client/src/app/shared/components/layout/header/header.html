@@ -136,10 +136,10 @@
     (menuFocus)="onMenuItemFocus($event)"
     (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
     (menuActivate)="onMenuItemActivate()"/>
+</nav>
 
-<!-- User Profile Popup -->
+<!-- User Profile Popup - Moved outside nav -->
 <app-user-profile-popup
   [isOpen]="isProfilePopupOpen"
   (closePopup)="onProfilePopupClose()">
 </app-user-profile-popup>
-</nav>
