@@ -1,1 +1,166 @@
 <p>admin-page works!</p>
+
+<div
+    class="self-stretch h-[733px] p-6 bg-white rounded-tl-[32px] rounded-tr-[32px] outline outline-1 outline-offset-[-1px] outline-gray-200 flex-col items-center gap-6 overflow-hidden">
+    <div class="self-stretch inline-flex justify-between items-center">
+        <div class="flex justify-start items-center gap-3 p-4">
+            <div class="justify-start text-black text-2xl font-semibold leading-normal">Administration</div>
+            <div class="flex justify-center items-center gap-4">
+                <div data-property-1="placeholder" data-show-leading-icon="true"
+                    class="w-72 self-stretch px-3 py-2 rounded-lg outline outline-1 outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden">
+                    <lucide-icon name="search" size="16" />
+                    <input placeholder="Chercher une UE ou un groupe..."
+                        class="flex-1 opacity-60 justify-start text-black text-sm font-normal leading-tight" />
+                </div>
+                <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
+                    class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
+                    <div class="w-4 h-4 relative overflow-hidden">
+                        <lucide-icon name="graduation-cap" size="16" />
+                    </div>
+                    <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter une
+                        UE</div>
+                </div>
+                <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
+                    class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
+                    <div class="w-4 h-4 relative overflow-hidden">
+                        <lucide-icon name="folder" size="16" />
+                    </div>
+                    <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter un
+                        groupe</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="self-stretch relative flex flex-col justify-start items-start gap-3">
+        <div class="self-stretch p-[5px] bg-slate-100 rounded-md inline-flex justify-start items-start">
+            <div data-state="selected"
+                class="flex-1 px-3 py-1.5 bg-white rounded shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex justify-center items-center gap-2.5">
+                <div class="flex-1 text-center justify-start text-black text-sm font-medium  leading-tight">Unités
+                    d’enseignement</div>
+            </div>
+            <div data-state="unselected" class="flex-1 px-3 py-1.5 rounded-sm flex justify-center items-center gap-2.5">
+                <div class="flex-1 text-center justify-start text-Primary-dark text-sm font-medium  leading-tight">
+                    Utilisateurs</div>
+            </div>
+        </div>
+        <div class="self-stretch flex flex-col justify-start items-center">
+            <div data-state="Default" data-type="default"
+                class="self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">Nom</div>
+                </div>
+                <div class="w-72 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">Description
+                    </div>
+                </div>
+                <div class="flex-1 h-12 px-4 flex justify-end items-center">
+                    <div class="text-right justify-start"></div>
+                </div>
+            </div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">WE4B</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours de
+                        développement web avec Angulat</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch bg-sky-500/5 border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal flex flex-row leading-normal">
+                        <lucide-icon name="arrow-right" size="16" /> CM
+                    </div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Salle A123, tous les
+                        jeudis de 8h00 à 10h00</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 1</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch bg-sky-500/5 border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 2</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">HM40</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours d’ergonomie
+                    </div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch bg-sky-500/5 border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> CM</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div data-state="Default" data-type="last child" data-variant="Default"
+                class="self-stretch inline-flex justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+            <div class="self-stretch py-4 inline-flex justify-center items-center">
+                <div class="justify-start text-Primary-dark text-sm font-normal  leading-tight">Tous les cours ont été
+                    chargés</div>
+            </div>
+        </div>
+        <div data-hover="false"
+            class="w-6 h-6 p-1.5 left-[1160px] top-[118px] absolute rounded-md flex flex-col justify-center items-center gap-2.5 overflow-hidden">
+            <div class="w-4 h-0.5 bg-black outline outline-[1.25px] outline-offset-[-0.62px] outline-black"></div>
+        </div>
+        <div data-hover="false"
+            class="w-6 h-6 p-1.5 left-[1160px] top-[174px] absolute rounded-md flex flex-col justify-center items-center gap-2.5 overflow-hidden">
+            <div class="w-4 h-0.5 bg-black outline outline-[1.25px] outline-offset-[-0.62px] outline-black"></div>
+        </div>
+        <div data-hover="false"
+            class="w-6 h-6 p-1.5 left-[1160px] top-[230px] absolute rounded-md flex flex-col justify-center items-center gap-2.5 overflow-hidden">
+            <div class="w-4 h-0.5 bg-black outline outline-[1.25px] outline-offset-[-0.62px] outline-black"></div>
+        </div>
+        <div data-hover="false"
+            class="w-6 h-6 p-1.5 left-[1160px] top-[286px] absolute rounded-md flex flex-col justify-center items-center gap-2.5 overflow-hidden">
+            <div class="w-4 h-0.5 bg-black outline outline-[1.25px] outline-offset-[-0.62px] outline-black"></div>
+        </div>
+        <div data-hover="false"
+            class="w-6 h-6 p-1.5 left-[1160px] top-[342px] absolute rounded-md flex flex-col justify-center items-center gap-2.5 overflow-hidden">
+            <div class="w-4 h-0.5 bg-black outline outline-[1.25px] outline-offset-[-0.62px] outline-black"></div>
+        </div>
+        <div data-hover="false"
+            class="w-6 h-6 p-1.5 left-[1160px] top-[398px] absolute rounded-md flex flex-col justify-center items-center gap-2.5 overflow-hidden">
+            <div class="w-4 h-0.5 bg-black outline outline-[1.25px] outline-offset-[-0.62px] outline-black"></div>
+        </div>
+    </div>
+</div>

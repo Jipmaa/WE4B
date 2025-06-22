@@ -139,8 +139,7 @@ export class CourseUnitsService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    //return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, courseUnitData)
-    return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, formData)
+    return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, courseUnitData)
       .pipe(
         tap(response => {
           if (response.success) {
