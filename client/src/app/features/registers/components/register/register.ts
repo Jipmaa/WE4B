@@ -4,6 +4,7 @@ import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, 
 import { HttpClient } from '@angular/common/http';
 import { UsersService } from '@/core/services/users.service';
 import { Router } from '@angular/router';
+import {CreateUserRequest, UserRole} from '@/core/models/user.models';
 
 @Component({
   selector: 'app-register',
@@ -38,7 +39,7 @@ export class Register implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file; // pour l'envoi du fichier
-      this.myForm.get('avatar')?.setValue(file); // pour le FormControl      
+      this.myForm.get('avatar')?.setValue(file); // pour le FormControl
     } else {
       this.myForm.get('avatar')?.setValue(null);
     }
@@ -57,38 +58,28 @@ export class Register implements OnInit {
   }
 
   onSubmit() {
-    const formData = new FormData();
-    console.log(this.myForm.value, this.myForm.errors, this.myForm.status);
-
     if (this.myForm.invalid) {
       this.myForm.markAllAsTouched();
-      console.log(this.myForm.value, this.myForm.errors, this.myForm.status);
       alert('Formulaire invalide');
       return;
     }
 
-    // Ajoute tous les champs du formulaire sauf le rôle
-    formData.append('firstName', this.myForm.value.firstName || '');
-    formData.append('lastName', this.myForm.value.lastName || '');
-    formData.append('fullName', `${this.myForm.value.firstName} ${this.myForm.value.lastName}` || '');
-    formData.append('birthdate', this.myForm.value.birthdate || '');
-    formData.append('email', this.myForm.value.email || '');
-    formData.append('phoneNumber', this.myForm.value.phoneNumber || '');
-    formData.append('password', this.myForm.value.password || '');
-    formData.append('isActive', 'true');
-    formData.append('isEmailVerified', 'false');
-    formData.append('createdAt', new Date().toISOString());
-    formData.append('updatedAt', new Date().toISOString());
-    //formData.append('department', this.myForm.value.department || '');
-
-    // Ajoute les rôles (tableau)
-    (this.myForm.value.roles || []).forEach((role: string) => formData.append('roles', role));
-    // Ajoute le fichier
-    if (this.selectedFile) {
-      formData.append('avatar', this.selectedFile);
+    const getRoles = (): UserRole[] => {
+      return this.myForm.value.roles as UserRole[] || [];
     }
+
+    const data = {
+      firstName: this.myForm.value.firstName || '',
+      lastName: this.myForm.value.lastName || '',
+      birthdate: this.myForm.value.birthdate || '',
+      email: this.myForm.value.email || '',
+      password: this.myForm.value.password || '',
+      roles: getRoles(),
+      avatar: this.myForm.value.avatar || undefined  // Will be replaced with minio url later on
+    } satisfies CreateUserRequest;
+
     // Envoie la requête POST via createUser du user.service.ts
-    this.userService.createUser(formData).subscribe({
+    this.userService.createUser(data).subscribe({
       next: res => {
         alert('Utilisateur créé avec succès !');
         this.myForm.reset();

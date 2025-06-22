@@ -7,7 +7,7 @@
         <!-- Prénom -->
         <div>
             <label for="inputPrenom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Prénom</label>
-            <input type="text" id="inputPrenom" name="prenom" placeholder="Ton prénom" formControlName="firstName"
+            <input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom" formControlName="firstName" required
                 class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
@@ -22,7 +22,7 @@
         <!-- Nom -->
         <div>
             <label for="inputNom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
-            <input type="text" id="inputNom" name="nom" placeholder="Ton nom de famille" formControlName="lastName"
+            <input type="text" id="inputNom" name="lastName" placeholder="Ton nom de famille" formControlName="lastName" required
                 class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
@@ -37,7 +37,7 @@
         <!-- Date de naissance -->
         <div>
             <label for="birthDate" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Date de naissance</label>
-            <input type="date" id="birthDate" name="birthDate" formControlName="birthdate"
+            <input type="date" id="birthDate" name="birthdate" formControlName="birthdate" required
                 class="w-full self-stretch pl-3 pr-4 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
@@ -50,7 +50,7 @@
         <!-- Email -->
         <div>
             <label for="inputEmail4" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Email</label>
-            <input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr" formControlName="email"
+            <input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr" formControlName="email" required
                 class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
@@ -81,17 +81,17 @@
             <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Rôles</label>
             <div class="space-y-2 mt-1">
                 <div>
-                    <input type="checkbox" value="student" id="roleStudent" (change)="onRoleChange($event)"
+                    <input type="checkbox" value="student" name="roles" id="roleStudent" (change)="onRoleChange($event)"
                         [checked]="myForm.value.roles?.includes('student')" class="mr-2">
                     <label for="roleStudent">Student</label>
                 </div>
                 <div>
-                    <input type="checkbox" value="teacher" id="roleTeacher" (change)="onRoleChange($event)"
+                    <input type="checkbox" value="teacher" name="roles" id="roleTeacher" (change)="onRoleChange($event)"
                         [checked]="myForm.value.roles?.includes('teacher')" class="mr-2">
                     <label for="roleTeacher">Teacher</label>
                 </div>
                 <div>
-                    <input type="checkbox" value="admin" id="roleAdmin" (change)="onRoleChange($event)"
+                    <input type="checkbox" value="admin" name="roles" id="roleAdmin" (change)="onRoleChange($event)"
                         [checked]="myForm.value.roles?.includes('admin')" class="mr-2">
                     <label for="roleAdmin">Admin</label>
                 </div>
@@ -110,7 +110,7 @@
         <div>
             <label for="inputPassword" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Mot de passe</label>
             <div class="relative">
-                <input type="password" id="inputPassword" name="password" formControlName="password"
+                <input type="password" id="inputPassword" name="password" formControlName="password" required
                     placeholder="Mot de passe"
                     class="w-full pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
                 <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"

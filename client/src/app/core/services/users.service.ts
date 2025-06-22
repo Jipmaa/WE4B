@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats } from '../models/user.models';
+import { User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats, CreateUserRequest, CreateUserResponse } from '../models/user.models';
 import { UpdateUserRequest } from '@/core/models/course-unit.models';
 import { ApiResponse } from '../models/_shared.models';
 
@@ -55,25 +55,6 @@ export class UsersService {
 
     return departments;
   });
-
-  // Create User
-  createUser(formData: FormData): Observable<ApiResponse<{ user: User }>> {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    return this.http.post<ApiResponse<{ user: User }>>(this.baseUrl, formData)
-      .pipe(
-        tap(response => {
-          if (response.success) {
-            // Ajoute le nouvel utilisateur à la liste des utilisateurs
-            const currentUsers = this._users();
-            this._users.set([...currentUsers, response.data.user]);
-          }
-        }),
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
-  }
 
   // Users Methods
   getUsers(filters: UserFilters = {}): Observable<ApiResponse<UsersResponse>> {
@@ -128,6 +109,35 @@ export class UsersService {
         tap(response => {
           if (response.success) {
             this._selectedUser.set(response.data.user);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+  createUser(userData: CreateUserRequest): Observable<ApiResponse<CreateUserResponse>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.post<ApiResponse<CreateUserResponse>>(this.baseUrl, userData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Add the new user to the current list
+            const currentUsers = this._users();
+            const updatedUsers = [response.data.user, ...currentUsers];
+            this._users.set(updatedUsers);
+
+            // Update pagination to reflect the new user count
+            const currentPagination = this._pagination();
+            if (currentPagination) {
+              const updatedPagination = {
+                ...currentPagination,
+                totalUsers: currentPagination.totalUsers + 1
+              };
+              this._pagination.set(updatedPagination);
+            }
           }
         }),
         catchError(error => this.handleError(error)),

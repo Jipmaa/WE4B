@@ -57,3 +57,20 @@ export interface UserSearchResult {
   users: User[];
   count: number;
 }
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  birthdate: Date | string;
+  roles?: UserRole[];
+  department?: string;
+  avatar?: string;
+  isActive?: boolean;
+  isEmailVerified?: boolean;
+}
+
+export interface CreateUserResponse {
+  user: User;
+}
