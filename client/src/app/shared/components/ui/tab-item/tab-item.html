@@ -1,0 +1,14 @@
+<button
+  type="button"
+  role="tab"
+  class="tab-trigger"
+  [class.active]="isActive"
+  [attr.tabindex]="tabIndex"
+  [attr.aria-selected]="isActive"
+  [attr.aria-controls]="ariaControls"
+  [attr.id]="tabId"
+  [disabled]="disabled"
+  (click)="onClick()"
+>
+  <ng-content></ng-content>
+</button>

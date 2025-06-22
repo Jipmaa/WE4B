@@ -1,0 +1,12 @@
+<div class="tabs-container" [attr.data-tabs-id]="id">
+  <div 
+    class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground"
+    role="tablist"
+    [attr.aria-label]="ariaLabel || 'Tabs'"
+  >
+    <ng-content select="app-tab-item"></ng-content>
+  </div>
+  <div class="tab-content-container mt-2">
+    <ng-content select="app-tab-content"></ng-content>
+  </div>
+</div>

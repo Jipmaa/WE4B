@@ -1,0 +1,12 @@
+<div
+  class="tab-content-panel"
+  [class.active]="isActive"
+  [class.hidden]="!isActive"
+  role="tabpanel"
+  [attr.id]="contentId"
+  [attr.aria-labelledby]="ariaLabelledBy"
+  [attr.tabindex]="isActive ? 0 : -1"
+  [attr.hidden]="!isActive ? true : null"
+>
+  <ng-content></ng-content>
+</div>
