@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import User from '../models/user';
 import { asyncHandler } from '../utils/async-handler';
+import {validateRequest} from "../middleware/validate-request";
 
 const router = Router();
 
@@ -380,7 +381,7 @@ router.get('/user', (req: Request, res: Response) => {
 // @route   POST /setup/user
 // @desc    Create a new user from form submission
 // @access  Public (no authentication required)
-router.post('/user', createUserValidation, asyncHandler(async (req: Request, res: Response) => {
+router.post('/user', createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	// Custom validation handling for HTML form
 	const errors = validationResult(req);
 

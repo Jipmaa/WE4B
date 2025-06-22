@@ -38,7 +38,7 @@ router.get('/avatars/:filename', [
 	
 	// Set appropriate headers with CORS
 	res.set({
-		'Content-Type': fileInfo.metaData['content-type'] || 'application/octet-stream',
+		'Content-Type': fileInfo.metaData['content-type'] || fileInfo.metaData['Content-Type'] || 'application/octet-stream',
 		'Content-Length': fileInfo.size.toString(),
 		'Cache-Control': 'public, max-age=86400', // 24 hours cache
 		'ETag': fileInfo.etag,
