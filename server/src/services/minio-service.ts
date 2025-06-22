@@ -29,14 +29,14 @@ export const FILE_CONFIGS = {
 	avatar: {
 		bucket: BUCKETS.AVATARS,
 		maxSize: 5 * 1024 * 1024, // 5MB
-		allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-		allowedExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+		allowedTypes: COMMON_IMAGE_TYPES,
+		allowedExtensions: COMMON_IMAGE_EXTENSIONS
 	},
 	courseImage: {
 		bucket: BUCKETS.COURSE_IMAGES,
 		maxSize: 10 * 1024 * 1024, // 10MB
-		allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-		allowedExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+		allowedTypes: COMMON_IMAGE_TYPES,
+		allowedExtensions: COMMON_IMAGE_EXTENSIONS
 	},
 	activityFile: {
 		bucket: BUCKETS.ACTIVITY_FILES,
