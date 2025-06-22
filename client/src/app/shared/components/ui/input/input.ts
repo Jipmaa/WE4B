@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { IdGeneratorService } from '@/core/services/id-generator.service';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 export type InputVariant = 'default' | 'filled' | 'flushed';
@@ -20,6 +21,8 @@ export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url'
   ]
 })
 export class InputComponent implements ControlValueAccessor {
+  private readonly idGenerator = inject(IdGeneratorService);
+
   @Input() placeholder: string = '';
   @Input() type: InputType = 'text';
   @Input() disabled: boolean = false;
@@ -55,7 +58,8 @@ export class InputComponent implements ControlValueAccessor {
   private onTouched = () => {};
 
   constructor() {
-    this.inputId = this.id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate unique ID using the ID generator service
+    this.inputId = this.idGenerator.generateId('input', this.id);
   }
 
   get inputClasses(): string {

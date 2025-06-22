@@ -1,9 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, validationResult } from 'express-validator';
 import User from '../models/user';
-import { validateRequest } from '../middleware/validate-request';
-import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
+import {validateRequest} from "../middleware/validate-request";
 
 const router = Router();
 
@@ -82,6 +81,7 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 		input[type="email"],
 		input[type="password"],
 		input[type="date"],
+		input[type="url"],
 		select {
 			width: 100%;
 			padding: 12px;
@@ -234,11 +234,11 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 			<div class="form-row">
 				<div class="form-group">
 					<label for="firstName">First Name <span class="required">*</span></label>
-					<input type="text" id="firstName" name="firstName" value="${formData.firstName || ''}" required>
+					<input type="text" id="firstName" name="firstName" value="${formData.firstName || ''}" required maxlength="50">
 				</div>
 				<div class="form-group">
 					<label for="lastName">Last Name <span class="required">*</span></label>
-					<input type="text" id="lastName" name="lastName" value="${formData.lastName || ''}" required>
+					<input type="text" id="lastName" name="lastName" value="${formData.lastName || ''}" required maxlength="50">
 				</div>
 			</div>
 
@@ -261,8 +261,14 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 				</div>
 				<div class="form-group">
 					<label for="department">Department</label>
-					<input type="text" id="department" name="department" value="${formData.department || ''}" placeholder="e.g., Computer Science">
+					<input type="text" id="department" name="department" value="${formData.department || ''}" placeholder="e.g., Computer Science" maxlength="100">
 				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="avatar">Avatar URL</label>
+				<input type="url" id="avatar" name="avatar" value="${formData.avatar || ''}" placeholder="https://example.com/avatar.jpg">
+				<div class="helper-text">Optional: URL to your profile picture</div>
 			</div>
 
 			<div class="roles-group">
@@ -335,6 +341,10 @@ const createUserValidation = [
 		 .trim()
 		 .isLength({ max: 100 })
 		 .withMessage('Department must be less than 100 characters'),
+	body('avatar')
+		 .optional()
+		 .isURL()
+		 .withMessage('Avatar must be a valid URL'),
 	body('roles')
 		 .custom((value, { req }) => {
 			 // Handle both single value and array from form submission
@@ -371,7 +381,7 @@ router.get('/user', (req: Request, res: Response) => {
 // @route   POST /setup/user
 // @desc    Create a new user from form submission
 // @access  Public (no authentication required)
-router.post('/user', createUserValidation, asyncHandler(async (req: Request, res: Response) => {
+router.post('/user', createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	// Custom validation handling for HTML form
 	const errors = validationResult(req);
 
@@ -388,7 +398,7 @@ router.post('/user', createUserValidation, asyncHandler(async (req: Request, res
 	}
 
 	try {
-		const { firstName, lastName, email, password, birthdate, department, roles } = req.body;
+		const { firstName, lastName, email, password, birthdate, department, avatar, roles } = req.body;
 
 		// Check if user already exists
 		const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -405,9 +415,11 @@ router.post('/user', createUserValidation, asyncHandler(async (req: Request, res
 			password,
 			birthdate: new Date(birthdate),
 			department: department || undefined,
+			avatar: avatar || undefined,
 			roles,
 			isActive: true,
-			isEmailVerified: true // Auto-verify for setup users
+			isEmailVerified: true, // Auto-verify for setup users
+			memberOfGroups: []
 		});
 
 		await newUser.save();
@@ -443,149 +455,5 @@ router.post('/user', createUserValidation, asyncHandler(async (req: Request, res
 		res.status(500).send(html);
 	}
 }));
-
-// @route   GET /setup/user/stats
-// @desc    Display current user statistics (for monitoring setup)
-// @access  Public (no authentication required)
-router.get('/user/stats', asyncHandler(async (req: Request, res: Response) => {
-	const stats = await User.aggregate([
-		{
-			$group: {
-				_id: null,
-				totalUsers: { $sum: 1 },
-				activeUsers: { $sum: { $cond: [{ $eq: ['$isActive', true] }, 1, 0] } },
-				verifiedUsers: { $sum: { $cond: [{ $eq: ['$isEmailVerified', true] }, 1, 0] } }
-			}
-		}
-	]);
-
-	const roleStats = await User.aggregate([
-		{ $unwind: '$roles' },
-		{ $group: { _id: '$roles', count: { $sum: 1 } } },
-		{ $sort: { count: -1 } }
-	]);
-
-	const result = stats[0] || { totalUsers: 0, activeUsers: 0, verifiedUsers: 0 };
-
-	const html = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>User Statistics - Mooodle WE4B</title>
-	<style>
-		body { 
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			min-height: 100vh;
-			margin: 0;
-			padding: 20px;
-		}
-		.container { 
-			max-width: 800px; 
-			margin: 0 auto; 
-			background: white; 
-			border-radius: 16px; 
-			padding: 40px;
-			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-		}
-		h1 { 
-			color: #333; 
-			text-align: center; 
-			margin-bottom: 30px;
-		}
-		.stats-grid { 
-			display: grid; 
-			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-			gap: 20px; 
-			margin-bottom: 30px;
-		}
-		.stat-card { 
-			background: #f8f9fa; 
-			padding: 20px; 
-			border-radius: 8px; 
-			text-align: center;
-			border-left: 4px solid #667eea;
-		}
-		.stat-number { 
-			font-size: 2rem; 
-			font-weight: bold; 
-			color: #667eea; 
-		}
-		.stat-label { 
-			color: #666; 
-			font-weight: 600;
-		}
-		.roles-section { 
-			margin-top: 30px;
-		}
-		.role-item { 
-			display: flex; 
-			justify-content: space-between; 
-			padding: 10px 15px; 
-			background: #f8f9fa; 
-			margin: 5px 0; 
-			border-radius: 8px;
-		}
-		.links { 
-			text-align: center; 
-			margin-top: 30px;
-		}
-		.links a { 
-			color: #667eea; 
-			text-decoration: none; 
-			margin: 0 15px;
-			font-weight: 600;
-		}
-		.links a:hover { 
-			text-decoration: underline;
-		}
-	</style>
-</head>
-<body>
-	<div class="container">
-		<h1>📊 User Statistics</h1>
-		
-		<div class="stats-grid">
-			<div class="stat-card">
-				<div class="stat-number">${result.totalUsers}</div>
-				<div class="stat-label">Total Users</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-number">${result.activeUsers}</div>
-				<div class="stat-label">Active Users</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-number">${result.verifiedUsers}</div>
-				<div class="stat-label">Verified Users</div>
-			</div>
-		</div>
-
-		<div class="roles-section">
-			<h3>👥 Users by Role</h3>
-			${roleStats.map(role => `
-				<div class="role-item">
-					<span>${role._id.charAt(0).toUpperCase() + role._id.slice(1)}s</span>
-					<strong>${role.count}</strong>
-				</div>
-			`).join('')}
-		</div>
-
-		<div class="links">
-			<a href="/setup/user">🆕 Create New User</a>
-			<a href="/api/users/stats">📈 API Stats</a>
-			<a href="/">🏠 Home</a>
-		</div>
-	</div>
-</body>
-</html>
-	`;
-
-	res.send(html);
-}));
-
-// Import validation result for the custom validation
-import { validationResult } from 'express-validator';
 
 export default router;

@@ -6,6 +6,8 @@ import { adminMiddleware } from '../middleware/roles-middleware';
 import { validateRequest } from '../middleware/validate-request';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
+import { uploadCourseImage, handleFileUploadError } from '../middleware/file-upload-middleware';
+import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS, getPublicUrl } from '../services/minio-service';
 
 const router = Router();
 
@@ -78,10 +80,7 @@ const createCourseUnitValidation = [
 		 .withMessage('Capacity is required')
 		 .isInt({ min: 1 })
 		 .withMessage('Capacity must be a positive integer'),
-	body('img_path')
-		 .optional()
-		 .isURL()
-		 .withMessage('Image path must be a valid URL')
+	// Image will be handled by file upload middleware
 ];
 
 const updateCourseUnitValidation = [
@@ -108,10 +107,7 @@ const updateCourseUnitValidation = [
 		 .optional()
 		 .isInt({ min: 1 })
 		 .withMessage('Capacity must be a positive integer'),
-	body('img_path')
-		 .optional()
-		 .isURL()
-		 .withMessage('Image path must be a valid URL')
+	// Image will be handled by file upload middleware
 ];
 
 // @route   GET /api/course-units
@@ -270,8 +266,8 @@ router.get('/:id', courseUnitIdValidation, validateRequest, asyncHandler(async (
 // @route   POST /api/course-units
 // @desc    Create new course unit
 // @access  Private (Admin only)
-router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { name, code, slug, capacity, img_path } = req.body;
+router.post('/', adminMiddleware, uploadCourseImage, handleFileUploadError, createCourseUnitValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const { name, code, slug, capacity } = req.body;
 
 	// Check if course unit with same slug already exists
 	const existingCourseUnit = await CourseUnit.findOne({ slug });
@@ -285,12 +281,30 @@ router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, a
 		throw new AppError('Course unit with this code already exists', 400);
 	}
 
+	let imageKey = null;
+	let imageUrl = null;
+
+	// Handle image upload if provided
+	if (req.file) {
+		const fileName = generateFileName(req.file.originalname, `course-${slug}`);
+		imageKey = await uploadFile(
+			req.file,
+			FILE_CONFIGS.courseImage.bucket,
+			fileName,
+			{
+				'X-Amz-Meta-Course-Slug': slug,
+				'X-Amz-Meta-Upload-Type': 'course-image'
+			}
+		);
+		imageUrl = getPublicUrl(FILE_CONFIGS.courseImage.bucket, imageKey);
+	}
+
 	const courseUnit = new CourseUnit({
 		name,
 		code,
 		slug,
 		capacity,
-		img_path: img_path || null
+		img: imageKey
 	});
 
 	await courseUnit.save();
@@ -305,7 +319,8 @@ router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, a
 				code: courseUnit.code,
 				slug: courseUnit.slug,
 				capacity: courseUnit.capacity,
-				img_path: courseUnit.img_path,
+				img: courseUnit.img,
+				imageUrl,
 				createdAt: courseUnit.createdAt,
 				updatedAt: courseUnit.updatedAt
 			}
@@ -317,7 +332,7 @@ router.post('/', adminMiddleware, createCourseUnitValidation, validateRequest, a
 // @desc    Update course unit
 // @access  Private (Admin only)
 router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseUnitValidation], validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { name, code, slug, capacity, img_path } = req.body;
+	const { name, code, slug, capacity } = req.body;
 
 	const courseUnit = await CourseUnit.findById(req.params.id);
 
@@ -346,9 +361,14 @@ router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseU
 	if (code !== undefined) courseUnit.code = code;
 	if (slug !== undefined) courseUnit.slug = slug;
 	if (capacity !== undefined) courseUnit.capacity = capacity;
-	if (img_path !== undefined) courseUnit.img_path = img_path;
 
 	await courseUnit.save();
+
+	// Get image URL if exists
+	let imageUrl = null;
+	if (courseUnit.img) {
+		imageUrl = getPublicUrl(FILE_CONFIGS.courseImage.bucket, courseUnit.img);
+	}
 
 	res.json({
 		success: true,
@@ -360,7 +380,8 @@ router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseU
 				code: courseUnit.code,
 				slug: courseUnit.slug,
 				capacity: courseUnit.capacity,
-				img_path: courseUnit.img_path,
+				img: courseUnit.img,
+				imageUrl,
 				createdAt: courseUnit.createdAt,
 				updatedAt: courseUnit.updatedAt
 			}
@@ -414,7 +435,7 @@ router.get('/search/:term', [
 		]
 	})
 		 .limit(limit)
-		 .select('name code slug capacity img_path createdAt')
+		 .select('name code slug capacity img createdAt')
 		 .sort({ name: 1 });
 
 	res.json({
@@ -519,7 +540,7 @@ router.get('/capacity-range/:min/:max', [
 			 .sort({ capacity: 1 })
 			 .skip(skip)
 			 .limit(limit)
-			 .select('name code slug capacity img_path createdAt'),
+			 .select('name code slug capacity img createdAt'),
 		CourseUnit.countDocuments({
 			capacity: { $gte: minCapacity, $lte: maxCapacity }
 		})
@@ -542,6 +563,108 @@ router.get('/capacity-range/:min/:max', [
 			capacityRange: {
 				min: minCapacity,
 				max: maxCapacity
+			}
+		}
+	});
+}));
+
+// @route   PUT /api/course-units/:id/image
+// @desc    Upload/Update course unit image
+// @access  Private (Admin only)
+router.put('/:id/image', adminMiddleware, courseUnitIdValidation, uploadCourseImage, handleFileUploadError, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	if (!req.file) {
+		throw new AppError('Image file is required', 400);
+	}
+
+	const courseUnit = await CourseUnit.findById(req.params.id);
+
+	if (!courseUnit) {
+		throw new AppError('Course unit not found', 404);
+	}
+
+	// Delete old image if exists
+	if (courseUnit.img) {
+		try {
+			await deleteFile(FILE_CONFIGS.courseImage.bucket, courseUnit.img);
+		} catch (error) {
+			console.warn('Failed to delete old course image:', error);
+		}
+	}
+
+	// Generate unique filename and upload new image
+	const fileName = generateFileName(req.file.originalname, `course-${courseUnit.slug}`);
+	const objectKey = await uploadFile(
+		req.file,
+		FILE_CONFIGS.courseImage.bucket,
+		fileName,
+		{
+			'X-Amz-Meta-Course-Id': courseUnit._id.toString(),
+			'X-Amz-Meta-Course-Slug': courseUnit.slug,
+			'X-Amz-Meta-Upload-Type': 'course-image'
+		}
+	);
+
+	// Update course unit image reference
+	courseUnit.img = objectKey;
+	await courseUnit.save();
+
+	const imageUrl = getPublicUrl(FILE_CONFIGS.courseImage.bucket, objectKey);
+
+	res.json({
+		success: true,
+		message: 'Course unit image uploaded successfully',
+		data: {
+			img: objectKey,
+			imageUrl,
+			courseUnit: {
+				id: courseUnit._id,
+				name: courseUnit.name,
+				code: courseUnit.code,
+				slug: courseUnit.slug,
+				capacity: courseUnit.capacity,
+				img: objectKey,
+				imageUrl
+			}
+		}
+	});
+}));
+
+// @route   DELETE /api/course-units/:id/image
+// @desc    Remove course unit image
+// @access  Private (Admin only)
+router.delete('/:id/image', adminMiddleware, courseUnitIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const courseUnit = await CourseUnit.findById(req.params.id);
+
+	if (!courseUnit) {
+		throw new AppError('Course unit not found', 404);
+	}
+
+	if (!courseUnit.img) {
+		throw new AppError('Course unit has no image to remove', 400);
+	}
+
+	// Delete image from MinIO
+	try {
+		await deleteFile(FILE_CONFIGS.courseImage.bucket, courseUnit.img);
+	} catch (error) {
+		console.warn('Failed to delete image from storage:', error);
+	}
+
+	// Remove image reference from course unit
+	courseUnit.img = undefined;
+	await courseUnit.save();
+
+	res.json({
+		success: true,
+		message: 'Course unit image removed successfully',
+		data: {
+			courseUnit: {
+				id: courseUnit._id,
+				name: courseUnit.name,
+				code: courseUnit.code,
+				slug: courseUnit.slug,
+				capacity: courseUnit.capacity,
+				img: null
 			}
 		}
 	});

@@ -12,10 +12,12 @@ import userRoutes from './routes/user-routes';
 import courseUnitRoutes from './routes/course-unit-routes';
 import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
+import fileRoutes from './routes/file-routes';
 
 // Import middleware
 import { errorHandler } from './middleware/error-handler';
 import { notFound } from './middleware/not-found';
+import {initializeBuckets} from "./services/minio-service";
 
 // Load environment variables
 dotenv.config();
@@ -24,11 +26,25 @@ class Server {
 	public app: express.Application;
 	private port: string | number;
 
-	constructor() {
+	public static start() {
+		const server = new Server();
+		server.initializeServer().then(r => {
+			server.start();
+		}).catch(e => {
+			console.error("Could not start server", e);
+			process.exit(1);
+		});
+	}
+
+	private constructor() {
 		this.app = express();
 		this.port = process.env.PORT || 3000;
+	}
 
-		this.connectDatabase();
+	private async initializeServer(): Promise<void> {
+		this.verifyEnv();
+		await this.connectDatabase();
+		await this.initializeMinIO();
 		this.initializeMiddlewares();
 		this.initializeRoutes();
 		this.initializeErrorHandling();
@@ -56,6 +72,16 @@ class Server {
 		} catch (error) {
 			console.error('❌ Error connecting to MongoDB:', error);
 			process.exit(1);
+		}
+	}
+
+	private async initializeMinIO(): Promise<void> {
+		try {
+			await initializeBuckets();
+			console.log('✅ MinIO buckets initialized successfully');
+		} catch (error) {
+			console.error('❌ Error initializing MinIO:', error);
+			console.warn('⚠️ Continuing without MinIO - file uploads will not work');
 		}
 	}
 
@@ -144,6 +170,7 @@ class Server {
 		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/course-units', courseUnitRoutes);
 		this.app.use('/api/users', userRoutes);
+		this.app.use('/api/files', fileRoutes);
 
 		// Root endpoint
 		this.app.get('/', (req, res) => {
@@ -174,9 +201,33 @@ class Server {
 			console.log(`🚀 Server running on port ${this.port}`);
 			console.log(`📖 Environment: ${process.env.NODE_ENV || 'development'}`);
 			console.log(`🔗 API URL: http://localhost:${this.port}`);
+			console.log('📚 MinIO dashboard: http://localhost:9001');
+			console.log('------------------------------------------------------------------');
 			console.log(`👤 Setup User: http://localhost:${this.port}/setup/user`);
 			console.log(`📊 User Stats: http://localhost:${this.port}/setup/user/stats`);
 		});
+	}
+
+	private verifyEnv(): void {
+		const missingEnvVars: string[] = [];
+		const requiredEnvVars: string[] = [
+			 'MONGODB_URI',
+			 'MINIO_ENDPOINT',
+			 'MINIO_PORT',
+			 'MINIO_USE_SSL',
+			 'MINIO_ACCESS_KEY',
+			 'MINIO_SECRET_KEY'
+		];
+
+		for (const envVar of requiredEnvVars) {
+			if (!process.env[envVar]) {
+				missingEnvVars.push(envVar);
+			}
+		}
+
+		if (missingEnvVars.length > 0) {
+			throw new Error(`Missing environment variables: ${missingEnvVars.join(', ')}`);
+		}
 	}
 }
 
@@ -206,7 +257,4 @@ process.on('SIGINT', async () => {
 });
 
 // Create and start server
-const server = new Server();
-server.start();
-
-export default server;
+Server.start();

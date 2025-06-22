@@ -6,6 +6,8 @@ import { adminMiddleware } from '../middleware/roles-middleware';
 import { validateRequest } from '../middleware/validate-request';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
+import { uploadAvatar, handleFileUploadError } from '../middleware/file-upload-middleware';
+import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS, getPublicUrl } from '../services/minio-service';
 
 const router = Router();
 
@@ -532,6 +534,174 @@ router.get('/by-department/:department', adminMiddleware, [
 				limit,
 				hasNextPage: page < totalPages,
 				hasPrevPage: page > 1
+			}
+		}
+	});
+}));
+
+// @route   GET /api/users/me
+// @desc    Get current user profile
+// @access  Private
+router.get('/me', asyncHandler(async (req: Request, res: Response) => {
+	const user = await User.findById(req.user?.userId).select('-__v');
+
+	if (!user) {
+		throw new AppError('User not found', 404);
+	}
+
+	// Add avatar URL if exists
+	const userData = user.toJSON();
+	const avatarUrl = userData.avatar ? user.getAvatarUrl() : null;
+	const userWithAvatar = {
+		...userData,
+		avatarUrl
+	};
+
+	res.json({
+		success: true,
+		data: {
+			user: userWithAvatar
+		}
+	});
+}));
+
+// @route   PUT /api/users/me/avatar
+// @desc    Upload/Update user avatar
+// @access  Private
+router.put('/me/avatar', uploadAvatar, handleFileUploadError, asyncHandler(async (req: Request, res: Response) => {
+	if (!req.file) {
+		throw new AppError('Avatar file is required', 400);
+	}
+
+	const user = await User.findById(req.user?.userId);
+
+	if (!user) {
+		throw new AppError('User not found', 404);
+	}
+
+	// Delete old avatar if exists
+	if (user.avatar) {
+		try {
+			await deleteFile(FILE_CONFIGS.avatar.bucket, user.avatar);
+		} catch (error) {
+			console.warn('Failed to delete old avatar:', error);
+		}
+	}
+
+	// Generate unique filename and upload new avatar
+	const fileName = generateFileName(req.file.originalname, `avatar-${user._id}`);
+	const objectKey = await uploadFile(
+		req.file,
+		FILE_CONFIGS.avatar.bucket,
+		fileName,
+		{
+			'X-Amz-Meta-User-Id': user._id.toString(),
+			'X-Amz-Meta-Upload-Type': 'avatar'
+		}
+	);
+
+	// Update user avatar reference
+	user.avatar = objectKey;
+	await user.save();
+
+	const avatarUrl = getPublicUrl(FILE_CONFIGS.avatar.bucket, objectKey);
+
+	res.json({
+		success: true,
+		message: 'Avatar uploaded successfully',
+		data: {
+			avatar: objectKey,
+			avatarUrl,
+			user: {
+				id: user._id,
+				email: user.email,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				fullName: user.getFullName(),
+				avatar: objectKey,
+				avatarUrl
+			}
+		}
+	});
+}));
+
+// @route   DELETE /api/users/me/avatar
+// @desc    Remove user avatar
+// @access  Private
+router.delete('/me/avatar', asyncHandler(async (req: Request, res: Response) => {
+	const user = await User.findById(req.user?.userId);
+
+	if (!user) {
+		throw new AppError('User not found', 404);
+	}
+
+	if (!user.avatar) {
+		throw new AppError('No avatar to remove', 400);
+	}
+
+	// Delete avatar from MinIO
+	try {
+		await deleteFile(FILE_CONFIGS.avatar.bucket, user.avatar);
+	} catch (error) {
+		console.warn('Failed to delete avatar from storage:', error);
+	}
+
+	// Remove avatar reference from user
+	user.avatar = undefined;
+	await user.save();
+
+	res.json({
+		success: true,
+		message: 'Avatar removed successfully',
+		data: {
+			user: {
+				id: user._id,
+				email: user.email,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				fullName: user.getFullName(),
+				avatar: null
+			}
+		}
+	});
+}));
+
+// @route   DELETE /api/users/:id/avatar
+// @desc    Remove user avatar (Admin only)
+// @access  Private (Admin only)
+router.delete('/:id/avatar', adminMiddleware, userIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const user = await User.findById(req.params.id);
+
+	if (!user) {
+		throw new AppError('User not found', 404);
+	}
+
+	if (!user.avatar) {
+		throw new AppError('User has no avatar to remove', 400);
+	}
+
+	// Delete avatar from MinIO
+	try {
+		await deleteFile(FILE_CONFIGS.avatar.bucket, user.avatar);
+	} catch (error) {
+		console.warn('Failed to delete avatar from storage:', error);
+	}
+
+	// Remove avatar reference from user
+	user.avatar = undefined;
+	await user.save();
+
+	res.json({
+		success: true,
+		message: 'User avatar removed successfully',
+		data: {
+			user: {
+				id: user._id,
+				email: user.email,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				fullName: user.getFullName(),
+				avatar: null
 			}
 		}
 	});
