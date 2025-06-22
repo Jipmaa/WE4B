@@ -12,7 +12,11 @@ import { TabContentComponent } from '../tab-content/tab-content';
   templateUrl: './tabs.html',
   styles: [`
     .tabs-container {
-      @apply w-full;
+      @apply w-full min-w-0;
+    }
+    
+    .tab-list {
+      @apply min-w-0;
     }
 
     .tab-content-container {
@@ -20,7 +24,7 @@ import { TabContentComponent } from '../tab-content/tab-content';
     }
 
     :host {
-      @apply w-full;
+      @apply w-full block min-w-0;
     }
   `]
 })
@@ -28,6 +32,8 @@ export class TabsComponent implements OnInit, OnDestroy, AfterContentInit {
   @Input() id!: string;
   @Input() ariaLabel?: string;
   @Input() defaultTab?: string;
+
+  public gridTemplateColumns: string = '';
 
   @ContentChildren(TabItemComponent) tabItems!: QueryList<TabItemComponent>;
   @ContentChildren(TabContentComponent) tabContents!: QueryList<TabContentComponent>;
@@ -79,6 +85,10 @@ export class TabsComponent implements OnInit, OnDestroy, AfterContentInit {
 
   private setupTabItems() {
     if (!this.tabItems || !this.tabContents) return;
+
+    // Set up grid columns based on number of tabs
+    const tabCount = this.tabItems.length;
+    this.gridTemplateColumns = `repeat(${tabCount}, minmax(0, 1fr))`;
 
     this.tabItems.forEach((tabItem, index) => {
       // Set up ARIA attributes

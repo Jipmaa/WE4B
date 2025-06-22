@@ -1,6 +1,7 @@
 <div class="tabs-container" [attr.data-tabs-id]="id">
-  <div 
-    class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground"
+  <div
+    class="tab-list bg-muted p-1 text-muted-foreground rounded-md w-full grid gap-1"
+    [style.grid-template-columns]="gridTemplateColumns"
     role="tablist"
     [attr.aria-label]="ariaLabel || 'Tabs'"
   >

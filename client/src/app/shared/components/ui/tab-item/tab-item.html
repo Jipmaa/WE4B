@@ -1,8 +1,7 @@
 <button
   type="button"
   role="tab"
-  class="tab-trigger"
-  [class.active]="isActive"
+  [class]="getClasses()"
   [attr.tabindex]="tabIndex"
   [attr.aria-selected]="isActive"
   [attr.aria-controls]="ariaControls"

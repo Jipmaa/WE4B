@@ -7,30 +7,15 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './tab-item.html',
   styles: [`
-    .tab-trigger {
-      @apply inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all duration-200;
-      @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-      @apply disabled:pointer-events-none disabled:opacity-50;
-      @apply border-0 bg-transparent;
-    }
-    
-    .tab-trigger:not(.active) {
-      @apply text-muted-foreground hover:text-foreground;
-    }
-    
-    .tab-trigger.active {
-      @apply bg-background text-foreground shadow-sm;
-    }
-    
     :host {
-      @apply flex;
+      @apply contents;
     }
   `]
 })
 export class TabItemComponent {
   @Input() value!: string;
   @Input() disabled: boolean = false;
-  
+
   @Output() tabClick = new EventEmitter<string>();
   @Output() keyboardEvent = new EventEmitter<KeyboardEvent>();
 
@@ -60,7 +45,7 @@ export class TabItemComponent {
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
       this.keyboardEvent.emit(event);
     }
-    
+
     // Handle Enter and Space to activate the tab
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -95,5 +80,15 @@ export class TabItemComponent {
   // Getter for checking if this tab is currently focused
   public get isFocused(): boolean {
     return document.activeElement === this.elementRef.nativeElement.querySelector('button');
+  }
+
+  getClasses() {
+    if (this.isActive) {
+      return 'w-full min-w-0 px-3 py-1.5 bg-white rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex justify-center items-center gap-2.5 text-black font-medium text-sm';
+    }
+    if (this.disabled) {
+      return 'w-full min-w-0 px-3 py-1.5 rounded-sm flex justify-center items-center gap-2.5 text-muted-foreground/60 font-medium cursor-not-allowed text-sm';
+    }
+    return 'w-full min-w-0 px-3 py-1.5 rounded-sm flex justify-center items-center gap-2.5 text-muted-foreground font-medium hover:bg-primary/10 focus:bg-primary/10 cursor-pointer transition-colors text-sm';
   }
 }
