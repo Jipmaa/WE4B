@@ -2,7 +2,15 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats} from '../models/user.models';
+import {
+  CreateUserRequest, CreateUserResponse,
+  User,
+  UserFilters,
+  UserRole,
+  UserSearchResult,
+  UsersResponse,
+  UserStats
+} from '../models/user.models';
 import {UpdateUserRequest} from '@/core/models/user.models';
 import { ApiResponse } from '../models/_shared.models';
 
@@ -116,11 +124,44 @@ export class UsersService {
       );
   }
 
-  createUser(userData: CreateUserRequest): Observable<ApiResponse<CreateUserResponse>> {
+  createUser(userData: CreateUserRequest, avatarFile?: File): Observable<ApiResponse<CreateUserResponse>> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this.http.post<ApiResponse<CreateUserResponse>>(this.baseUrl, userData)
+    // Create FormData to handle both user data and file upload
+    const formData = new FormData();
+
+    // Add user data to FormData
+    formData.append('email', userData.email);
+    formData.append('password', userData.password);
+    formData.append('firstName', userData.firstName);
+    formData.append('lastName', userData.lastName);
+    formData.append('birthdate', userData.birthdate.toString());
+
+    if (userData.roles && userData.roles.length > 0) {
+      userData.roles.forEach((role, index) => {
+        formData.append(`roles[${index}]`, role);
+      });
+    }
+
+    if (userData.department) {
+      formData.append('department', userData.department);
+    }
+
+    if (userData.isActive !== undefined) {
+      formData.append('isActive', userData.isActive.toString());
+    }
+
+    if (userData.isEmailVerified !== undefined) {
+      formData.append('isEmailVerified', userData.isEmailVerified.toString());
+    }
+
+    // Add avatar file if provided
+    if (avatarFile) {
+      formData.append('avatar', avatarFile);
+    }
+
+    return this.http.post<ApiResponse<CreateUserResponse>>(this.baseUrl, formData)
       .pipe(
         tap(response => {
           if (response.success) {

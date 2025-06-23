@@ -432,23 +432,6 @@ router.post('/user', uploadAvatar, handleFileUploadError, createUserValidation, 
 			return res.status(400).send(html);
 		}
 
-		// Handle avatar upload or URL
-		let avatarKey = undefined;
-		if (avatarType === 'upload' && req.file) {
-			// Generate a temporary user ID for the filename
-			const tempUserId = new Date().getTime().toString();
-			const fileName = generateFileName(req.file.originalname, `avatar-${tempUserId}`);
-			avatarKey = await uploadFile(
-				req.file,
-				FILE_CONFIGS.avatar.bucket,
-				fileName,
-				{
-					'X-Amz-Meta-Upload-Type': 'avatar',
-					'X-Amz-Meta-Created-Via': 'setup-route'
-				}
-			);
-		}
-
 		// Create new user
 		const newUser = new User({
 			firstName,
@@ -457,12 +440,28 @@ router.post('/user', uploadAvatar, handleFileUploadError, createUserValidation, 
 			password,
 			birthdate: new Date(birthdate),
 			department: department || undefined,
-			avatar: avatarKey,
 			roles,
 			isActive: true,
 			isEmailVerified: true, // Auto-verify for setup users
 			memberOfGroups: []
 		});
+
+		// Handle avatar upload or URL
+		let avatarKey = undefined;
+		if (avatarType === 'upload' && req.file) {
+			// Generate a temporary user ID for the filename
+			const fileName = generateFileName(req.file.originalname, `avatar-${newUser._id}`);
+			avatarKey = await uploadFile(
+				req.file,
+				FILE_CONFIGS.avatar.bucket,
+				fileName,
+				{
+					'X-Amz-Meta-Upload-Type': 'avatar',
+					'X-Amz-Meta-User-Id': newUser._id.toString(),
+				}
+			);
+			newUser.avatar = avatarKey;
+		}
 
 		await newUser.save();
 

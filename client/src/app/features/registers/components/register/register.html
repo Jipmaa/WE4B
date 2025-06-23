@@ -8,7 +8,7 @@
         <div>
             <label for="inputPrenom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Prénom</label>
             <input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom" formControlName="firstName" required
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
                 <div *ngIf="myForm.get('firstName')?.errors?.['required']; else firstNameValid"
@@ -23,7 +23,7 @@
         <div>
             <label for="inputNom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
             <input type="text" id="inputNom" name="lastName" placeholder="Ton nom de famille" formControlName="lastName" required
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
                 <div *ngIf="myForm.get('lastName')?.errors?.['required']; else lastNameValid"
@@ -38,7 +38,7 @@
         <div>
             <label for="birthDate" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Date de naissance</label>
             <input type="date" id="birthDate" name="birthdate" formControlName="birthdate" required
-                class="w-full self-stretch pl-3 pr-4 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+                class="w-full self-stretch pl-3 pr-4 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
                 <div *ngIf="myForm.get('birthdate')?.errors?.['required']" class="text-red-600 text-sm">❌ Date requise
@@ -51,7 +51,7 @@
         <div>
             <label for="inputEmail4" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Email</label>
             <input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr" formControlName="email" required
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
                 <div *ngIf="myForm.get('email')?.errors?.['required']" class="text-red-600 text-sm">❌ Email requis</div>
@@ -60,21 +60,6 @@
             </ng-container>
         </div>
 
-        <!-- Numéro de téléphone -->
-        <div>
-            <label for="inputPhoneNumber" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Numéro de téléphone</label>
-            <input type="text" id="inputPhoneNumber" name="phoneNumber" placeholder="+XX * ** ** ** **"
-                formControlName="phoneNumber"
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
-            <ng-container *ngIf="myForm.get('phoneNumber')?.dirty || myForm.get('phoneNumber')?.touched">
-                <div *ngIf="myForm.get('phoneNumber')?.errors?.['phoneFormat']; else phoneNumberValid">
-                    ❌ Le numéro de téléphone doit avoir 10 chiffres
-                </div>
-                <ng-template #phoneNumberValid>
-                    <div class="text-success small">✅ Numéro de téléphone valide</div>
-                </ng-template>
-            </ng-container>
-        </div>
 
         <!-- Rôles -->
         <div>
@@ -112,9 +97,9 @@
             <div class="relative">
                 <input type="password" id="inputPassword" name="password" formControlName="password" required
                     placeholder="Mot de passe"
-                    class="w-full pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
-                <ion-icon name="eye-off-outline" (click)="TogglePass($event.target)"
-                    class="absolute right-3 top-3 text-gray-400 cursor-pointer"></ion-icon>
+                    class="w-full pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+                <lucide-icon name="eye" (click)="TogglePass($event.target)"
+                    class="absolute right-3 top-3 text-gray-400 cursor-pointer"></lucide-icon>
             </div>
             <ng-container *ngIf="myForm.get('password')?.dirty || myForm.get('password')?.touched">
                 <div *ngIf="myForm.get('password')?.errors?.['minLength']; else minLengthValid"
@@ -153,12 +138,13 @@
         <!-- Avatar -->
         <div>
             <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Photo de profil</label>
-            <input type="file" class="cursor-pointer block w-full text-sm text-gray-500
+            <input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="cursor-pointer block w-full text-sm text-gray-500
              file:mr-4 file:py-2 file:px-4
              file:rounded-full file:border-0
              file:text-sm file:font-semibold
              file:bg-blue-50 file:text-blue-700
              hover:file:bg-blue-100" (change)="onFileSelected($event)">
+            <div class="text-sm text-gray-500 mt-1">Formats acceptés: JPEG, PNG, GIF, WebP (max 5MB)</div>
         </div>
 
         <!-- Bouton -->

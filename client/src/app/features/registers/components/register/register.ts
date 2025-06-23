@@ -5,11 +5,12 @@ import { HttpClient } from '@angular/common/http';
 import { UsersService } from '@/core/services/users.service';
 import { Router } from '@angular/router';
 import {CreateUserRequest, UserRole} from '@/core/models/user.models';
+import {LucideAngularModule} from "lucide-angular";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   templateUrl: './register.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -20,7 +21,6 @@ export class Register implements OnInit {
     lastName: new FormControl<string>('', Validators.required),
     birthdate: new FormControl<string>('', Validators.required),
     email: new FormControl<string>('', [Validators.required, Validators.email]),
-    phoneNumber: new FormControl<string>('', [Validators.required, phoneNumberValidator]),
     roles: new FormControl<string[]>([], [rolesValidator]),
     password: new FormControl<string>('', [Validators.required, passwordValidator]),
     avatar: new FormControl<string>('')
@@ -38,9 +38,30 @@ export class Register implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Type de fichier non supporté. Veuillez choisir une image JPEG, PNG, GIF ou WebP.');
+        event.target.value = '';
+        this.selectedFile = null;
+        this.myForm.get('avatar')?.setValue(null);
+        return;
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        alert('Le fichier est trop volumineux. La taille maximale est de 5MB.');
+        event.target.value = '';
+        this.selectedFile = null;
+        this.myForm.get('avatar')?.setValue(null);
+        return;
+      }
+
       this.selectedFile = file; // pour l'envoi du fichier
       this.myForm.get('avatar')?.setValue(file); // pour le FormControl
     } else {
+      this.selectedFile = null;
       this.myForm.get('avatar')?.setValue(null);
     }
     this.myForm.get('avatar')?.updateValueAndValidity();
@@ -74,17 +95,16 @@ export class Register implements OnInit {
       birthdate: this.myForm.value.birthdate || '',
       email: this.myForm.value.email || '',
       password: this.myForm.value.password || '',
-      roles: getRoles(),
-      avatar: this.myForm.value.avatar || undefined  // Will be replaced with minio url later on
+      roles: getRoles()
     } satisfies CreateUserRequest;
 
-    // Envoie la requête POST via createUser du user.service.ts
-    this.userService.createUser(data).subscribe({
+    // Envoie la requête POST via createUser du user.service.ts avec le fichier avatar
+    this.userService.createUser(data, this.selectedFile || undefined).subscribe({
       next: res => {
         alert('Utilisateur créé avec succès !');
         this.myForm.reset();
         this.selectedFile = null;
-        this.router.navigate(['/dashboard']);//SANS DOUTE A CHANGER
+        this.router.navigate(['/dashboard']);
       },
       error: err => {
         /* gestion des erreurs */
@@ -126,17 +146,6 @@ function passwordValidator(control: AbstractControl): ValidationErrors | null {
   return Object.keys(errors).length ? errors : null;
 }
 
-function phoneNumberValidator(control: AbstractControl): ValidationErrors | null {
-
-  const errors: any = {}
-  const value = control.value || '';
-
-  if (!/^\d{10}$/.test(value)) {
-    errors["phoneFormat"] = 'ok';
-  }
-
-  return Object.keys(errors).length ? errors : null;
-}
 
 function rolesValidator(control: AbstractControl): ValidationErrors | null {
   //const value = control.value || [];

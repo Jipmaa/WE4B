@@ -1,13 +1,13 @@
-import { Router, Request, Response } from 'express';
-import { query, param, body } from 'express-validator';
+import {Request, Response, Router} from 'express';
+import {body, param, query} from 'express-validator';
 import User from '../models/user';
-import { authMiddleware } from '../middleware/auth-middleware';
-import { adminMiddleware } from '../middleware/roles-middleware';
-import { validateRequest } from '../middleware/validate-request';
-import { AppError } from '../utils/app-error';
-import { asyncHandler } from '../utils/async-handler';
-import { uploadAvatar, handleFileUploadError } from '../middleware/file-upload-middleware';
-import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS, getPublicUrl } from '../services/minio-service';
+import {authMiddleware} from '../middleware/auth-middleware';
+import {adminMiddleware} from '../middleware/roles-middleware';
+import {validateRequest} from '../middleware/validate-request';
+import {AppError} from '../utils/app-error';
+import {asyncHandler} from '../utils/async-handler';
+import {handleFileUploadError, uploadAvatar} from '../middleware/file-upload-middleware';
+import {deleteFile, FILE_CONFIGS, generateFileName, getPublicUrl, uploadFile} from '../services/minio-service';
 
 const router = Router();
 
@@ -96,10 +96,6 @@ const createUserValidation = [
 		 .isLength({ max: 100 })
 		 .withMessage('Department must be less than 100 characters')
 		 .trim(),
-	body('avatar')
-		 .optional()
-		 .isURL()
-		 .withMessage('Avatar must be a valid URL'),
 	body('isActive')
 		 .optional()
 		 .isBoolean()
@@ -113,7 +109,7 @@ const createUserValidation = [
 // @route   POST /api/users
 // @desc    Create a new user
 // @access  Private (Admin only)
-router.post('/', adminMiddleware, createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+router.post('/', adminMiddleware, uploadAvatar, handleFileUploadError, createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	const {
 		email,
 		password,
@@ -122,7 +118,6 @@ router.post('/', adminMiddleware, createUserValidation, validateRequest, asyncHa
 		birthdate,
 		roles,
 		department,
-		avatar,
 		isActive,
 		isEmailVerified
 	} = req.body;
@@ -142,10 +137,19 @@ router.post('/', adminMiddleware, createUserValidation, validateRequest, asyncHa
 		birthdate,
 		roles: roles || ['student'], // Default to student role if not provided
 		department: department || undefined,
-		avatar: avatar || undefined,
 		isActive: isActive !== undefined ? isActive : true, // Default to active
 		isEmailVerified: isEmailVerified !== undefined ? isEmailVerified : false // Default to unverified
 	};
+
+	// Handle avatar upload if provided
+	if (req.file) {
+		// Generate unique filename and upload avatar
+		const fileName = generateFileName(req.file.originalname, `avatar-new-user`);
+		userData.avatar = await uploadFile(req.file, FILE_CONFIGS.avatar.bucket, fileName, {
+			'X-Amz-Meta-Upload-Type': 'avatar',
+			'X-Amz-Meta-User-Id': userData._id
+		});
+	}
 
 	const user = new User(userData);
 	await user.save();
