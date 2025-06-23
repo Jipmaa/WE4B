@@ -1,5 +1,6 @@
-import {Component, EventEmitter, HostBinding, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, OnInit, Output, inject} from '@angular/core';
 import {LucideAngularModule} from 'lucide-angular';
+import {IdGeneratorService} from '@/core/services/id-generator.service';
 
 type ButtonVariant =  // all text black by default
   | 'default' // filled primary
@@ -19,12 +20,11 @@ type ButtonSize = 'sm' | 'md' | 'lg';
 })
 export class ButtonComponent implements OnInit {
   @HostBinding('style.display') display = 'contents';
+  private readonly idGenerator = inject(IdGeneratorService);
 
   ngOnInit(): void {
-    // Generate unique ID if not provided
-    if (!this.id) {
-      this.id = `button-${Math.random().toString(36).substr(2, 9)}`;
-    }
+    // Generate unique ID using the ID generator service
+    this.id = this.idGenerator.generateId('button', this.id);
   }
 
   // Core button properties

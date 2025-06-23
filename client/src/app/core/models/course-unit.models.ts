@@ -1,14 +1,23 @@
 import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
 
+export interface CourseUnitActivitiesCategory {
+  _id: string;
+  name: string;
+  description: string;
+  activities: string[];
+}
+
 export interface CourseUnit {
   _id: string;
   slug: string;
   capacity: number;
   name: string;
   code: string;
+  img?: string;
+  groups?: string[];
+  activities: CourseUnitActivitiesCategory[];
   type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
-  img_path?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,14 +67,6 @@ export interface CreateUserRequest {
   birthdate?: Date;
 }
 
-export interface UpdateUserRequest {
-  firstName?: string;
-  lastName?: string;
-  department?: string;
-  birthdate?: Date;
-  avatar?: string;
-}
-
 export interface UpdateUserRolesRequest {
   roles: UserRole[];
 }
@@ -75,7 +76,7 @@ export interface CreateCourseUnitRequest {
   code: string;
   slug: string;
   capacity: number;
-  img_path?: string;
+  img?: string;
 }
 
 export interface UpdateCourseUnitRequest {
@@ -83,7 +84,7 @@ export interface UpdateCourseUnitRequest {
   code?: string;
   slug?: string;
   capacity?: number;
-  img_path?: string;
+  img?: string;
 }
 
 export interface CourseUnitsResponse {

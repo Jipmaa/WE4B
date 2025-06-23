@@ -1,5 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { getPublicUrl, FILE_CONFIGS } from '../services/minio-service';
+
+export type UserRole = 'student' | 'teacher' | 'admin';
 
 export interface IUser extends Document {
 	_id: mongoose.Types.ObjectId;
@@ -8,19 +11,21 @@ export interface IUser extends Document {
 	password: string;
 	firstName: string;
 	lastName: string;
-	avatar?: string;
-	roles: Array<'student' | 'teacher' | 'admin'>;
+	avatar?: string;  // MinIO object key
+	roles: Array<UserRole>;
 	department?: string;
 	isActive: boolean;
 	isEmailVerified: boolean;
 	lastLogin?: Date;
+	memberOfGroups: mongoose.Types.ObjectId[];
 	createdAt: Date;
 	updatedAt: Date;
 	comparePassword(candidatePassword: string): Promise<boolean>;
 	getFullName(): string;
-	hasRole(role: 'student' | 'teacher' | 'admin'): boolean;
+	hasRole(role: UserRole): boolean;
 	isAdmin(): boolean;
 	isTeacher(): boolean;
+	getAvatarUrl(): string | null;
 }
 
 const userSchema = new Schema<IUser>({
@@ -85,7 +90,14 @@ const userSchema = new Schema<IUser>({
 	lastLogin: {
 		type: Date,
 		default: null
-	}
+	},
+	memberOfGroups: {
+		type: [{
+			type: Schema.Types.ObjectId,
+			ref: 'CourseGroup'
+		}],
+		default: []
+	},
 }, {
 	timestamps: true,
 	toJSON: {
@@ -110,6 +122,7 @@ userSchema.index({ createdAt: -1 });
 userSchema.index({ roles: 1 });
 userSchema.index({ department: 1 });
 userSchema.index({ isActive: 1 });
+userSchema.index({ memberOfGroups: 1 });
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
@@ -137,11 +150,11 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
 
 // Instance method to get full name
 userSchema.methods.getFullName = function(): string {
-		return `${this.firstName} ${this.lastName}`;
+	return `${this.firstName} ${this.lastName}`;
 };
 
 // Instance method to check if user has a specific role
-userSchema.methods.hasRole = function(role: 'student' | 'teacher' | 'admin'): boolean {
+userSchema.methods.hasRole = function(role: UserRole): boolean {
 	return this.roles.includes(role);
 };
 
@@ -153,6 +166,17 @@ userSchema.methods.isAdmin = function(): boolean {
 // Instance method to check if user is teacher
 userSchema.methods.isTeacher = function(): boolean {
 	return this.roles.includes('teacher');
+};
+
+// Instance method to get avatar URL
+userSchema.methods.getAvatarUrl = function(): string | null {
+	if (!this.avatar) return null;
+	try {
+		return getPublicUrl(FILE_CONFIGS.avatar.bucket, this.avatar);
+	} catch (error) {
+		console.warn('Failed to generate avatar URL:', error);
+		return null;
+	}
 };
 
 // Static method to find user by email

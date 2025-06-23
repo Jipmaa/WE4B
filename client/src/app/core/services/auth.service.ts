@@ -237,6 +237,43 @@ export class AuthService {
       );
   }
 
+  updateAvatar(file: File): Observable<ApiResponse<{ user: User }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    return this.http.put<ApiResponse<{ user: User }>>(`${environment.apiUrl}/users/me/avatar`, formData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            this._user.set(response.data.user);
+            this.saveUserToStorage(response.data.user);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+  removeAvatar(): Observable<ApiResponse<{ user: User }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.delete<ApiResponse<{ user: User }>>(`${environment.apiUrl}/users/me/avatar`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            this._user.set(response.data.user);
+            this.saveUserToStorage(response.data.user);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
   // Role and Permission Methods
   hasRole(role: UserRole): boolean {
     return this.userRoles().includes(role);

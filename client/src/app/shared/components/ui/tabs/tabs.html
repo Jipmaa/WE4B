@@ -1,0 +1,13 @@
+<div class="tabs-container" [attr.data-tabs-id]="id">
+  <div
+    class="tab-list bg-muted p-1 text-muted-foreground rounded-md w-full grid gap-1"
+    [style.grid-template-columns]="gridTemplateColumns"
+    role="tablist"
+    [attr.aria-label]="ariaLabel || 'Tabs'"
+  >
+    <ng-content select="app-tab-item"></ng-content>
+  </div>
+  <div class="tab-content-container mt-2">
+    <ng-content select="app-tab-content"></ng-content>
+  </div>
+</div>

@@ -2,8 +2,8 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats, CreateUserRequest, CreateUserResponse } from '../models/user.models';
-import { UpdateUserRequest } from '@/core/models/course-unit.models';
+import {User, UserFilters, UserRole, UserSearchResult, UsersResponse, UserStats} from '../models/user.models';
+import {UpdateUserRequest} from '@/core/models/user.models';
 import { ApiResponse } from '../models/_shared.models';
 
 @Injectable({
@@ -282,6 +282,32 @@ export class UsersService {
 
     return this.http.get<ApiResponse<UsersResponse>>(`${this.baseUrl}/by-department/${department}`, { params })
       .pipe(
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+  removeUserAvatar(id: string): Observable<ApiResponse<{ user: User }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.delete<ApiResponse<{ user: User }>>(`${this.baseUrl}/${id}/avatar`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the user in the current list
+            const currentUsers = this._users();
+            const updatedUsers = currentUsers.map(user =>
+              user._id === id ? response.data.user : user
+            );
+            this._users.set(updatedUsers);
+
+            // Update selected user if it's the same user
+            if (this._selectedUser()?._id === id) {
+              this._selectedUser.set(response.data.user);
+            }
+          }
+        }),
         catchError(error => this.handleError(error)),
         tap(() => this._isLoading.set(false))
       );

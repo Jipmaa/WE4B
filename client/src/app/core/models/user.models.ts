@@ -11,12 +11,12 @@ export interface User {
   fullName: string;
   avatar?: string;
   roles: UserRole[];
-  password: string; 
   department?: string;
-  birthdate?: Date;
+  birthdate: Date;
   isActive: boolean;
   isEmailVerified: boolean;
   lastLogin?: Date;
+  memberOfGroups: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +56,14 @@ export interface UsersResponse {
 export interface UserSearchResult {
   users: User[];
   count: number;
+}
+
+export interface UpdateUserRequest {
+  firstName?: string;
+  lastName?: string;
+  department?: string;
+  birthdate?: Date;
+  avatar?: string;
 }
 
 export interface CreateUserRequest {
