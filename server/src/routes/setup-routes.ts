@@ -3,6 +3,8 @@ import { body, validationResult } from 'express-validator';
 import User from '../models/user';
 import { asyncHandler } from '../utils/async-handler';
 import {validateRequest} from "../middleware/validate-request";
+import { uploadAvatar, handleFileUploadError } from '../middleware/file-upload-middleware';
+import { uploadFile, generateFileName, getPublicUrl, FILE_CONFIGS } from '../services/minio-service';
 
 const router = Router();
 
@@ -82,6 +84,7 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 		input[type="password"],
 		input[type="date"],
 		input[type="url"],
+		input[type="file"],
 		select {
 			width: 100%;
 			padding: 12px;
@@ -230,7 +233,7 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 		</div>
 		` : ''}
 
-		<form method="POST" action="">
+		<form method="POST" action="" enctype="multipart/form-data">
 			<div class="form-row">
 				<div class="form-group">
 					<label for="firstName">First Name <span class="required">*</span></label>
@@ -266,9 +269,17 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 			</div>
 
 			<div class="form-group">
-				<label for="avatar">Avatar URL</label>
-				<input type="url" id="avatar" name="avatar" value="${formData.avatar || ''}" placeholder="https://example.com/avatar.jpg">
-				<div class="helper-text">Optional: URL to your profile picture</div>
+				<label for="avatarType">Avatar Option</label>
+				<select id="avatarType" name="avatarType" onchange="toggleAvatarInput()">
+					<option value="none" ${!formData.avatarType || formData.avatarType === 'none' ? 'selected' : ''}>No Avatar</option>
+					<option value="upload" ${formData.avatarType === 'upload' ? 'selected' : ''}>Upload File</option>
+				</select>
+			</div>
+
+			<div class="form-group" id="avatarFileGroup" style="display: ${formData.avatarType === 'upload' ? 'block' : 'none'}">
+				<label for="avatarFile">Avatar File</label>
+				<input type="file" id="avatarFile" name="avatar" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+				<div class="helper-text">Upload an image file (max 5MB). Supported formats: JPEG, PNG, GIF, WebP</div>
 			</div>
 
 			<div class="roles-group">
@@ -297,6 +308,20 @@ const generateSetupForm = (errors: string[] = [], successMessage: string = '', f
 				🚀 Create User Account
 			</button>
 		</form>
+
+		<script>
+			function toggleAvatarInput() {
+				const avatarType = document.getElementById('avatarType').value;
+				const fileGroup = document.getElementById('avatarFileGroup');
+				
+				fileGroup.style.display = avatarType === 'upload' ? 'block' : 'none';
+				
+				// Clear the file input when switching to none
+				if (avatarType !== 'upload') {
+					document.getElementById('avatarFile').value = '';
+				}
+			}
+		</script>
 	</div>
 </body>
 </html>
@@ -341,10 +366,14 @@ const createUserValidation = [
 		 .trim()
 		 .isLength({ max: 100 })
 		 .withMessage('Department must be less than 100 characters'),
-	body('avatar')
+	body('avatarUrl')
 		 .optional()
 		 .isURL()
 		 .withMessage('Avatar must be a valid URL'),
+	body('avatarType')
+		 .optional()
+		 .isIn(['none', 'upload'])
+		 .withMessage('Invalid avatar type'),
 	body('roles')
 		 .custom((value, { req }) => {
 			 // Handle both single value and array from form submission
@@ -381,7 +410,7 @@ router.get('/user', (req: Request, res: Response) => {
 // @route   POST /setup/user
 // @desc    Create a new user from form submission
 // @access  Public (no authentication required)
-router.post('/user', createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+router.post('/user', uploadAvatar, handleFileUploadError, createUserValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	// Custom validation handling for HTML form
 	const errors = validationResult(req);
 
@@ -398,13 +427,30 @@ router.post('/user', createUserValidation, validateRequest, asyncHandler(async (
 	}
 
 	try {
-		const { firstName, lastName, email, password, birthdate, department, avatar, roles } = req.body;
+		const { firstName, lastName, email, password, birthdate, department, avatarUrl, avatarType, roles } = req.body;
 
 		// Check if user already exists
 		const existingUser = await User.findOne({ email: email.toLowerCase() });
 		if (existingUser) {
 			const html = generateSetupForm(['Email address is already registered'], '', req.body);
 			return res.status(400).send(html);
+		}
+
+		// Handle avatar upload or URL
+		let avatarKey = undefined;
+		if (avatarType === 'upload' && req.file) {
+			// Generate a temporary user ID for the filename
+			const tempUserId = new Date().getTime().toString();
+			const fileName = generateFileName(req.file.originalname, `avatar-${tempUserId}`);
+			avatarKey = await uploadFile(
+				req.file,
+				FILE_CONFIGS.avatar.bucket,
+				fileName,
+				{
+					'X-Amz-Meta-Upload-Type': 'avatar',
+					'X-Amz-Meta-Created-Via': 'setup-route'
+				}
+			);
 		}
 
 		// Create new user
@@ -415,7 +461,7 @@ router.post('/user', createUserValidation, validateRequest, asyncHandler(async (
 			password,
 			birthdate: new Date(birthdate),
 			department: department || undefined,
-			avatar: avatar || undefined,
+			avatar: avatarKey,
 			roles,
 			isActive: true,
 			isEmailVerified: true, // Auto-verify for setup users

@@ -202,9 +202,8 @@ class Server {
 			console.log(`📖 Environment: ${process.env.NODE_ENV || 'development'}`);
 			console.log(`🔗 API URL: http://localhost:${this.port}`);
 			console.log('📚 MinIO dashboard: http://localhost:9001');
-			console.log('------------------------------------------------------------------');
 			console.log(`👤 Setup User: http://localhost:${this.port}/setup/user`);
-			console.log(`📊 User Stats: http://localhost:${this.port}/setup/user/stats`);
+			console.log('------------------------------------------------------------------');
 		});
 	}
 
