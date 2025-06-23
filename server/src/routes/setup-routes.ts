@@ -4,7 +4,7 @@ import User from '../models/user';
 import { asyncHandler } from '../utils/async-handler';
 import {validateRequest} from "../middleware/validate-request";
 import { uploadAvatar, handleFileUploadError } from '../middleware/file-upload-middleware';
-import { uploadFile, generateFileName, getPublicUrl, FILE_CONFIGS } from '../services/minio-service';
+import { uploadFile, generateFileName, FILE_CONFIGS } from '../services/minio-service';
 
 const router = Router();
 
@@ -366,10 +366,6 @@ const createUserValidation = [
 		 .trim()
 		 .isLength({ max: 100 })
 		 .withMessage('Department must be less than 100 characters'),
-	body('avatarUrl')
-		 .optional()
-		 .isURL()
-		 .withMessage('Avatar must be a valid URL'),
 	body('avatarType')
 		 .optional()
 		 .isIn(['none', 'upload'])
@@ -427,7 +423,7 @@ router.post('/user', uploadAvatar, handleFileUploadError, createUserValidation, 
 	}
 
 	try {
-		const { firstName, lastName, email, password, birthdate, department, avatarUrl, avatarType, roles } = req.body;
+		const { firstName, lastName, email, password, birthdate, department, avatarType, roles } = req.body;
 
 		// Check if user already exists
 		const existingUser = await User.findOne({ email: email.toLowerCase() });
