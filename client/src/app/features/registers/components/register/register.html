@@ -63,7 +63,7 @@
         <!-- Téléphone -->
         <div>
             <label for="inputPhone" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Téléphone (optionnel)</label>
-            <input type="tel" id="inputPhone" name="phone" placeholder="+33 6 12 34 56 78" formControlName="phone"
+            <input type="tel" id="inputPhone" name="phone" placeholder="** ** ** ** **" formControlName="phone"
                 class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
 
             <ng-container *ngIf="myForm.get('phone')?.dirty || myForm.get('phone')?.touched">
@@ -110,7 +110,7 @@
                 <input type="password" id="inputPassword" name="password" formControlName="password" required
                     placeholder="Mot de passe"
                     class="w-full pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
-                <lucide-icon name="eye" (click)="TogglePass($event.target)"
+                <lucide-icon [name]="iconName" (click)="TogglePass($event.target)"
                     class="absolute right-3 top-3 text-gray-400 cursor-pointer"></lucide-icon>
             </div>
             <ng-container *ngIf="myForm.get('password')?.dirty || myForm.get('password')?.touched">

@@ -16,6 +16,8 @@ import {LucideAngularModule} from "lucide-angular";
 })
 export class Register implements OnInit {
 
+  iconName: string = "eye-off";
+
   myForm = new FormGroup({
     firstName: new FormControl<string>('', Validators.required),
     lastName: new FormControl<string>('', Validators.required),
@@ -121,10 +123,10 @@ export class Register implements OnInit {
     if (field) {
       console.log("Champ de mot de passe trouvé :", field);
       if (field.type === "password") {
-        icone.name = "eye-outline";
+        this.iconName = "eye";
         field.type = "text";
       } else {
-        icone.name = "eye-off-outline";
+        this.iconName = "eye-off";
         field.type = "password";
       }
     }
