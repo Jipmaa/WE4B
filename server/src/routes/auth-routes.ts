@@ -51,6 +51,10 @@ const registerValidation = [
 		 .isLength({ max: 100 })
 		 .withMessage('Department must be less than 100 characters')
 		 .trim(),
+	body('phone')
+		 .optional()
+		 .isMobilePhone('any')
+		 .withMessage('Please provide a valid phone number'),
 	body('roles')
 		 .optional()
 		 .isArray()
@@ -87,7 +91,7 @@ const changePasswordValidation = [
 // @desc    Register a new user
 // @access  Public
 router.post('/register', registerValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { email, password, birthdate, firstName, lastName, department, roles } = req.body;
+	const { email, password, birthdate, firstName, lastName, department, roles, phone } = req.body;
 
 	// Check if user already exists
 	const existingUser = await User.findOne({ email });
@@ -104,6 +108,7 @@ router.post('/register', registerValidation, validateRequest, asyncHandler(async
 		firstName,
 		lastName,
 		department,
+		phone,
 		roles: roles || ['student'] // Default to student role if not provided
 	});
 
@@ -129,8 +134,10 @@ router.post('/register', registerValidation, validateRequest, asyncHandler(async
 				roles: user.roles,
 				department: user.department,
 				birthdate: user.birthdate,
+				phone: user.phone,
 				isActive: user.isActive,
 				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
 				createdAt: user.createdAt
 			},
 			token
@@ -186,8 +193,10 @@ router.post('/login', loginValidation, validateRequest, asyncHandler(async (req:
 				roles: user.roles,
 				department: user.department,
 				birthdate: user.birthdate,
+				phone: user.phone,
 				isActive: user.isActive,
 				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
 				lastLogin: user.lastLogin
 			},
 			token
@@ -218,8 +227,10 @@ router.get('/me', authMiddleware, asyncHandler(async (req: Request, res: Respons
 				roles: user.roles,
 				department: user.department,
 				birthdate: user.birthdate,
+				phone: user.phone,
 				isActive: user.isActive,
 				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
 				lastLogin: user.lastLogin,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt
@@ -251,13 +262,17 @@ router.put('/profile', authMiddleware, [
 		 .isLength({ max: 100 })
 		 .withMessage('Department must be less than 100 characters')
 		 .trim(),
+	body('phone')
+		 .optional()
+		 .isMobilePhone('any')
+		 .withMessage('Please provide a valid phone number'),
 	body('birthdate')
 		 .optional()
 		 .isISO8601()
 		 .toDate()
 		 .withMessage('Please provide a valid birthdate')
 ], validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { firstName, lastName, avatar, department, birthdate } = req.body;
+	const { firstName, lastName, avatar, department, birthdate, phone } = req.body;
 
 	const user = await User.findById(req.user?.userId);
 	if (!user) {
@@ -270,6 +285,7 @@ router.put('/profile', authMiddleware, [
 	if (avatar !== undefined) user.avatar = avatar;
 	if (department !== undefined) user.department = department;
 	if (birthdate !== undefined) user.birthdate = birthdate;
+	if (phone !== undefined) user.phone = phone;
 
 	await user.save();
 
@@ -287,8 +303,10 @@ router.put('/profile', authMiddleware, [
 				roles: user.roles,
 				department: user.department,
 				birthdate: user.birthdate,
+				phone: user.phone,
 				isActive: user.isActive,
 				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
 				updatedAt: user.updatedAt
 			}
 		}

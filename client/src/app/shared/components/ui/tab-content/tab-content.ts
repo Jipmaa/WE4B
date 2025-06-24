@@ -7,19 +7,21 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   templateUrl: './tab-content.html',
   styles: [`
+    @reference "../../../../../styles.css";
+
     .tab-content-panel {
-      @apply ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+      @apply ring-offset-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
       @apply mt-2;
     }
-    
+
     .tab-content-panel.hidden {
       @apply hidden;
     }
-    
+
     .tab-content-panel.active {
       @apply block;
     }
-    
+
     :host {
       @apply w-full;
     }
@@ -44,7 +46,7 @@ export class TabContentComponent {
   // Methods called by parent tabs component
   public setActive(active: boolean) {
     this.isActive = active;
-    
+
     // Update the tabindex for proper focus management
     const panel = this.elementRef.nativeElement.querySelector('.tab-content-panel');
     if (panel) {

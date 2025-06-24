@@ -42,7 +42,10 @@ export class UserProfilePopup implements OnInit, OnDestroy {
 
   profileForm = new FormGroup({
     firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-    lastName: new FormControl('', [Validators.required, Validators.minLength(2)])
+    lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+    department: new FormControl(''),
+    birthdate: new FormControl(''),
+    phone: new FormControl('')
   });
 
   passwordForm = new FormGroup({
@@ -56,9 +59,15 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     document.addEventListener('keydown', this.keydownListener);
 
     if (this.user()) {
+      const user = this.user()!;
+      const birthdate = user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '';
+      
       this.profileForm.patchValue({
-        firstName: this.user()?.firstName || '',
-        lastName: this.user()?.lastName || ''
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        department: user.department || '',
+        birthdate: birthdate,
+        phone: user.phone || ''
       });
     }
   }
@@ -182,7 +191,10 @@ export class UserProfilePopup implements OnInit, OnDestroy {
       const formValue = this.profileForm.value;
       const updateRequest: ProfileUpdateRequest = {
         firstName: formValue.firstName || undefined,
-        lastName: formValue.lastName || undefined
+        lastName: formValue.lastName || undefined,
+        department: formValue.department || undefined,
+        birthdate: formValue.birthdate || undefined,
+        phone: formValue.phone || undefined
       };
 
       this.authService.updateProfile(updateRequest).subscribe({
@@ -236,9 +248,15 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     this.uploadError = '';
 
     if (this.user()) {
+      const user = this.user()!;
+      const birthdate = user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '';
+      
       this.profileForm.patchValue({
-        firstName: this.user()?.firstName || '',
-        lastName: this.user()?.lastName || ''
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        department: user.department || '',
+        birthdate: birthdate,
+        phone: user.phone || ''
       });
     }
   }

@@ -11,16 +11,18 @@ import { TabContentComponent } from '../tab-content/tab-content';
   imports: [CommonModule],
   templateUrl: './tabs.html',
   styles: [`
+    @reference "../../../../../styles.css";
+
     .tabs-container {
       @apply w-full min-w-0;
     }
-    
+
     .tab-list {
       @apply min-w-0;
     }
 
     .tab-content-container {
-      @apply ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+      @apply ring-offset-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
     }
 
     :host {

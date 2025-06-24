@@ -118,7 +118,6 @@ const courseGroupSchema = new Schema<CourseGroup>({
 });
 
 // --- Indexes ---
-courseGroupSchema.index({ slug: 1 });
 courseGroupSchema.index({ courseUnit: 1 });
 courseGroupSchema.index({ "users.user": 1 });
 
