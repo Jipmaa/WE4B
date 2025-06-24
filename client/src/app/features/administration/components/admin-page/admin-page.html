@@ -30,155 +30,185 @@
                 </div>
             </div>
         </div>
-
     </div>
-    <div class="self-stretch relative flex flex-col justify-start items-start gap-3">
-        <div class="self-stretch p-[5px] bg-slate-100 rounded-md inline-flex justify-start items-start">
-            <div data-state="unselected" class="flex-1 px-3 py-1.5 rounded-sm flex justify-center items-center gap-2.5">
-                <app-button (click)="displayList('ue')"
-                    class="cursor-pointer flex-1 text-center justify-start text-Primary-dark text-sm font-medium leading-tight">
-                    Unités d’enseignement
-                </app-button>
-            </div>
 
-            <div data-state="unselected" class="flex-1 px-3 py-1.5 rounded-sm flex justify-center items-center gap-2.5">
-                <app-button (click)="displayList('users')"
-                    class="cursor-pointer flex-1 text-center justify-start text-Primary-dark text-sm font-medium  leading-tight">
-                    Utilisateurs</app-button>
-            </div>
-        </div>
+    <app-tabs id="onglet">
+        <app-tab-item value="ues">Unités d’enseignement</app-tab-item>
+        <app-tab-item value="users">Utilisateurs</app-tab-item>
 
-        <div *ngIf="showContent" class="self-stretch flex flex-col justify-start items-center">
-            <!-- Contenu pour les unités d'enseignement -->
-            <div *ngIf="showContent === 'ue'">
-                <div data-state="Default" data-type="default"
-                    class="self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                    <div class="w-48 h-12 px-4 flex justify-start items-center">
-                        <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">Nom</div>
-                    </div>
-                    <div class="w-72 h-12 px-4 flex justify-start items-center">
-                        <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">
-                            Description
-                        </div>
-                    </div>
-                    <div class="flex-1 h-12 px-4 flex justify-end items-center">
-                        <div class="text-right justify-start"></div>
+        <app-tab-content value="ues">
+            <div data-state="Default" data-type="default"
+                class="self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">Nom</div>
+                </div>
+                <div class="w-72 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">
+                        Description
                     </div>
                 </div>
-
-                <div data-state="Default" data-type="default" data-variant="Default"
-                    class="self-stretch border-b border-border flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">WE4B</div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours de
-                            développement web avec Angular</div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div data-state="Default" data-type="default" data-variant="Default"
-                    class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal flex flex-row leading-normal">
-                            <lucide-icon name="arrow-right" size="16" /> CM
-                        </div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">Salle A123, tous
-                            les
-                            jeudis de 8h00 à 10h00</div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div data-state="Default" data-type="default" data-variant="Default"
-                    class="self-stretch border-b border-border flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 1</div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div data-state="Default" data-type="default" data-variant="Default"
-                    class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 2</div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div data-state="Default" data-type="default" data-variant="Default"
-                    class="self-stretch border-b border-border flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">HM40</div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours d’ergonomie
-                        </div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div data-state="Default" data-type="default" data-variant="Default"
-                    class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> CM</div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div data-state="Default" data-type="last child" data-variant="Default"
-                    class="self-stretch flex flex-row justify-start items-start">
-                    <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD</div>
-                    </div>
-                    <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                        <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                    </div>
-                    <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-                </div>
-
-                <div class="self-stretch py-4 flex flex-row justify-center items-center">
-                    <div class="justify-start text-Primary-dark text-sm font-normal  leading-tight">Tous les cours ont
-                        été
-                        chargés</div>
+                <div class="flex-1 h-12 px-4 flex justify-end items-center">
+                    <div class="text-right justify-start"></div>
                 </div>
             </div>
 
-            <!-- Contenu pour les utilisateurs -->
-            <div *ngIf="showContent === 'users'">
-                <div data-state="Default" data-type="default"
-                    class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                    <div class="w-48 h-12 px-4 flex justify-start items-center">
-                        <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
-                            Nom</div>
-                    </div>
-                    <div class="w-72 h-12 px-4 flex justify-start items-center">
-                        <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
-                            Email</div>
-                    </div>
-                    <div class="flex-1 h-12 px-4 flex justify-start items-center">
-                        <div class="text-right justify-start text-muted-foreground text-sm font-medium leading-normal">
-                            Rôles</div>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch border-b border-border flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">WE4B</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours de
+                        développement web avec Angular</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal flex flex-row leading-normal">
+                        <lucide-icon name="arrow-right" size="16" /> CM
                     </div>
                 </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Salle A123, tous
+                        les
+                        jeudis de 8h00 à 10h00</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
 
-                <!--ngfor-->
-                <div class="self-stretch flex flex-col justify-start items-start">
-                    <app-admin-page-list *ngFor="let users of UsersArray" [users]="users"></app-admin-page-list>
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch border-b border-border flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 1</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 2</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch border-b border-border flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">HM40</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours d’ergonomie
+                    </div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+
+            <div data-state="Default" data-type="default" data-variant="Default"
+                class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> CM</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+
+            <div data-state="Default" data-type="last child" data-variant="Default"
+                class="self-stretch flex flex-row justify-start items-start">
+                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD</div>
+                </div>
+                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
+                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
+                </div>
+                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
+            </div>
+
+            <div class="self-stretch py-4 flex flex-row justify-center items-center">
+                <div class="justify-start text-Primary-dark text-sm font-normal  leading-tight">Tous les cours ont
+                    été
+                    chargés</div>
+            </div>
+        </app-tab-content>
+
+        <!--<app-tab-content value="users">
+            <div data-state="Default" data-type="default"
+                class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
+                        Nom</div>
+                </div>
+                <div class="w-72 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
+                        Email</div>
+                </div>
+                <div class="flex-1 h-12 px-4 flex justify-start items-center">
+                    <div class="text-right justify-start text-muted-foreground text-sm font-medium leading-normal">
+                        Rôles</div>
                 </div>
             </div>
-        </div>
-    </div>
+
+            <div class="self-stretch flex flex-col justify-start items-start">
+                <app-admin-page-list *ngFor="let users of UsersArray" [users]="users"></app-admin-page-list>
+            </div>
+        </app-tab-content>-->
+
+        <app-tab-content value="users">
+            <table class="w-full">
+                <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
+                    <tr class="">
+                        <th class=" justify-start text-muted-foreground text-sm font-semibold leading-tight">Nom
+                        </th>
+                        <th class=" justify-start text-muted-foreground text-sm font-semibold leading-tight">Email
+                        </th>
+                        <th class=" justify-start text-muted-foreground text-sm font-semibold leading-tight">Rôles
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of UsersArray; let i = index" [style.background-color]="i % 2 !== 0 ? 'rgba(14, 165, 233, 0.05)' : ''"> 
+                        <td
+                            class="w-1/4 p-4 text-left justify-start text-foreground text-sm font-normal leading-normal">
+                            {{ user?.fullName }}</td>
+                        <td
+                            class="w-2/4 p-4 text-left justify-start text-foreground text-sm font-normal leading-normal">
+                            {{ user?.email }}</td>
+                        <td
+                            class="w-1/4 p-4 text-left justify-start text-foreground text-sm font-normal leading-normal">
+                            {{ user?.roles }}</td>
+                    </tr>
+            </table>
+
+            <!--<div data-state="Default" data-type="default"
+                class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
+                <div class="w-48 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
+                        Nom</div>
+                </div>
+                <div class="w-72 h-12 px-4 flex justify-start items-center">
+                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
+                        Email</div>
+                </div>
+                <div class="flex-1 h-12 px-4 flex justify-start items-center">
+                    <div class="text-right justify-start text-muted-foreground text-sm font-medium leading-normal">
+                        Rôles</div>
+                </div>
+            </div>
+
+            <div class="self-stretch flex flex-col justify-start items-start">
+                <app-admin-page-list *ngFor="let users of UsersArray" [users]="users"></app-admin-page-list>
+            </div>-->
+        </app-tab-content>
+    </app-tabs>
 </div>

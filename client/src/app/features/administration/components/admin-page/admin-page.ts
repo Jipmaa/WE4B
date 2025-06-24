@@ -4,11 +4,14 @@ import { CommonModule } from '@angular/common';
 import { User } from '@/core/models/user.models';
 import { AdminPageList } from './admin-page-list/admin-page-list';
 import { UsersService } from '@/core/services/users.service';
+import { TabsComponent } from '@/shared/components/ui/tabs';
+import { TabItemComponent } from "../../../../shared/components/ui/tab-item/tab-item";
+import { TabContentComponent } from "../../../../shared/components/ui/tab-content/tab-content";
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, AdminPageList],
+  imports: [CommonModule, LucideAngularModule, AdminPageList, TabsComponent, TabItemComponent, TabContentComponent],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
