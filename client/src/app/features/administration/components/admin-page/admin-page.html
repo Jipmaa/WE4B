@@ -1,5 +1,6 @@
 <div
     class="self-stretch h-[733px] p-6 bg-white rounded-tl-[32px] rounded-tr-[32px] outline outline-offset-[-1px] outline-gray-200 flex-col items-center gap-6 overflow-hidden">
+    <!--Titre + recherche + boutons d'ajout-->
     <div class="self-stretch inline-flex justify-between items-center">
         <div class="flex justify-start items-center gap-3 p-4">
             <div class="justify-start text-black text-2xl font-semibold leading-normal">Administration</div>
@@ -34,6 +35,7 @@
         <app-tab-item value="ues">Unités d’enseignement</app-tab-item>
         <app-tab-item value="users">Utilisateurs</app-tab-item>
 
+        <!--Contenu affiché si l'onglet Unités d'enseignement est cliqué-->
         <app-tab-content value="ues">
             <table class="w-full rounded overflow-clip">
                 <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
@@ -41,9 +43,22 @@
                         <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
                         <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Description</th>
                         <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
+                        <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
                     </tr>
                 </thead>
                 <tbody>
+                    <tr *ngFor="let course of CoursesArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.code }}</td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.name }}</td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
+                    </tr>
+
+                    <tr class="text-center">
+                      <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les utilisateurs ont été chargés</td>
+                    </tr>
+                </tbody>
+                <!--<tbody>
 
                     <tr class="border-b border-border">
                         <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">WE4B</td>
@@ -80,32 +95,11 @@
                     <tr class="text-center">
                         <td colspan="3" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
                     </tr>
-                </tbody>
+                </tbody>-->
             </table>
         </app-tab-content>
 
-        <!--<app-tab-content value="users">
-            <div data-state="Default" data-type="default"
-                class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                <div class="h-12 px-4 flex justify-start items-center">
-                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
-                        Nom</div>
-                </div>
-                <div class="h-12 px-4 flex justify-start items-center">
-                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
-                        Email</div>
-                </div>
-                <div class="flex-1 h-12 px-4 flex justify-start items-center">
-                    <div class="text-right justify-start text-muted-foreground text-sm font-medium leading-normal">
-                        Rôles</div>
-                </div>
-            </div>
-
-            <div class="self-stretch flex flex-col justify-start items-start">
-                <app-admin-page-list *ngFor="let users of UsersArray" [users]="users"></app-admin-page-list>
-            </div>
-        </app-tab-content>-->
-
+        <!--Contenu affiché si l'onglet utilisateurs est cliqué-->
         <app-tab-content value="users">
             <table class="w-full rounded overflow-clip">
                 <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
@@ -129,26 +123,6 @@
                     </tr>
                 </tbody>
             </table>
-
-            <!--<div data-state="Default" data-type="default"
-                class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                <div class="h-12 px-4 flex justify-start items-center">
-                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
-                        Nom</div>
-                </div>
-                <div class="h-12 px-4 flex justify-start items-center">
-                    <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
-                        Email</div>
-                </div>
-                <div class="flex-1 h-12 px-4 flex justify-start items-center">
-                    <div class="text-right justify-start text-muted-foreground text-sm font-medium leading-normal">
-                        Rôles</div>
-                </div>
-            </div>
-
-            <div class="self-stretch flex flex-col justify-start items-start">
-                <app-admin-page-list *ngFor="let users of UsersArray" [users]="users"></app-admin-page-list>
-            </div>-->
         </app-tab-content>
     </app-tabs>
 </div>
