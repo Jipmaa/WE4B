@@ -6,11 +6,13 @@ import { UsersService } from '@/core/services/users.service';
 import { Router } from '@angular/router';
 import {CreateUserRequest, UserRole} from '@/core/models/user.models';
 import {LucideAngularModule} from "lucide-angular";
+import { ButtonComponent } from "../../../../shared/components/ui/button/button";
+import { InputComponent } from "../../../../shared/components/ui/input/input";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ButtonComponent, InputComponent],
   templateUrl: './register.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

@@ -10,9 +10,10 @@ import {
   CourseUnitsResponse,
   CourseUnitStats,
   CreateCourseUnitRequest,
+  CreateCourseUnitsResponse,
   UpdateCourseUnitRequest
 } from '../models/course-unit.models';
-import {ApiResponse, SortOrder} from '../models/_shared.models';
+import { ApiResponse, SortOrder } from '../models/_shared.models';
 
 
 @Injectable({
@@ -135,42 +136,50 @@ export class CourseUnitsService {
       );
   }
 
-  createCourseUnit(courseUnitData: CreateCourseUnitRequest): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {  
+  createCourseUnit(courseUnitData: CreateCourseUnitRequest, imgFile?: File): Observable<ApiResponse<CreateCourseUnitsResponse>> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this.http.post<ApiResponse<{ courseUnit: CourseUnit }>>(this.baseUrl, courseUnitData)
+    // Create FormData to handle both course data and file upload
+    const formData = new FormData();
+
+    // Add course data to FormData
+    formData.append('name', courseUnitData.name);
+    formData.append('slug', "course");
+    formData.append('code', courseUnitData.code);
+    formData.append('type', courseUnitData.type);
+    formData.append('capacity', courseUnitData.capacity.toString());
+
+    // Add img file if provided
+    if (imgFile) {
+      formData.append('image', imgFile);
+    }
+
+    return this.http.post<ApiResponse<CreateCourseUnitsResponse>>(this.baseUrl, formData)
       .pipe(
         tap(response => {
+          console.log('API Response:', response); // Ajoutez ceci pour voir la structure de la réponse
           if (response.success) {
             // Add the new course unit to the current list
             const currentUnits = this._courseUnits();
-            this._courseUnits.set([response.data.courseUnit, ...currentUnits]);
+            const updateCourseUnit = [response.data.course, ...currentUnits];
+            this._courseUnits.set(updateCourseUnit);
+
+            // Update pagination to reflect the new course count
+            const currentPagination = this._pagination();
+            if (currentPagination) {
+              const updatedPagination = {
+                ...currentPagination,
+                totalCourseUnits: currentPagination.totalCourseUnits + 1
+              };
+              this._pagination.set(updatedPagination);
+            }
           }
         }),
         catchError(error => this.handleError(error)),
         tap(() => this._isLoading.set(false))
       );
   }
-
-  //Creer une UE
-  createUe(formData: FormData): Observable<ApiResponse<{ courseUnits: CourseUnit }>> {
-      this._isLoading.set(true);
-      this._error.set(null);
-  
-      return this.http.post<ApiResponse<{ courseUnits: CourseUnit }>>(this.baseUrl, formData)
-        .pipe(
-          tap(response => {
-            if (response.success) {
-              // Ajoute la nouvelle ue à la liste des ues
-              const currentUsers = this._courseUnits();
-              this._courseUnits.set([...currentUsers, response.data.courseUnits]);
-            }
-          }),
-          catchError(error => this.handleError(error)),
-          tap(() => this._isLoading.set(false))
-        );
-    }
 
   updateCourseUnit(id: string, courseUnitData: UpdateCourseUnitRequest): Observable<ApiResponse<{ courseUnit: CourseUnit }>> {
     this._isLoading.set(true);

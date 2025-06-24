@@ -1,13 +1,6 @@
 import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
 
-export interface CourseUnitActivitiesCategory {
-  _id: string;
-  name: string;
-  description: string;
-  activities: string[];
-}
-
 export interface CourseUnit {
   _id: string;
   slug: string;
@@ -22,10 +15,17 @@ export interface CourseUnit {
   updatedAt: Date;
 }
 
+export interface CourseUnitActivitiesCategory {
+  _id: string;
+  name: string;
+  description: string;
+  activities: string[];
+}
+
 export interface CourseUnitFilters extends BaseFilters {
   minCapacity?: number;
   maxCapacity?: number;
-  sortBy?: 'createdAt' | 'updatedAt' | 'name' | 'code' | 'capacity';
+  sortBy?: 'createdAt' | 'updatedAt' | 'name' | 'code' | 'type' | 'capacity';
 }
 
 export interface CourseUnitStats {
@@ -43,6 +43,7 @@ export interface CourseUnitStats {
       name: string;
       code: string;
       capacity: number;
+      type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
     }>;
   }>;
   recentCourseUnits: CourseUnit[];
@@ -76,6 +77,7 @@ export interface CreateCourseUnitRequest {
   code: string;
   slug: string;
   capacity: number;
+  type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
   img?: string;
 }
 
@@ -84,6 +86,7 @@ export interface UpdateCourseUnitRequest {
   code?: string;
   slug?: string;
   capacity?: number;
+  type?: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
   img?: string;
 }
 
@@ -120,4 +123,8 @@ export interface CapacityRangeResponse {
   };
 }
 
-export type CourseUnitSortBy = 'createdAt' | 'updatedAt' | 'name' | 'code' | 'capacity';
+export interface CreateCourseUnitsResponse {
+  course: CourseUnit;
+}
+
+export type CourseUnitSortBy = 'createdAt' | 'updatedAt' | 'name' | 'code' | 'type' | 'capacity';

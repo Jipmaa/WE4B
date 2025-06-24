@@ -1,14 +1,18 @@
 <p>register works!</p>
 
-<div class="max-w-3xl bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col justify-evenly mt-[3em] p-[2vh] mx-auto px-4 py-8">
+<div
+    class="max-w-3xl bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col justify-evenly mt-[3em] p-[2vh] mx-auto px-4 py-8">
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <h1 class="text-2xl font-bold text-gray-800">Créer un utilisateur</h1>
 
         <!-- Prénom -->
         <div>
-            <label for="inputPrenom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Prénom</label>
-            <input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom" formControlName="firstName" required
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+            <label for="inputPrenom"
+                class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Prénom</label>
+            <!--<input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom" formControlName="firstName" required
+                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">-->
+            <app-input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom"
+                formControlName="firstName"></app-input>
 
             <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
                 <div *ngIf="myForm.get('firstName')?.errors?.['required']; else firstNameValid"
@@ -22,8 +26,8 @@
         <!-- Nom -->
         <div>
             <label for="inputNom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
-            <input type="text" id="inputNom" name="lastName" placeholder="Ton nom de famille" formControlName="lastName" required
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+            <app-input type="text" id="inputNom" name="lastName" placeholder="Ton nom de famille"
+                formControlName="lastName"></app-input>
 
             <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
                 <div *ngIf="myForm.get('lastName')?.errors?.['required']; else lastNameValid"
@@ -36,9 +40,9 @@
 
         <!-- Date de naissance -->
         <div>
-            <label for="birthDate" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Date de naissance</label>
-            <input type="date" id="birthDate" name="birthdate" formControlName="birthdate" required
-                class="w-full self-stretch pl-3 pr-4 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+            <label for="birthDate" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Date de
+                naissance</label>
+            <app-input type="date" id="birthDate" name="birthdate" formControlName="birthdate"></app-input>
 
             <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
                 <div *ngIf="myForm.get('birthdate')?.errors?.['required']" class="text-red-600 text-sm">❌ Date requise
@@ -50,8 +54,8 @@
         <!-- Email -->
         <div>
             <label for="inputEmail4" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Email</label>
-            <input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr" formControlName="email" required
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+            <app-input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr"
+                formControlName="email"></app-input>
 
             <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
                 <div *ngIf="myForm.get('email')?.errors?.['required']" class="text-red-600 text-sm">❌ Email requis</div>
@@ -62,12 +66,14 @@
 
         <!-- Téléphone -->
         <div>
-            <label for="inputPhone" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Téléphone (optionnel)</label>
-            <input type="tel" id="inputPhone" name="phone" placeholder="** ** ** ** **" formControlName="phone"
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+            <label for="inputPhone" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Téléphone
+                (optionnel)</label>
+            <app-input type="tel" id="inputPhone" name="phone" placeholder="** ** ** ** **"
+                formControlName="phone"></app-input>
 
             <ng-container *ngIf="myForm.get('phone')?.dirty || myForm.get('phone')?.touched">
-                <div *ngIf="myForm.get('phone')?.errors?.['pattern']" class="text-red-600 text-sm">❌ Format de téléphone invalide</div>
+                <div *ngIf="myForm.get('phone')?.errors?.['pattern']" class="text-red-600 text-sm">❌ Format de téléphone
+                    invalide</div>
                 <div *ngIf="!myForm.get('phone')?.invalid" class="text-green-600 text-sm">✅ Téléphone valide</div>
             </ng-container>
         </div>
@@ -78,38 +84,40 @@
             <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Rôles</label>
             <div class="space-y-2 mt-1">
                 <div>
-                    <input type="checkbox" value="student" name="roles" id="roleStudent" (change)="onRoleChange($event)"
-                        [checked]="myForm.value.roles?.includes('student')" class="mr-2">
+                    <!--<input type="checkbox" value="student" name="roles" id="roleStudent" (change)="onRoleChange($event)"
+                        [checked]="myForm.value.roles?.includes('student')" class="mr-2">-->
+                    <app-input type="checkbox" value="student" id="roleStudent" name="roles"
+                        (change)="onRoleChange($event)" [checked]="myForm.value.roles?.includes('student')"></app-input>
                     <label for="roleStudent">Student</label>
                 </div>
                 <div>
-                    <input type="checkbox" value="teacher" name="roles" id="roleTeacher" (change)="onRoleChange($event)"
-                        [checked]="myForm.value.roles?.includes('teacher')" class="mr-2">
+                    <app-input type="checkbox" value="teacher" id="roleTeacher" name="roles"
+                        (change)="onRoleChange($event)" [checked]="myForm.value.roles?.includes('teacher')"></app-input>
                     <label for="roleTeacher">Teacher</label>
                 </div>
                 <div>
-                    <input type="checkbox" value="admin" name="roles" id="roleAdmin" (change)="onRoleChange($event)"
-                        [checked]="myForm.value.roles?.includes('admin')" class="mr-2">
+                    <app-input type="checkbox" value="admin" id="roleAdmin" name="roles" (change)="onRoleChange($event)"
+                        [checked]="myForm.value.roles?.includes('admin')"></app-input>
                     <label for="roleAdmin">Admin</label>
                 </div>
                 <ng-container *ngIf="myForm.get('roles')?.touched">
-                <div *ngIf="myForm.get('roles')?.errors?.['rolesRequired']" class="text-danger small">
-                    ❌ Au moins un rôle doit être sélectionné
-                </div>
-                <div *ngIf="myForm.get('roles')?.errors?.['rolesInvalid']" class="text-danger small">
-                    ❌ Combinaison de rôles non autorisée
-                </div>
-            </ng-container>
+                    <div *ngIf="myForm.get('roles')?.errors?.['rolesRequired']" class="text-danger small">
+                        ❌ Au moins un rôle doit être sélectionné
+                    </div>
+                    <div *ngIf="myForm.get('roles')?.errors?.['rolesInvalid']" class="text-danger small">
+                        ❌ Combinaison de rôles non autorisée
+                    </div>
+                </ng-container>
             </div>
         </div>
 
         <!-- Mot de passe -->
         <div>
-            <label for="inputPassword" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Mot de passe</label>
+            <label for="inputPassword" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Mot de
+                passe</label>
             <div class="relative">
-                <input type="password" id="inputPassword" name="password" formControlName="password" required
-                    placeholder="Mot de passe"
-                    class="w-full pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+                <app-input type="password" id="inputPassword" name="password" placeholder="Mot de passe"
+                    formControlName="password"></app-input>
                 <lucide-icon [name]="iconName" (click)="TogglePass($event.target)"
                     class="absolute right-3 top-3 text-gray-400 cursor-pointer"></lucide-icon>
             </div>
@@ -150,21 +158,25 @@
         <!-- Avatar -->
         <div>
             <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Photo de profil</label>
-            <input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="cursor-pointer block w-full text-sm text-gray-500
+            <!--<input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="cursor-pointer block w-full text-sm text-gray-500
              file:mr-4 file:py-2 file:px-4
              file:rounded-full file:border-0
              file:text-sm file:font-semibold
              file:bg-blue-50 file:text-blue-700
-             hover:file:bg-blue-100" (change)="onFileSelected($event)">
+             hover:file:bg-blue-100" (change)="onFileSelected($event)">-->
+
+            <app-input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="cursor-pointer block w-full text-sm text-gray-500
+             file:mr-4 file:py-2 file:px-4
+             file:rounded-full file:border-0
+             file:text-sm file:font-semibold
+             file:bg-blue-50 file:text-blue-700
+             hover:file:bg-blue-100" (change)="onFileSelected($event)"></app-input>
             <div class="text-sm text-gray-500 mt-1">Formats acceptés: JPEG, PNG, GIF, WebP (max 5MB)</div>
         </div>
 
         <!-- Bouton -->
         <div>
-            <button type="submit"
-                class="cursor-pointer w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">
-                Enregistrer
-            </button>
+            <app-button type="submit" [fullWidth]="true">Enregistrer</app-button>
         </div>
     </form>
 </div>

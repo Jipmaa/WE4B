@@ -5,7 +5,7 @@ import { IdGeneratorService } from '@/core/services/id-generator.service';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 export type InputVariant = 'default' | 'filled' | 'flushed';
-export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'date';
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'date' | 'checkbox' | 'file';
 
 @Component({
   selector: 'app-input',

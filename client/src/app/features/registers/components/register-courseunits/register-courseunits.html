@@ -8,9 +8,8 @@
         <!-- Name -->
         <div class="col-12">
             <label for="inputName" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Nom</label>
-            <input type="text" class="form-control" id="inputName" name="name" placeholder="ex: Technologies web"
-                formControlName="name"
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+            <app-input type="text" class="form-control" id="inputName" name="name" placeholder="ex: Technologies web"
+                formControlName="name"></app-input>
             <ng-container *ngIf="myForm.get('name')?.dirty || myForm.get('name')?.touched">
                 <div *ngIf="myForm.get('name')?.errors?.['required']; else nameValid">
                     ❌ Nom d'ue requis
@@ -24,9 +23,8 @@
         <!-- Code -->
         <div class="col-12">
             <label for="inputCode" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Code</label>
-            <input type="text" class="form-control" id="inputCode" name="nom" placeholder="ex: WE4A"
-                formControlName="code"
-                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+                <app-input type="text" class="form-control" id="inputCode" name="nom" placeholder="ex: WE4A"
+                formControlName="code" [required]="true"></app-input>
             <ng-container *ngIf="myForm.get('code')?.dirty || myForm.get('code')?.touched">
                 <div *ngIf="myForm.get('code')?.errors?.['required']; else codeValid">
                     ❌ Code requis
@@ -79,29 +77,18 @@
         <div class="mb-3">
             <label class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Choisir une image</label>
             <div class="input-group mb-3">
-                <input type="file" id="inputGroupFile02" name="img_path" class="cursor-pointer block w-full text-sm text-gray-500
+                <input type="file" id="inputGroupFile02" name="image" class="cursor-pointer block w-full text-sm text-gray-500
              file:mr-4 file:py-2 file:px-4
              file:rounded-full file:border-0
              file:text-sm file:font-semibold
              file:bg-blue-50 file:text-blue-700
              hover:file:bg-blue-100" (change)="onFileSelected($event)" (click)="onFileClick()">
             </div>
-            <ng-container *ngIf="myForm.get('img_path')?.dirty || myForm.get('img_path')?.touched">
-                <div *ngIf="myForm.get('img_path')?.errors?.['required']" class="text-danger small">
-                    ❌ Image requise
-                </div>
-                <div *ngIf="!myForm.get('img_path')?.invalid" class="text-success small">
-                    ✅ Image valide
-                </div>
-            </ng-container>
         </div>
 
+        <!-- Bouton -->
         <div>
-            <button type="submit"
-                class="cursor-pointer w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700">
-                Enregistrer
-            </button>
+            <app-button type="submit" [fullWidth]="true">Enregistrer</app-button>
         </div>
-
     </form>
 </div>
