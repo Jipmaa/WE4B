@@ -10,6 +10,7 @@ export interface CourseUnit {
   img?: string;
   groups?: string[];
   activities: CourseUnitActivitiesCategory[];
+  userRole?: 'student' | 'teacher'; // User's role in this specific course
   type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
   createdAt: Date;
   updatedAt: Date;

@@ -20,7 +20,7 @@ export const routes: Routes = [
   },
   {
     path: 'courses',
-    canActivate: [adminGuard],
+    canActivate: [authGuard],
     loadChildren: () => import('./features/course/course.routes').then(m => m.courseRoutes)
   },
 

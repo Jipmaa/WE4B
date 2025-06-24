@@ -1,0 +1,65 @@
+@if (isOpen()) {
+  <!-- Backdrop overlay for mobile -->
+  <div
+    class="md:hidden fixed inset-0 bg-black/50 z-40"
+    (click)="toggleSidebar()"
+  ></div>
+}
+
+<div
+  [class]="isOpen()
+    ? 'w-64 p-6 bg-white rounded-t-4xl outline outline-offset-[-1px] outline-gray-200 flex flex-col gap-4 overflow-hidden transition-all duration-300 h-full md:relative md:z-auto ' +
+      (isLeftDirection() ? 'md:inline-flex max-md:fixed max-md:left-0 max-md:top-0 max-md:bottom-0 max-md:z-50 max-md:rounded-t-none' : 'md:inline-flex max-md:fixed max-md:right-0 max-md:top-0 max-md:bottom-0 max-md:z-50 max-md:rounded-t-none')
+    : 'mt-5 p-0 bg-white rounded-sm outline outline-offset-[-1px] outline-gray-200 inline-flex flex-col transition-all duration-300 h-auto w-auto'"
+  role="complementary"
+  [attr.aria-label]="title + ' sidebar'"
+  [attr.aria-expanded]="isOpen()"
+>
+  <div [class]="isOpen() ? 'self-stretch inline-flex justify-start items-center gap-2' : 'inline-flex justify-center items-center'">
+    @if (isLeftDirection()) {
+      <app-icon-button
+        variant="ghost"
+        size="sm"
+        [icon]="leftIcon()"
+        [iconSize]="18"
+        (click)="toggleSidebar()"
+        [attr.aria-label]="isOpen() ? 'Close sidebar' : 'Open sidebar'"
+        role="button"
+        tabindex="0"
+        [class]="isOpen() ? '' : 'h-8 w-10'"
+      />
+    }
+    @if (isOpen()) {
+      <h2
+        class="flex-1 justify-start text-black text-base font-semibold"
+        id="sidebar-title"
+        role="heading"
+        aria-level="2"
+      >
+        {{ title }}
+      </h2>
+    }
+    @if (isRightDirection()) {
+      <app-icon-button
+        variant="ghost"
+        size="sm"
+        [icon]="rightIcon()"
+        [iconSize]="18"
+        (click)="toggleSidebar()"
+        [attr.aria-label]="isOpen() ? 'Close sidebar' : 'Open sidebar'"
+        role="button"
+        tabindex="0"
+        [class]="isOpen() ? '' : 'h-8 w-10'"
+      />
+    }
+  </div>
+  @if (isOpen()) {
+    <div
+      class="flex-1 w-full animate-fade-in"
+      role="region"
+      [attr.aria-labelledby]="'sidebar-title'"
+    >
+      <ng-content></ng-content>
+    </div>
+  }
+</div>

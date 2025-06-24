@@ -25,18 +25,22 @@ export class CourseUnitsService {
 
   // State management with signals
   private readonly _courseUnits = signal<CourseUnit[]>([]);
+  private readonly _userCourseUnits = signal<CourseUnit[]>([]);
   private readonly _selectedCourseUnit = signal<CourseUnit | null>(null);
   private readonly _courseUnitStats = signal<CourseUnitStats | null>(null);
   private readonly _isLoading = signal<boolean>(false);
+  private readonly _isLoadingUserCourseUnits = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
   private readonly _currentFilters = signal<CourseUnitFilters>({});
   private readonly _pagination = signal<CourseUnitsResponse['pagination'] | null>(null);
 
   // Public readonly signals
   readonly courseUnits = this._courseUnits.asReadonly();
+  readonly userCourseUnits = this._userCourseUnits.asReadonly();
   readonly selectedCourseUnit = this._selectedCourseUnit.asReadonly();
   readonly courseUnitStats = this._courseUnitStats.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
+  readonly isLoadingUserCourseUnits = this._isLoadingUserCourseUnits.asReadonly();
   readonly error = this._error.asReadonly();
   readonly currentFilters = this._currentFilters.asReadonly();
   readonly pagination = this._pagination.asReadonly();
@@ -44,6 +48,7 @@ export class CourseUnitsService {
   // Computed signals
   readonly totalCourseUnits = computed(() => this._pagination()?.totalCourseUnits || 0);
   readonly hasCourseUnits = computed(() => this._courseUnits().length > 0);
+  readonly hasUserCourseUnits = computed(() => this._userCourseUnits().length > 0);
   readonly totalCapacity = computed(() => this._courseUnits().reduce((sum, unit) => sum + unit.capacity, 0));
   readonly averageCapacity = computed(() => {
     const units = this._courseUnits();
@@ -118,6 +123,22 @@ export class CourseUnitsService {
         }),
         catchError(error => this.handleError(error)),
         tap(() => this._isLoading.set(false))
+      );
+  }
+
+  getUserCourseUnits(): Observable<ApiResponse<{ courseUnits: CourseUnit[] }>> {
+    this._isLoadingUserCourseUnits.set(true);
+    this._error.set(null);
+
+    return this.http.get<ApiResponse<{ courseUnits: CourseUnit[] }>>(`${environment.apiUrl}/users/me/course-units`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            this._userCourseUnits.set(response.data.courseUnits);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoadingUserCourseUnits.set(false))
       );
   }
 
@@ -367,6 +388,24 @@ export class CourseUnitsService {
   clearCourseUnits(): void {
     this._courseUnits.set([]);
     this._pagination.set(null);
+  }
+
+  clearUserCourseUnits(): void {
+    this._userCourseUnits.set([]);
+  }
+
+  refreshUserCourseUnits(): void {
+    this.getUserCourseUnits().subscribe();
+  }
+
+  hasAccessToCourseUnit(courseUnitSlug: string): boolean {
+    const userCourseUnits = this._userCourseUnits();
+    return userCourseUnits.some(unit => unit.slug === courseUnitSlug);
+  }
+
+  getUserCourseUnitBySlug(slug: string): CourseUnit | null {
+    const userCourseUnits = this._userCourseUnits();
+    return userCourseUnits.find(unit => unit.slug === slug) || null;
   }
 
   // Helper methods

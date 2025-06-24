@@ -1,10 +1,17 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SidebarLayout } from '@/shared/components/layout/sidebar-layout/sidebar-layout';
 import { TabsExampleComponent } from "../../../../shared/components/ui/tabs/tabs-example";
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [TabsExampleComponent],
+  imports: [
+    CommonModule,
+    SidebarLayout,
+    TabsExampleComponent
+  ],
   templateUrl: './dashboard-page.html',
+  styleUrl: './dashboard-page.css'
 })
 export class DashboardPage {
 

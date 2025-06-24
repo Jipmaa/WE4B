@@ -1,3 +1,5 @@
+import { Component } from '@angular/core';
+import {SidebarLayout} from "@/shared/components/layout/sidebar-layout/sidebar-layout";
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
@@ -12,7 +14,7 @@ import { CourseUnitsService } from '@/core/services/course-units.service';
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

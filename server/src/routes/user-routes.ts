@@ -1,13 +1,14 @@
-import {Request, Response, Router} from 'express';
-import {body, param, query} from 'express-validator';
+import { Router, Request, Response } from 'express';
+import { query, param, body } from 'express-validator';
 import User from '../models/user';
-import {authMiddleware} from '../middleware/auth-middleware';
-import {adminMiddleware} from '../middleware/roles-middleware';
-import {validateRequest} from '../middleware/validate-request';
-import {AppError} from '../utils/app-error';
-import {asyncHandler} from '../utils/async-handler';
-import {handleFileUploadError, uploadAvatar} from '../middleware/file-upload-middleware';
-import {deleteFile, FILE_CONFIGS, generateFileName, getPublicUrl, uploadFile} from '../services/minio-service';
+import CourseGroup from '../models/course-group';
+import { authMiddleware } from '../middleware/auth-middleware';
+import { adminMiddleware } from '../middleware/roles-middleware';
+import { validateRequest } from '../middleware/validate-request';
+import { AppError } from '../utils/app-error';
+import { asyncHandler } from '../utils/async-handler';
+import { uploadAvatar, handleFileUploadError } from '../middleware/file-upload-middleware';
+import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS, getPublicUrl } from '../services/minio-service';
 
 const router = Router();
 
@@ -697,6 +698,47 @@ router.get('/me', asyncHandler(async (req: Request, res: Response) => {
 		success: true,
 		data: {
 			user: userWithAvatar
+		}
+	});
+}));
+
+// @route   GET /api/users/me/course-units
+// @desc    Get current user's course units based on their groups
+// @access  Private
+router.get('/me/course-units', asyncHandler(async (req: Request, res: Response) => {
+	const user = await User.findById(req.user?.userId).select('_id');
+
+	if (!user) {
+		throw new AppError('User not found', 404);
+	}
+
+	// Find all course groups where the user is explicitly assigned with a role
+	const courseGroups = await CourseGroup.find({
+		'users.user': user._id
+	}).select('courseUnit users').populate('courseUnit', 'slug name code img');
+
+	// Extract unique course units and include user's role in each course
+	const courseUnitsMap = new Map();
+
+	courseGroups.forEach(group => {
+		const userInGroup = group.users.find(u => u.user.toString() === user._id.toString());
+		if (userInGroup && group.courseUnit) {
+			const courseUnitId = group.courseUnit._id.toString();
+			if (!courseUnitsMap.has(courseUnitId)) {
+				courseUnitsMap.set(courseUnitId, {
+					...group.courseUnit.toObject(),
+					userRole: userInGroup.role
+				});
+			}
+		}
+	});
+
+	const courseUnits = Array.from(courseUnitsMap.values());
+
+	res.json({
+		success: true,
+		data: {
+			courseUnits
 		}
 	});
 }));

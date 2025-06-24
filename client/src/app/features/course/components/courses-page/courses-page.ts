@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import {CourseBox} from '@/features/course/components/courses-page/course-box/course-box';
+import {SidebarLayout} from '@/shared/components/layout/sidebar-layout/sidebar-layout';
+import {InputComponent} from '@/shared/components/ui/input/input';
+import {LucideAngularModule} from 'lucide-angular';
 import { CommonModule } from '@angular/common';
-import { CourseBox } from '@/features/course/components/courses-page/course-box/course-box';
 import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
-import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-courses-page',
-  imports: [CommonModule, CourseBox, LucideAngularModule],
+  imports: [CommonModule, CourseBox, SidebarLayout, InputComponent, LucideAngularModule],
   templateUrl: './courses-page.html',
 })
 export class CoursesPage implements OnInit {
@@ -26,5 +28,4 @@ export class CoursesPage implements OnInit {
   ngOnInit(): void {
 
   }
-
 }
