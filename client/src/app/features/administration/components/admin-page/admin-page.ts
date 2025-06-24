@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import {SidebarLayout} from "@/shared/components/layout/sidebar-layout/sidebar-layout";
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
