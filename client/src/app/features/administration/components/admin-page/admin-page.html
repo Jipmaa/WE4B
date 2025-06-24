@@ -1,13 +1,11 @@
-<p>admin-page works!</p>
-
 <div
-    class="self-stretch h-[733px] p-6 bg-white rounded-tl-[32px] rounded-tr-[32px] outline outline-1 outline-offset-[-1px] outline-gray-200 flex-col items-center gap-6 overflow-hidden">
+    class="self-stretch h-[733px] p-6 bg-white rounded-tl-[32px] rounded-tr-[32px] outline outline-offset-[-1px] outline-gray-200 flex-col items-center gap-6 overflow-hidden">
     <div class="self-stretch inline-flex justify-between items-center">
         <div class="flex justify-start items-center gap-3 p-4">
             <div class="justify-start text-black text-2xl font-semibold leading-normal">Administration</div>
             <div class="flex justify-center items-center gap-4">
                 <div data-property-1="placeholder" data-show-leading-icon="true"
-                    class="w-72 self-stretch px-3 py-2 rounded-lg outline outline-1 outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden">
+                    class="self-stretch px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden">
                     <lucide-icon name="search" size="16" />
                     <input placeholder="Chercher une UE ou un groupe..."
                         class="flex-1 opacity-60 justify-start text-black text-sm font-normal leading-tight" />
@@ -32,124 +30,68 @@
         </div>
     </div>
 
-    <app-tabs id="onglet">
+    <app-tabs id="tabs">
         <app-tab-item value="ues">Unités d’enseignement</app-tab-item>
         <app-tab-item value="users">Utilisateurs</app-tab-item>
 
         <app-tab-content value="ues">
-            <div data-state="Default" data-type="default"
-                class="self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                <div class="w-48 h-12 px-4 flex justify-start items-center">
-                    <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">Nom</div>
-                </div>
-                <div class="w-72 h-12 px-4 flex justify-start items-center">
-                    <div class="justify-start text-muted-foreground text-sm font-semibold  leading-tight">
-                        Description
-                    </div>
-                </div>
-                <div class="flex-1 h-12 px-4 flex justify-end items-center">
-                    <div class="text-right justify-start"></div>
-                </div>
-            </div>
+            <table class="w-full rounded overflow-clip">
+                <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
+                    <tr class="border-b border-border">
+                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
+                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Description</th>
+                        <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
+                    </tr>
+                </thead>
+                <tbody>
 
-            <div data-state="Default" data-type="default" data-variant="Default"
-                class="self-stretch border-b border-border flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">WE4B</div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours de
-                        développement web avec Angular</div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
+                    <tr class="border-b border-border">
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">WE4B</td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Cours de développement web avec Angular</td>
+                        <td class="p-4 text-right"></td>
+                    </tr>
 
-            <div data-state="Default" data-type="default" data-variant="Default"
-                class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal flex flex-row leading-normal">
-                        <lucide-icon name="arrow-right" size="16" /> CM
-                    </div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Salle A123, tous
-                        les
-                        jeudis de 8h00 à 10h00</div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
+                    <tr class="bg-sky-500/5 border-b border-border">
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
+                            <div class="flex items-center gap-1">
+                                <lucide-icon name="arrow-right" size="16" /> CM
+                            </div>
+                        </td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Salle A123, tous les jeudis de 8h00 à 10h00</td>
+                        <td class="p-4 text-right"></td>
+                    </tr>
 
-            <div data-state="Default" data-type="default" data-variant="Default"
-                class="self-stretch border-b border-border flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 1</div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
+                    <tr class="border-b border-border">
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
+                          <lucide-icon name="arrow-right" size="16" /> TD 1
+                        </td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
+                        <td class="p-4 text-right"></td>
+                    </tr>
 
-            <div data-state="Default" data-type="default" data-variant="Default"
-                class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD 2</div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
+                    <tr class="bg-sky-500/5 border-b border-border">
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
+                          <lucide-icon name="arrow-right" size="16" /> TD 2
+                        </td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
+                        <td class="p-4 text-right"></td>
+                    </tr>
 
-            <div data-state="Default" data-type="default" data-variant="Default"
-                class="self-stretch border-b border-border flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">HM40</div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">Cours d’ergonomie
-                    </div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
-
-            <div data-state="Default" data-type="default" data-variant="Default"
-                class="self-stretch bg-sky-500/5 border-b border-border flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> CM</div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
-
-            <div data-state="Default" data-type="last child" data-variant="Default"
-                class="self-stretch flex flex-row justify-start items-start">
-                <div class="w-48 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">--> TD</div>
-                </div>
-                <div class="w-72 p-4 flex justify-start items-center gap-2.5">
-                    <div class="justify-start text-foreground text-sm font-normal  leading-normal">...</div>
-                </div>
-                <div class="flex-1 p-4 flex justify-end items-center gap-2.5"></div>
-            </div>
-
-            <div class="self-stretch py-4 flex flex-row justify-center items-center">
-                <div class="justify-start text-Primary-dark text-sm font-normal  leading-tight">Tous les cours ont
-                    été
-                    chargés</div>
-            </div>
+                    <tr class="text-center">
+                        <td colspan="3" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
+                    </tr>
+                </tbody>
+            </table>
         </app-tab-content>
 
         <!--<app-tab-content value="users">
             <div data-state="Default" data-type="default"
                 class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                <div class="w-48 h-12 px-4 flex justify-start items-center">
+                <div class="h-12 px-4 flex justify-start items-center">
                     <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
                         Nom</div>
                 </div>
-                <div class="w-72 h-12 px-4 flex justify-start items-center">
+                <div class="h-12 px-4 flex justify-start items-center">
                     <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
                         Email</div>
                 </div>
@@ -165,38 +107,36 @@
         </app-tab-content>-->
 
         <app-tab-content value="users">
-            <table class="w-full">
+            <table class="w-full rounded overflow-clip">
                 <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
-                    <tr class="">
-                        <th class=" justify-start text-muted-foreground text-sm font-semibold leading-tight">Nom
-                        </th>
-                        <th class=" justify-start text-muted-foreground text-sm font-semibold leading-tight">Email
-                        </th>
-                        <th class=" justify-start text-muted-foreground text-sm font-semibold leading-tight">Rôles
-                        </th>
+                    <tr class="border-b border-border">
+                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
+                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Email</th>
+                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Téléphone</th>
+                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Rôles</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let user of UsersArray; let i = index" [style.background-color]="i % 2 !== 0 ? 'rgba(14, 165, 233, 0.05)' : ''"> 
-                        <td
-                            class="w-1/4 p-4 text-left justify-start text-foreground text-sm font-normal leading-normal">
-                            {{ user?.fullName }}</td>
-                        <td
-                            class="w-2/4 p-4 text-left justify-start text-foreground text-sm font-normal leading-normal">
-                            {{ user?.email }}</td>
-                        <td
-                            class="w-1/4 p-4 text-left justify-start text-foreground text-sm font-normal leading-normal">
-                            {{ user?.roles }}</td>
+                    <tr *ngFor="let user of UsersArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.fullName }}</td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.email }}</td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.phone || 'Non renseigné' }}</td>
+                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.roles }}</td>
                     </tr>
+
+                    <tr class="text-center">
+                      <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les utilisateurs ont été chargés</td>
+                    </tr>
+                </tbody>
             </table>
 
             <!--<div data-state="Default" data-type="default"
                 class="w-full self-stretch bg-sky-500/20 rounded-tl-lg rounded-tr-lg border-b border-border inline-flex justify-start items-start">
-                <div class="w-48 h-12 px-4 flex justify-start items-center">
+                <div class="h-12 px-4 flex justify-start items-center">
                     <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
                         Nom</div>
                 </div>
-                <div class="w-72 h-12 px-4 flex justify-start items-center">
+                <div class="h-12 px-4 flex justify-start items-center">
                     <div class="justify-start text-muted-foreground text-sm font-semibold leading-tight">
                         Email</div>
                 </div>

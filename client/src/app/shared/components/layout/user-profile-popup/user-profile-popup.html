@@ -87,6 +87,9 @@
                 {{ user()?.firstName }} {{ user()?.lastName }}
               </h3>
               <p class="text-sm text-gray-500">{{ user()?.email }}</p>
+              @if (user()?.phone) {
+                <p class="text-sm text-gray-500">{{ user()?.phone }}</p>
+              }
             </div>
           </div>
 

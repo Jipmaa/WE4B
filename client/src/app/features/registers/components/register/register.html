@@ -60,6 +60,18 @@
             </ng-container>
         </div>
 
+        <!-- Téléphone -->
+        <div>
+            <label for="inputPhone" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Téléphone (optionnel)</label>
+            <input type="tel" id="inputPhone" name="phone" placeholder="+33 6 12 34 56 78" formControlName="phone"
+                class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">
+
+            <ng-container *ngIf="myForm.get('phone')?.dirty || myForm.get('phone')?.touched">
+                <div *ngIf="myForm.get('phone')?.errors?.['pattern']" class="text-red-600 text-sm">❌ Format de téléphone invalide</div>
+                <div *ngIf="!myForm.get('phone')?.invalid" class="text-green-600 text-sm">✅ Téléphone valide</div>
+            </ng-container>
+        </div>
+
 
         <!-- Rôles -->
         <div>

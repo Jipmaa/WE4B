@@ -75,6 +75,7 @@ export interface CreateUserRequest {
   firstName: string;
   lastName: string;
   birthdate: Date | string;
+  phone?: string;
   roles?: UserRole[];
   department?: string;
   avatar?: string;

@@ -21,6 +21,7 @@ export class Register implements OnInit {
     lastName: new FormControl<string>('', Validators.required),
     birthdate: new FormControl<string>('', Validators.required),
     email: new FormControl<string>('', [Validators.required, Validators.email]),
+    phone: new FormControl<string>('', [Validators.pattern(/^\+?[1-9]\d{1,14}$/)]),
     roles: new FormControl<string[]>([], [rolesValidator]),
     password: new FormControl<string>('', [Validators.required, passwordValidator]),
     avatar: new FormControl<string>('')
@@ -94,6 +95,7 @@ export class Register implements OnInit {
       lastName: this.myForm.value.lastName || '',
       birthdate: this.myForm.value.birthdate || '',
       email: this.myForm.value.email || '',
+      phone: this.myForm.value.phone || undefined,
       password: this.myForm.value.password || '',
       roles: getRoles()
     } satisfies CreateUserRequest;
