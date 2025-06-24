@@ -8,6 +8,7 @@ export interface IUser extends Document {
 	_id: mongoose.Types.ObjectId;
 	birthdate: Date;
 	email: string;
+	phone: string | null;  // +XX XX XX XX XX
 	password: string;
 	firstName: string;
 	lastName: string;
@@ -16,6 +17,7 @@ export interface IUser extends Document {
 	department?: string;
 	isActive: boolean;
 	isEmailVerified: boolean;
+	isPhoneVerified: boolean;
 	lastLogin?: Date;
 	memberOfGroups: mongoose.Types.ObjectId[];
 	createdAt: Date;
@@ -40,6 +42,12 @@ const userSchema = new Schema<IUser>({
 		lowercase: true,
 		trim: true,
 		match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+	},
+	phone: {
+		type: String,
+		trim: true,
+		match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'],
+		default: null
 	},
 	password: {
 		type: String,
@@ -87,6 +95,10 @@ const userSchema = new Schema<IUser>({
 		type: Boolean,
 		default: false
 	},
+	isPhoneVerified: {
+		type: Boolean,
+		default: false
+	},
 	lastLogin: {
 		type: Date,
 		default: null
@@ -117,7 +129,6 @@ const userSchema = new Schema<IUser>({
 });
 
 // Indexes for better performance
-userSchema.index({ email: 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ roles: 1 });
 userSchema.index({ department: 1 });
@@ -195,7 +206,10 @@ userSchema.statics.getUserStats = async function() {
 					$sum: { $cond: [{ $eq: ['$isActive', true] }, 1, 0] }
 				},
 				verifiedUsers: {
-					$sum: { $cond: [{ $eq: ['$isEmailVerified', true] }, 1, 0] }
+					$sum: { $cond: [{$or: [
+						{ $eq: ['$isEmailVerified', true] },
+						{ $eq: ['$isPhoneVerified', true] }
+					]}, 1, 0] }
 				},
 				adminUsers: {
 					$sum: { $cond: [{ $in: ['admin', '$roles'] }, 1, 0] }

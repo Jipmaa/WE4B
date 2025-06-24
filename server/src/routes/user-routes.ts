@@ -77,7 +77,8 @@ router.get('/', adminMiddleware, getUsersValidation, validateRequest, asyncHandl
 			{ email: { $regex: search, $options: 'i' } },
 			{ firstName: { $regex: search, $options: 'i' } },
 			{ lastName: { $regex: search, $options: 'i' } },
-			{ department: { $regex: search, $options: 'i' } }
+			{ department: { $regex: search, $options: 'i' } },
+			{ phone: { $regex: search, $options: 'i' } }
 		];
 	}
 
@@ -147,10 +148,16 @@ router.get('/stats', adminMiddleware, asyncHandler(async (req: Request, res: Res
 					$sum: { $cond: [{ $eq: ['$isActive', false] }, 1, 0] }
 				},
 				verifiedUsers: {
-					$sum: { $cond: [{ $eq: ['$isEmailVerified', true] }, 1, 0] }
+					$sum: { $cond: [{$or: [
+						{ $eq: ['$isEmailVerified', true] },
+						{ $eq: ['$isPhoneVerified', true] }
+					]}, 1, 0] }
 				},
 				unverifiedUsers: {
-					$sum: { $cond: [{ $eq: ['$isEmailVerified', false] }, 1, 0] }
+					$sum: { $cond: [{$and: [
+						{ $eq: ['$isEmailVerified', false] },
+						{ $eq: ['$isPhoneVerified', false] }
+					]}, 1, 0] }
 				}
 			}
 		}
@@ -328,12 +335,16 @@ router.put('/:id/profile', adminMiddleware, [
 		 .isISO8601()
 		 .toDate()
 		 .withMessage('Please provide a valid birthdate'),
+	body('phone')
+		 .optional()
+		 .isMobilePhone('any')
+		 .withMessage('Please provide a valid phone number'),
 	body('avatar')
 		 .optional()
 		 .isURL()
 		 .withMessage('Avatar must be a valid URL')
 ], validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { firstName, lastName, department, birthdate, avatar } = req.body;
+	const { firstName, lastName, department, birthdate, avatar, phone } = req.body;
 
 	const user = await User.findById(req.params.id);
 
@@ -347,6 +358,7 @@ router.put('/:id/profile', adminMiddleware, [
 	if (department !== undefined) user.department = department;
 	if (birthdate !== undefined) user.birthdate = birthdate;
 	if (avatar !== undefined) user.avatar = avatar;
+	if (phone !== undefined) user.phone = phone;
 
 	await user.save();
 
@@ -363,9 +375,11 @@ router.put('/:id/profile', adminMiddleware, [
 				department: user.department,
 				birthdate: user.birthdate,
 				avatar: user.avatar,
+				phone: user.phone,
 				roles: user.roles,
 				isActive: user.isActive,
 				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
 				updatedAt: user.updatedAt
 			}
 		}
@@ -420,7 +434,8 @@ router.get('/search/:term', [
 			{ email: { $regex: searchTerm, $options: 'i' } },
 			{ firstName: { $regex: searchTerm, $options: 'i' } },
 			{ lastName: { $regex: searchTerm, $options: 'i' } },
-			{ department: { $regex: searchTerm, $options: 'i' } }
+			{ department: { $regex: searchTerm, $options: 'i' } },
+			{ phone: { $regex: searchTerm, $options: 'i' } }
 		],
 		isActive: true
 	})

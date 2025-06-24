@@ -20,6 +20,7 @@ export interface RegisterRequest {
   lastName: string;
   birthdate: string; // ISO string
   department?: string;
+  phone?: string;
   roles?: UserRole[];
 }
 
@@ -34,6 +35,7 @@ export interface ProfileUpdateRequest {
   avatar?: string;
   department?: string;
   birthdate?: string;
+  phone?: string;
 }
 
 export interface ChangePasswordRequest {

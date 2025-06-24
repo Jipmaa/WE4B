@@ -105,8 +105,6 @@ const courseUnitSchema = new Schema<CourseUnit>({
 	}
 });
 
-courseUnitSchema.index({ slug: 1 });
-courseUnitSchema.index({ code: 1 });
 courseUnitSchema.index({ groups: 1 });
 
 const CourseUnit = mongoose.model<CourseUnit>('CourseUnit', courseUnitSchema);

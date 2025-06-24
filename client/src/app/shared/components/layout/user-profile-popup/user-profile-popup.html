@@ -178,6 +178,38 @@
               </app-input>
             </div>
 
+            <!-- Department -->
+            <div class="mb-4">
+              <app-input
+                label="Département"
+                id="department"
+                type="text"
+                formControlName="department"
+                placeholder="Votre département (optionnel)">
+              </app-input>
+            </div>
+
+            <!-- Birthdate -->
+            <div class="mb-4">
+              <app-input
+                label="Date de naissance"
+                id="birthdate"
+                type="date"
+                formControlName="birthdate">
+              </app-input>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-4">
+              <app-input
+                label="Téléphone"
+                id="phone"
+                type="tel"
+                formControlName="phone"
+                placeholder="Votre numéro de téléphone (optionnel)">
+              </app-input>
+            </div>
+
             <!-- Error Messages -->
             @if (uploadError) {
               <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">

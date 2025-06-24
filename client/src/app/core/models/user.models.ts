@@ -12,8 +12,10 @@ export interface User {
   roles: UserRole[];
   department?: string;
   birthdate: Date;
+  phone?: string;
   isActive: boolean;
   isEmailVerified: boolean;
+  isPhoneVerified: boolean;
   lastLogin?: Date;
   memberOfGroups: string[];
   createdAt: Date;
@@ -63,4 +65,5 @@ export interface UpdateUserRequest {
   department?: string;
   birthdate?: Date;
   avatar?: string;
+  phone?: string;
 }
