@@ -17,6 +17,7 @@ export interface CourseUnit {
   img?: string;
   groups?: string[];
   activities: CourseUnitActivitiesCategory[];
+  userRole?: 'student' | 'teacher'; // User's role in this specific course
   createdAt: Date;
   updatedAt: Date;
 }

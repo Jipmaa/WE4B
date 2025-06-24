@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import {CoursesPage} from '@/features/course/components/courses-page/courses-page';
 import {CoursePage} from '@/features/course/components/course-page/course-page';
 import {CourseMembersPage} from '@/features/course/components/course-members-page/course-members-page';
+import { courseAccessGuard } from './guards';
 
 export const courseRoutes: Routes = [
   {
@@ -11,11 +12,11 @@ export const courseRoutes: Routes = [
   {
     path: ':slug',
     component: CoursePage,
-    children: [
-      {
-        path: 'members',
-        component: CourseMembersPage
-      }
-    ]
+    canActivate: [courseAccessGuard]
+  },
+  {
+    path: ':slug/members',
+    component: CourseMembersPage,
+    canActivate: [courseAccessGuard]
   }
 ]

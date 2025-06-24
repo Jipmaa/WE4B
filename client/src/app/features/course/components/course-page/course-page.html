@@ -1,1 +1,34 @@
-<p>course-page works!</p>
+<app-sidebar-layout
+  title="Course name"
+  [leftSidebarOpen]="true"
+  [rightSidebarOpen]="false"
+  leftSidebarTitle="Table des matières"
+  rightSidebarTitle="Activitées récentes"
+>
+
+  <ng-template #leftSidebar>
+    <!-- Table of content goes here -->
+    <p>Table of content's content goes here.</p>
+  </ng-template>
+
+  <ng-template #rightSidebar>
+    <!-- Recent activities content -->
+    <p>Recent activity content goes here.</p>
+  </ng-template>
+
+  <ng-template #actionButtons>
+    <app-button variant="ghost" (buttonClick)="onClickMembersList()">
+      Participants
+    </app-button>
+    @if (isTeacherOrAdminInCourse()) {
+      <app-button leadingIcon="plus" class="hidden md:inline-flex">
+        Ajouter une activité
+      </app-button>
+      <app-icon-button icon="plus" class="md:hidden" size="sm"/>
+    }
+    <!-- Add other actions here -->
+  </ng-template>
+
+  <app-course-box></app-course-box>
+
+</app-sidebar-layout>

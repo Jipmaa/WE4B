@@ -19,7 +19,6 @@ type ButtonSize = 'sm' | 'md' | 'lg';
   templateUrl: './button.html',
 })
 export class ButtonComponent implements OnInit {
-  @HostBinding('style.display') display = 'contents';
   private readonly idGenerator = inject(IdGeneratorService);
 
   ngOnInit(): void {
@@ -39,6 +38,7 @@ export class ButtonComponent implements OnInit {
   @Input() id: string = '';
   @Input() name: string = '';
   @Input() value: string = '';
+  @Input() class: string = '';
 
   // Accessibility properties
   @Input() ariaLabel: string = '';
@@ -60,6 +60,11 @@ export class ButtonComponent implements OnInit {
   @Output() buttonBlur = new EventEmitter<FocusEvent>();
   @Output() keydown = new EventEmitter<KeyboardEvent>();
   @Output() keyup = new EventEmitter<KeyboardEvent>();
+
+  @HostBinding('style.display')
+  get hostDisplay(): string | undefined {
+    return this.fullWidth ? 'contents' : undefined;
+  }
 
   get buttonClasses(): string {
     const baseClasses = 'inline-flex justify-center items-center gap-2 overflow-hidden transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 font-medium';
@@ -91,7 +96,10 @@ export class ButtonComponent implements OnInit {
     // Loading classes
     const loadingClasses = this.loading ? 'relative' : '';
 
-    return `${baseClasses} ${sizeClasses[this.size]} ${variantClasses[this.variant]} ${stateClasses} ${widthClasses} ${loadingClasses}`.trim();
+    // Custom classes provided via input
+    const customClasses = this.class || '';
+
+    return `${baseClasses} ${sizeClasses[this.size]} ${variantClasses[this.variant]} ${stateClasses} ${widthClasses} ${loadingClasses} ${customClasses}`.trim();
   }
 
   get isDisabled(): boolean {

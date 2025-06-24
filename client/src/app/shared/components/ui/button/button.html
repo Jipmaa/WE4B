@@ -37,7 +37,11 @@
     [class.invisible]="loading">
 
     <!-- Leading Slot -->
-    <ng-content select="[slot=leading]"></ng-content>
+    @if (leadingIcon) {
+      <lucide-icon [name]="leadingIcon" [size]="iconSize"></lucide-icon>
+    } @else {
+      <ng-content select="[slot=leading]"></ng-content>
+    }
 
     <!-- Main Content -->
     <span class="flex-1">
@@ -45,7 +49,11 @@
     </span>
 
     <!-- Trailing Slot -->
-    <ng-content select="[slot=trailing]"></ng-content>
+    @if (trailingIcon) {
+      <lucide-icon [name]="trailingIcon" [size]="iconSize"></lucide-icon>
+    } @else {
+      <ng-content select="[slot=trailing]"></ng-content>
+    }
 
   </div>
 

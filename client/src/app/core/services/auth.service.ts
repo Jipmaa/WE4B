@@ -15,6 +15,7 @@ import {
 } from '@/core/models/auth.models';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/_shared.models';
+import { CourseUnitsService } from './course-units.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ import { ApiResponse } from '../models/_shared.models';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly courseUnitsService = inject(CourseUnitsService);
   private readonly baseUrl = `${environment.apiUrl}/accounts`;
 
   // Storage keys
@@ -186,6 +188,14 @@ export class AuthService {
           if (response.success) {
             this._user.set(response.data.user);
             this.saveUserToStorage(response.data.user);
+
+            // Refresh user's course units when user data is updated
+            this.courseUnitsService.getUserCourseUnits().subscribe({
+              error: (error) => {
+                console.warn('Failed to refresh user course units after profile update:', error);
+                // Course units will be loaded when needed by guards
+              }
+            });
           }
         }),
         catchError(error => this.handleError(error)),
@@ -323,6 +333,14 @@ export class AuthService {
     this._user.set(user);
     this._token.set(token);
     this.saveToStorage(user, token);
+
+    // Load user's course units after authentication
+    this.courseUnitsService.getUserCourseUnits().subscribe({
+      error: (error) => {
+        console.warn('Failed to load user course units after authentication:', error);
+        // Course units will be loaded when needed by guards
+      }
+    });
   }
 
   /**
@@ -339,6 +357,9 @@ export class AuthService {
     this._user.set(null);
     this._token.set(null);
     this._error.set(null);
+
+    // Clear user course units
+    this.courseUnitsService.clearUserCourseUnits();
 
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
@@ -375,6 +396,19 @@ export class AuthService {
     if (token && user && this.isTokenValid(token)) {
       this._user.set(user);
       this._token.set(token);
+
+      // Try to load user's course units on app initialization
+      // If this fails, course units will be loaded when needed by guards
+      this.courseUnitsService.getUserCourseUnits().subscribe({
+        next: () => {
+          console.log('✅ User course units loaded on initialization');
+        },
+        error: (error) => {
+          console.warn('⚠️ Failed to load user course units on initialization:', error);
+          console.log('📝 Course units will be loaded when accessing specific courses');
+          // This is not critical - guards will handle loading course units when needed
+        }
+      });
     } else {
       this.clearAuthData();
     }

@@ -1,1 +1,16 @@
-<p>dashboard-page works!</p>
+<app-sidebar-layout
+  title="Mes cours"
+  [leftSidebarOpen]="false"
+  [rightSidebarOpen]="true"
+  rightSidebarTitle="Activitées récentes"
+>
+
+  <ng-template #rightSidebar>
+    <!-- Recent activities content -->
+    <p>Recent activity content goes here.</p>
+  </ng-template>
+
+  <!-- Main content of the dashboard -->
+  <p>Main dashboard content goest here.</p>
+
+</app-sidebar-layout>
