@@ -12,6 +12,6 @@ export class App {
   readonly authService = inject(AuthService);
 
   readonly mainClasses = this.authService.isAuthenticated()
-    ? 'bg-background w-full min-h-[calc(100dvh-48px)]'
+    ? 'bg-background w-full h-[calc(100dvh-3rem)]'
     : 'bg-background w-full min-h-dvh';
 }

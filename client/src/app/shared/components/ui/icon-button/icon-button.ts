@@ -42,6 +42,7 @@ export class IconButtonComponent implements OnInit {
   @Input() id: string = '';
   @Input() name: string = '';
   @Input() value: string = '';
+  @Input() class: string = '';
 
   // Accessibility properties
   @Input() ariaLabel: string = '';
@@ -100,7 +101,10 @@ export class IconButtonComponent implements OnInit {
     // Loading classes
     const loadingClasses = this.loading ? 'relative' : '';
 
-    return `${baseClasses} ${sizeClasses[this.size]} ${shapeClasses[this.shape]} ${variantClasses[this.variant]} ${stateClasses} ${loadingClasses}`.trim();
+    // Custom classes provided via input
+    const customClasses = this.class || '';
+
+    return `${baseClasses} ${sizeClasses[this.size]} ${shapeClasses[this.shape]} ${variantClasses[this.variant]} ${stateClasses} ${loadingClasses} ${customClasses}`.trim();
   }
 
   get computedIconSize(): number {

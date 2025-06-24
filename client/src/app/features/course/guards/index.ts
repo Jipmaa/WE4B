@@ -1,0 +1,1 @@
+export { courseAccessGuard } from './course-access.guard';
