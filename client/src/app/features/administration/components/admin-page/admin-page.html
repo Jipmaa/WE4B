@@ -5,139 +5,125 @@
 >
 
   <ng-template #actionButtons>
-    buttons here
-  </ng-template>
-
-  Content goes here
-
-</app-sidebar-layout>
-
-<!--TODO a supp-->
-<div
-    class="self-stretch h-[733px] p-6 bg-white rounded-tl-[32px] rounded-tr-[32px] outline outline-offset-[-1px] outline-gray-200 flex-col items-center gap-6 overflow-hidden">
-    <!--Titre + recherche + boutons d'ajout-->
-    <div class="self-stretch inline-flex justify-between items-center">
-        <div class="flex justify-start items-center gap-3 p-4">
-            <div class="justify-start text-black text-2xl font-semibold leading-normal">Administration</div>
-            <div class="flex justify-center items-center gap-4">
-                <div data-property-1="placeholder" data-show-leading-icon="true"
-                    class="self-stretch px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden">
-                    <lucide-icon name="search" size="16" />
-                    <input placeholder="Chercher une UE ou un groupe..."
-                        class="flex-1 opacity-60 justify-start text-black text-sm font-normal leading-tight" />
-                </div>
-                <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
-                    class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
-                    <div class="w-4 h-4 relative overflow-hidden">
-                        <lucide-icon name="graduation-cap" size="16" />
-                    </div>
-                    <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter une
-                        UE</div>
-                </div>
-                <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
-                    class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
-                    <div class="w-4 h-4 relative overflow-hidden">
-                        <lucide-icon name="folder" size="16" />
-                    </div>
-                    <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter un
-                        groupe</div>
-                </div>
-            </div>
-        </div>
+    <div data-property-1="placeholder" data-show-leading-icon="true"
+         class="self-stretch px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden">
+      <lucide-icon name="search" size="16" />
+      <input placeholder="Chercher une UE ou un groupe..."
+             class="flex-1 opacity-60 justify-start text-black text-sm font-normal leading-tight" />
     </div>
 
-    <app-tabs id="tabs">
-        <app-tab-item value="ues">Unités d’enseignement</app-tab-item>
-        <app-tab-item value="users">Utilisateurs</app-tab-item>
+    <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
+         class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon name="graduation-cap" size="16" />
+      </div>
+      <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter une
+        UE</div>
+    </div>
 
-        <!--Contenu affiché si l'onglet Unités d'enseignement est cliqué-->
-        <app-tab-content value="ues">
-            <table class="w-full rounded overflow-clip">
-                <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
-                    <tr class="border-b border-border">
-                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
-                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Description</th>
-                        <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
-                        <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let course of CoursesArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.code }}</td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.name }}</td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
-                    </tr>
+    <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
+         class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon name="folder" size="16" />
+      </div>
+      <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter un
+        groupe</div>
+    </div>
+  </ng-template>
 
-                    <tr class="text-center">
-                      <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les utilisateurs ont été chargés</td>
-                    </tr>
-                </tbody>
-                <!--<tbody>
+  <app-tabs id="tabs">
+    <app-tab-item value="ues">Unités d’enseignement</app-tab-item>
+    <app-tab-item value="users">Utilisateurs</app-tab-item>
 
-                    <tr class="border-b border-border">
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">WE4B</td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Cours de développement web avec Angular</td>
-                        <td class="p-4 text-right"></td>
-                    </tr>
+    <!--Contenu affiché si l'onglet Unités d'enseignement est cliqué-->
+    <app-tab-content value="ues">
+      <table class="w-full rounded overflow-clip">
+        <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
+        <tr class="border-b border-border">
+          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
+          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Description</th>
+          <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
+          <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let course of CoursesArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.code }}</td>
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.name }}</td>
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
+        </tr>
 
-                    <tr class="bg-sky-500/5 border-b border-border">
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
-                            <div class="flex items-center gap-1">
-                                <lucide-icon name="arrow-right" size="16" /> CM
-                            </div>
-                        </td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Salle A123, tous les jeudis de 8h00 à 10h00</td>
-                        <td class="p-4 text-right"></td>
-                    </tr>
+        <tr class="text-center">
+          <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
+        </tr>
+        </tbody>
+        <!--<tbody>
 
-                    <tr class="border-b border-border">
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
-                          <lucide-icon name="arrow-right" size="16" /> TD 1
-                        </td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
-                        <td class="p-4 text-right"></td>
-                    </tr>
+            <tr class="border-b border-border">
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">WE4B</td>
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Cours de développement web avec Angular</td>
+                <td class="p-4 text-right"></td>
+            </tr>
 
-                    <tr class="bg-sky-500/5 border-b border-border">
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
-                          <lucide-icon name="arrow-right" size="16" /> TD 2
-                        </td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
-                        <td class="p-4 text-right"></td>
-                    </tr>
+            <tr class="bg-sky-500/5 border-b border-border">
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
+                    <div class="flex items-center gap-1">
+                        <lucide-icon name="arrow-right" size="16" /> CM
+                    </div>
+                </td>
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Salle A123, tous les jeudis de 8h00 à 10h00</td>
+                <td class="p-4 text-right"></td>
+            </tr>
 
-                    <tr class="text-center">
-                        <td colspan="3" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
-                    </tr>
-                </tbody>-->
-            </table>
-        </app-tab-content>
+            <tr class="border-b border-border">
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
+                  <lucide-icon name="arrow-right" size="16" /> TD 1
+                </td>
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
+                <td class="p-4 text-right"></td>
+            </tr>
 
-        <!--Contenu affiché si l'onglet utilisateurs est cliqué-->
-        <app-tab-content value="users">
-            <table class="w-full rounded overflow-clip">
-                <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
-                    <tr class="border-b border-border">
-                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
-                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Email</th>
-                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Téléphone</th>
-                        <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Rôles</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let user of UsersArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.fullName }}</td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.email }}</td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.phone || 'Non renseigné' }}</td>
-                        <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.roles }}</td>
-                    </tr>
+            <tr class="bg-sky-500/5 border-b border-border">
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
+                  <lucide-icon name="arrow-right" size="16" /> TD 2
+                </td>
+                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
+                <td class="p-4 text-right"></td>
+            </tr>
 
-                    <tr class="text-center">
-                      <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les utilisateurs ont été chargés</td>
-                    </tr>
-                </tbody>
-            </table>
-        </app-tab-content>
-    </app-tabs>
-</div>
+            <tr class="text-center">
+                <td colspan="3" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
+            </tr>
+        </tbody>-->
+      </table>
+    </app-tab-content>
+
+    <!--Contenu affiché si l'onglet utilisateurs est cliqué-->
+    <app-tab-content value="users">
+      <table class="w-full rounded overflow-clip">
+        <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
+        <tr class="border-b border-border">
+          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
+          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Email</th>
+          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Téléphone</th>
+          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Rôles</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of UsersArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.fullName }}</td>
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.email }}</td>
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.phone || 'Non renseigné' }}</td>
+          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.roles }}</td>
+        </tr>
+
+        <tr class="text-center">
+          <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les utilisateurs ont été chargés</td>
+        </tr>
+        </tbody>
+      </table>
+    </app-tab-content>
+  </app-tabs>
+
+</app-sidebar-layout>
