@@ -14,7 +14,7 @@ import {
   UpdateCourseUnitRequest
 } from '../models/course-unit.models';
 import { ApiResponse, SortOrder } from '../models/_shared.models';
-
+import slugify from 'slugify';
 
 @Injectable({
   providedIn: 'root'
@@ -166,7 +166,8 @@ export class CourseUnitsService {
 
     // Add course data to FormData
     formData.append('name', courseUnitData.name);
-    formData.append('slug', "course");
+    //formData.append('slug', "course");
+    formData.append('slug', slugify(courseUnitData.name, { lower: true, strict: true }));
     formData.append('code', courseUnitData.code);
     formData.append('type', courseUnitData.type);
     formData.append('capacity', courseUnitData.capacity.toString());

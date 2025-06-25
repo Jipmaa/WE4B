@@ -37,92 +37,29 @@
 
     <!--Contenu affiché si l'onglet Unités d'enseignement est cliqué-->
     <app-tab-content value="ues">
-      <table class="w-full rounded overflow-clip">
-        <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
-        <tr class="border-b border-border">
-          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
-          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Description</th>
-          <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
-          <th class="h-12 px-4 text-right text-muted-foreground text-sm font-semibold leading-tight"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let course of CoursesArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.code }}</td>
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ course?.name }}</td>
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal"></td>
-        </tr>
 
-        <tr class="text-center">
-          <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
-        </tr>
-        </tbody>
-        <!--<tbody>
-
-            <tr class="border-b border-border">
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">WE4B</td>
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Cours de développement web avec Angular</td>
-                <td class="p-4 text-right"></td>
-            </tr>
-
-            <tr class="bg-sky-500/5 border-b border-border">
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
-                    <div class="flex items-center gap-1">
-                        <lucide-icon name="arrow-right" size="16" /> CM
-                    </div>
-                </td>
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">Salle A123, tous les jeudis de 8h00 à 10h00</td>
-                <td class="p-4 text-right"></td>
-            </tr>
-
-            <tr class="border-b border-border">
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
-                  <lucide-icon name="arrow-right" size="16" /> TD 1
-                </td>
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
-                <td class="p-4 text-right"></td>
-            </tr>
-
-            <tr class="bg-sky-500/5 border-b border-border">
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">
-                  <lucide-icon name="arrow-right" size="16" /> TD 2
-                </td>
-                <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">...</td>
-                <td class="p-4 text-right"></td>
-            </tr>
-
-            <tr class="text-center">
-                <td colspan="3" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les cours ont été chargés</td>
-            </tr>
-        </tbody>-->
-      </table>
+      <app-array
+        [data]="CoursesArray"
+        [columns]="columnsCourses"
+        [rowActions]="rowActionsCourses"
+        [messages]="messagesCourses"
+        [loadingState]="loadingState"
+        (loadMore)="loadMoreUsers()"
+      ></app-array>
     </app-tab-content>
 
     <!--Contenu affiché si l'onglet utilisateurs est cliqué-->
     <app-tab-content value="users">
-      <table class="w-full rounded overflow-clip">
-        <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
-        <tr class="border-b border-border">
-          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Nom</th>
-          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Email</th>
-          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Téléphone</th>
-          <th class="h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight">Rôles</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let user of UsersArray; let i = index" [class]="i % 2 !== 0 ? 'bg-sky-500/5 border-b border-border' : 'border-b border-border'">
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.fullName }}</td>
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.email }}</td>
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.phone || 'Non renseigné' }}</td>
-          <td class="p-4 text-left text-foreground text-sm font-normal leading-normal">{{ user?.roles }}</td>
-        </tr>
 
-        <tr class="text-center">
-          <td colspan="4" class="p-4 text-muted-foreground text-sm font-normal leading-tight">Tous les utilisateurs ont été chargés</td>
-        </tr>
-        </tbody>
-      </table>
+      <app-array
+        [data]="UsersArray"
+        [columns]="columnsUsers"
+        [rowActions]="rowActionsUsers"
+        [messages]="messagesUsers"
+        [loadingState]="loadingState"
+        (loadMore)="loadMoreUsers()"
+      ></app-array>
+
     </app-tab-content>
   </app-tabs>
 
