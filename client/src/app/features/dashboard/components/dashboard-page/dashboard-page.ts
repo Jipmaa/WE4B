@@ -11,7 +11,6 @@ import {Activity} from '@/activity/activity';
     Activity,
   ],
   templateUrl: './dashboard-page.html',
-  styleUrl: './dashboard-page.css'
 })
 export class DashboardPage {
 }

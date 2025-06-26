@@ -11,8 +11,7 @@ export type SidebarPosition = 'left' | 'right' | null;
     NgTemplateOutlet,
     Sidebar
   ],
-  templateUrl: './sidebar-layout.html',
-  styleUrl: './sidebar-layout.css'
+  templateUrl: './sidebar-layout.html'
 })
 export class SidebarLayout {
   @HostBinding('class') class = 'block h-[calc(100vh-3rem)] w-full';
