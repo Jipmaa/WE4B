@@ -2,22 +2,22 @@ import { Component, inject, computed } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { CourseBox } from "@/features/course/components/courses-page/course-box/course-box";
 import { LucideAngularModule } from "lucide-angular";
 import { SidebarLayout } from "@/shared/components/layout/sidebar-layout/sidebar-layout";
 import { ButtonComponent } from '@/shared/components/ui/button/button';
 import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
 import { AuthService } from '@/core/services/auth.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
+import {Activity} from '@/shared/components/ui/activity/activity';
 
 @Component({
   selector: 'app-course-page',
   imports: [
-    CourseBox,
     LucideAngularModule,
     SidebarLayout,
     ButtonComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    Activity
   ],
   templateUrl: './course-page.html',
 })

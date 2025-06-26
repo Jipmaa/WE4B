@@ -63,7 +63,7 @@
                     [width]="64"
                     [height]="64"
                     alt="Photo de profil"
-                    class="w-16 h-16 rounded-full object-cover">
+                    className="w-16 h-16 rounded-full object-cover">
                   </app-auth-image>
 
                   <!-- Remove Avatar Button -->
@@ -163,8 +163,8 @@
                 type="text"
                 formControlName="firstName"
                 [required]="true"
-                [hasError]="!!(profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched)"
-                errorText="Le prénom est requis (minimum 2 caractères)">
+                [hasError]="hasFieldError('firstName')"
+                [errorText]="getFieldError('firstName') || ''">
               </app-input>
             </div>
 
@@ -176,8 +176,8 @@
                 type="text"
                 formControlName="lastName"
                 [required]="true"
-                [hasError]="!!(profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched)"
-                errorText="Le nom est requis (minimum 2 caractères)">
+                [hasError]="hasFieldError('lastName')"
+                [errorText]="getFieldError('lastName') || ''">
               </app-input>
             </div>
 
@@ -188,7 +188,9 @@
                 id="department"
                 type="text"
                 formControlName="department"
-                placeholder="Votre département (optionnel)">
+                placeholder="Votre département (optionnel)"
+                [hasError]="hasFieldError('department')"
+                [errorText]="getFieldError('department') || ''">
               </app-input>
             </div>
 
@@ -198,7 +200,9 @@
                 label="Date de naissance"
                 id="birthdate"
                 type="date"
-                formControlName="birthdate">
+                formControlName="birthdate"
+                [hasError]="hasFieldError('birthdate')"
+                [errorText]="getFieldError('birthdate') || ''">
               </app-input>
             </div>
 
@@ -209,7 +213,9 @@
                 id="phone"
                 type="tel"
                 formControlName="phone"
-                placeholder="Votre numéro de téléphone (optionnel)">
+                placeholder="Votre numéro de téléphone (optionnel)"
+                [hasError]="hasFieldError('phone')"
+                [errorText]="getFieldError('phone') || ''">
               </app-input>
             </div>
 
@@ -268,8 +274,8 @@
                 type="password"
                 formControlName="currentPassword"
                 [required]="true"
-                [hasError]="!!(passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched)"
-                errorText="Le mot de passe actuel est requis">
+                [hasError]="hasPasswordFieldError('currentPassword')"
+                [errorText]="getPasswordFieldError('currentPassword') || ''">
               </app-input>
             </div>
 
@@ -281,8 +287,8 @@
                 type="password"
                 formControlName="newPassword"
                 [required]="true"
-                [hasError]="!!(passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched)"
-                errorText="Le nouveau mot de passe est requis (minimum 6 caractères)">
+                [hasError]="hasPasswordFieldError('newPassword')"
+                [errorText]="getPasswordFieldError('newPassword') || ''">
               </app-input>
             </div>
 
@@ -294,8 +300,8 @@
                 type="password"
                 formControlName="confirmPassword"
                 [required]="true"
-                [hasError]="!!(passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched)"
-                errorText="La confirmation du mot de passe est requise">
+                [hasError]="hasPasswordFieldError('confirmPassword')"
+                [errorText]="getPasswordFieldError('confirmPassword') || ''">
               </app-input>
             </div>
 

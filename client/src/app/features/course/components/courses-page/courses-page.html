@@ -1,5 +1,9 @@
-<app-sidebar-layout title="Mes cours" [leftSidebarOpen]="false" [rightSidebarOpen]="true"
-  rightSidebarTitle="Activitées récentes">
+<app-sidebar-layout
+  title="Mes cours"
+  [leftSidebarOpen]="false"
+  [rightSidebarOpen]="true"
+  rightSidebarTitle="Activitées récentes"
+>
 
   <ng-template #rightSidebar>
     <!-- Recent activities content -->
@@ -7,12 +11,21 @@
   </ng-template>
 
   <ng-template #actionButtons>
-    <app-input type="text" placeholder="Commencer à chercher..." class="w-64">
-      <lucide-icon name="search" class="text-muted-foreground" slot="leading" size="12" />
+    <app-input
+      type="text"
+      placeholder="Commencer à chercher..."
+      class="w-64"
+      >
+      <lucide-icon
+        name="search"
+        class="text-muted-foreground"
+        slot="leading"
+        size="12"
+      />
     </app-input>
     <!-- Add other actions here -->
   </ng-template>
-  
+
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
     <app-course-box *ngFor="let course of CourseArray" [course]="course"></app-course-box>
   </div>

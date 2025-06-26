@@ -9,7 +9,13 @@ import { CourseUnitsService } from '@/core/services/course-units.service';
 
 @Component({
   selector: 'app-courses-page',
-  imports: [CommonModule, CourseBox, SidebarLayout, InputComponent, LucideAngularModule],
+  imports: [
+    CommonModule,
+    CourseBox,
+    SidebarLayout,
+    InputComponent,
+    LucideAngularModule
+  ],
   templateUrl: './courses-page.html',
 })
 export class CoursesPage implements OnInit {

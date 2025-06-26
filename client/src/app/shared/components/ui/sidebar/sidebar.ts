@@ -11,7 +11,12 @@ export type SidebarDirection = 'left' | 'right';
     IconButtonComponent
   ],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css'
+  styles: [`
+    @reference "../../../../../styles.css";
+    :host {
+      @apply flex flex-col;
+    }
+  `]
 })
 export class Sidebar {
   @Input() title: string = 'Title';
