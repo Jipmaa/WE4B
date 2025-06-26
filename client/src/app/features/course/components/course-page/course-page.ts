@@ -2,7 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { CourseBox } from "@/features/course/components/courses-page/course-box/course-box";
+import { CourseBox } from "@/features/course/components/course-box/course-box";
 import { LucideAngularModule } from "lucide-angular";
 import { SidebarLayout } from "@/shared/components/layout/sidebar-layout/sidebar-layout";
 import { ButtonComponent } from '@/shared/components/ui/button/button';
