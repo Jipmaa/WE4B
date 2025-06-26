@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '@/core/services/auth.service';
 import { ChangePasswordRequest, ProfileUpdateRequest } from '@/core/models/auth.models';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { AuthImageComponent } from '../../ui/auth-image/auth-image.component';
 })
 export class UserProfilePopup implements OnInit, OnDestroy {
   @Input() isOpen = false;
-  
+
   @Output() closePopup = new EventEmitter<void>();
 
   @ViewChild('avatarInput') avatarInput!: ElementRef<HTMLInputElement>;
@@ -41,18 +41,30 @@ export class UserProfilePopup implements OnInit, OnDestroy {
   uploadError = '';
 
   profileForm = new FormGroup({
-    firstName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-    lastName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-    department: new FormControl(''),
-    birthdate: new FormControl(''),
-    phone: new FormControl('')
+    firstName: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(50)
+    ]),
+    lastName: new FormControl('', [
+      Validators.required,
+      Validators.maxLength(50)
+    ]),
+    department: new FormControl('', [
+      Validators.maxLength(100)
+    ]),
+    birthdate: new FormControl('', [
+      this.birthdateValidator
+    ]),
+    phone: new FormControl('', [
+      this.phoneValidator
+    ])
   });
 
   passwordForm = new FormGroup({
     currentPassword: new FormControl('', [Validators.required]),
     newPassword: new FormControl('', [Validators.required, Validators.minLength(6)]),
     confirmPassword: new FormControl('', [Validators.required])
-  });
+  }, { validators: this.passwordMatchValidator });
 
   ngOnInit() {
     this.keydownListener = this.onGlobalKeydown.bind(this);
@@ -61,7 +73,7 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     if (this.user()) {
       const user = this.user()!;
       const birthdate = user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '';
-      
+
       this.profileForm.patchValue({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
@@ -187,6 +199,8 @@ export class UserProfilePopup implements OnInit, OnDestroy {
   }
 
   onSaveProfile() {
+    this.markAllFieldsAsTouched();
+
     if (this.profileForm.valid) {
       const formValue = this.profileForm.value;
       const updateRequest: ProfileUpdateRequest = {
@@ -199,23 +213,23 @@ export class UserProfilePopup implements OnInit, OnDestroy {
 
       this.authService.updateProfile(updateRequest).subscribe({
         next: () => {
+          this.uploadError = '';
           this.onBackToProfile();
         },
         error: (error) => {
           this.uploadError = error.message || 'Erreur lors de la mise à jour du profil';
         }
       });
+    } else {
+      this.uploadError = 'Veuillez corriger les erreurs dans le formulaire';
     }
   }
 
   onSavePassword() {
+    this.markAllPasswordFieldsAsTouched();
+
     if (this.passwordForm.valid) {
       const formValue = this.passwordForm.value;
-
-      if (formValue.newPassword !== formValue.confirmPassword) {
-        this.uploadError = 'Les mots de passe ne correspondent pas';
-        return;
-      }
 
       const changePasswordRequest: ChangePasswordRequest = {
         currentPassword: formValue.currentPassword!,
@@ -224,12 +238,15 @@ export class UserProfilePopup implements OnInit, OnDestroy {
 
       this.authService.changePassword(changePasswordRequest).subscribe({
         next: () => {
+          this.uploadError = '';
           this.onBackToProfile();
         },
         error: (error) => {
           this.uploadError = error.message || 'Erreur lors du changement de mot de passe';
         }
       });
+    } else {
+      this.uploadError = 'Veuillez corriger les erreurs dans le formulaire';
     }
   }
 
@@ -250,7 +267,7 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     if (this.user()) {
       const user = this.user()!;
       const birthdate = user.birthdate ? new Date(user.birthdate).toISOString().split('T')[0] : '';
-      
+
       this.profileForm.patchValue({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
@@ -291,5 +308,196 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     }
 
     return errors;
+  }
+
+  // Custom validators
+  private birthdateValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Allow empty value since birthdate is optional
+    }
+
+    // Server uses isISO8601().toDate() - check if it's a valid ISO date format
+    const dateStr = control.value;
+    const date = new Date(dateStr);
+
+    // Check if date is valid (matches server isISO8601 check)
+    if (isNaN(date.getTime())) {
+      return { invalidDate: { message: 'Please provide a valid birthdate' } };
+    }
+
+    // Basic check for reasonable date format (YYYY-MM-DD)
+    const isoPattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (!isoPattern.test(dateStr)) {
+      return { invalidDate: { message: 'Please provide a valid birthdate' } };
+    }
+
+    return null;
+  }
+
+  private phoneValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Allow empty value since phone is optional
+    }
+
+    // Match the server model regex pattern: /^\+?\d{7,14}$/
+    const phoneValue = control.value.toString().trim();
+
+    // Remove spaces and common formatting characters for validation
+    const cleanPhone = phoneValue.replace(/[\s\-.()]/g, '');
+
+    // Server model pattern: optional +, followed by 7-14 digits
+    const phonePattern = /^\+?\d{7,14}$/;
+
+    if (!phonePattern.test(cleanPhone)) {
+      return { invalidPhone: { message: 'Please provide a valid phone number (7-14 digits, optional +)' } };
+    }
+
+    return null;
+  }
+
+  // Enhanced error getters for specific fields
+  getFieldError(fieldName: string): string | null {
+    const field = this.profileForm.get(fieldName);
+
+    if (!field?.errors || !field.touched) {
+      return null;
+    }
+
+    const errors = field.errors;
+
+    if (errors['required']) {
+      return `${this.getFieldLabel(fieldName)} est requis`;
+    }
+
+    if (errors['minlength']) {
+      return `${this.getFieldLabel(fieldName)} doit contenir au moins ${errors['minlength'].requiredLength} caractères`;
+    }
+
+    if (errors['maxlength']) {
+      return `${this.getFieldLabel(fieldName)} ne peut pas dépasser ${errors['maxlength'].requiredLength} caractères`;
+    }
+
+    if (errors['pattern']) {
+      if (fieldName === 'firstName' || fieldName === 'lastName') {
+        return `${this.getFieldLabel(fieldName)} ne peut contenir que des lettres, espaces, apostrophes et tirets`;
+      }
+    }
+
+    if (errors['invalidDate']) {
+      return errors['invalidDate'].message;
+    }
+
+    if (errors['futureDate']) {
+      return errors['futureDate'].message;
+    }
+
+    if (errors['tooYoung']) {
+      return errors['tooYoung'].message;
+    }
+
+    if (errors['tooOld']) {
+      return errors['tooOld'].message;
+    }
+
+    if (errors['invalidPhone']) {
+      return errors['invalidPhone'].message;
+    }
+
+    return 'Valeur invalide';
+  }
+
+  private getFieldLabel(fieldName: string): string {
+    const labels: { [key: string]: string } = {
+      firstName: 'Le prénom',
+      lastName: 'Le nom',
+      department: 'Le département',
+      birthdate: 'La date de naissance',
+      phone: 'Le numéro de téléphone'
+    };
+    return labels[fieldName] || 'Le champ';
+  }
+
+  // Method to check if a specific field has errors
+  hasFieldError(fieldName: string): boolean {
+    const field = this.profileForm.get(fieldName);
+    return !!(field?.errors && field.touched);
+  }
+
+  // Method to trigger validation on form submit
+  private markAllFieldsAsTouched(): void {
+    Object.keys(this.profileForm.controls).forEach(key => {
+      this.profileForm.get(key)?.markAsTouched();
+    });
+  }
+
+  // Method to trigger validation on password form submit
+  private markAllPasswordFieldsAsTouched(): void {
+    Object.keys(this.passwordForm.controls).forEach(key => {
+      this.passwordForm.get(key)?.markAsTouched();
+    });
+  }
+
+  // Password match validator
+  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const newPassword = control.get('newPassword');
+    const confirmPassword = control.get('confirmPassword');
+
+    if (!newPassword || !confirmPassword) {
+      return null;
+    }
+
+    if (newPassword.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: { message: 'Les mots de passe ne correspondent pas' } });
+      return { passwordMismatch: { message: 'Les mots de passe ne correspondent pas' } };
+    } else {
+      // Clear the password mismatch error if passwords match
+      const errors = confirmPassword.errors;
+      if (errors) {
+        delete errors['passwordMismatch'];
+        confirmPassword.setErrors(Object.keys(errors).length ? errors : null);
+      }
+    }
+
+    return null;
+  }
+
+  // Enhanced error getters for password fields
+  getPasswordFieldError(fieldName: string): string | null {
+    const field = this.passwordForm.get(fieldName);
+
+    if (!field?.errors || !field.touched) {
+      return null;
+    }
+
+    const errors = field.errors;
+
+    if (errors['required']) {
+      return `${this.getPasswordFieldLabel(fieldName)} est requis`;
+    }
+
+    if (errors['minlength']) {
+      return `${this.getPasswordFieldLabel(fieldName)} doit contenir au moins ${errors['minlength'].requiredLength} caractères`;
+    }
+
+    if (errors['passwordMismatch']) {
+      return errors['passwordMismatch'].message;
+    }
+
+    return 'Valeur invalide';
+  }
+
+  private getPasswordFieldLabel(fieldName: string): string {
+    const labels: { [key: string]: string } = {
+      currentPassword: 'Le mot de passe actuel',
+      newPassword: 'Le nouveau mot de passe',
+      confirmPassword: 'La confirmation du mot de passe'
+    };
+    return labels[fieldName] || 'Le champ';
+  }
+
+  // Method to check if a specific password field has errors
+  hasPasswordFieldError(fieldName: string): boolean {
+    const field = this.passwordForm.get(fieldName);
+    return !!(field?.errors && field.touched);
   }
 }

@@ -338,8 +338,14 @@ router.put('/:id/profile', adminMiddleware, [
 		 .withMessage('Please provide a valid birthdate'),
 	body('phone')
 		 .optional()
-		 .isMobilePhone('any')
-		 .withMessage('Please provide a valid phone number'),
+		 .custom((value) => {
+			 if (!value) return true; // Allow empty since it's optional
+			 // Remove common formatting characters before validation
+			 const cleanPhone = value.replace(/[\s\-.()]/g, '');
+			 // Match the User model regex pattern: /^\+?\d{7,14}$/
+			 return /^\+?\d{7,14}$/.test(cleanPhone);
+		 })
+		 .withMessage('Please provide a valid phone number (7-14 digits, optional +)'),
 	body('avatar')
 		 .optional()
 		 .isURL()
@@ -605,7 +611,7 @@ router.get('/me/course-units', asyncHandler(async (req: Request, res: Response) 
 			const courseUnitId = group.courseUnit._id.toString();
 			if (!courseUnitsMap.has(courseUnitId)) {
 				courseUnitsMap.set(courseUnitId, {
-					...group.courseUnit.toObject(),
+					...group.courseUnit,
 					userRole: userInGroup.role
 				});
 			}

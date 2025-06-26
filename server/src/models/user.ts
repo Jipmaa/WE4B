@@ -46,7 +46,7 @@ const userSchema = new Schema<IUser>({
 	phone: {
 		type: String,
 		trim: true,
-		match: [/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'],
+		match: [/^\+?\d{7,14}$/, 'Please enter a valid phone number'],
 		default: null
 	},
 	password: {
