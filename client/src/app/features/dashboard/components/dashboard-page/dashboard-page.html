@@ -11,6 +11,38 @@
   </ng-template>
 
   <!-- Main content of the dashboard -->
-  <p>Main dashboard content goest here.</p>
+  <p>Main dashboard content goes here.</p>
+  <app-activity
+    [deadline]="9"
+    [title]="'Devoir de maths'"
+    [short]="true">
+  </app-activity>
+  <app-activity
+    [deadline]="9"
+    [title]="'Devoir de maths'"
+    [short]="true">
+  </app-activity>
+  <app-activity
+    [deadline]="2"
+    [title]="'Devoir de maths'"
+    [short]="true">
+  </app-activity>
+  <app-activity
+    [deadline]="28"
+    [title]="'Devoir de maths'"
+    [short]="true">
+  </app-activity>
 
+  <app-activity
+    [title]="'Devoir de français'"
+    [short]="false"
+    [content]="'Rédiger un texte argumentatif sur l’importance de la lecture dans la vie quotidienne.'">
+  </app-activity>
+
+  <app-activity
+    [title]="'Devoir de physique'"
+    [short]="false"
+    [content]="'Explication des lois de Newton et de leur application dans la vie quotidienne.'"
+    [alert]="true">
+  </app-activity>
 </app-sidebar-layout>
