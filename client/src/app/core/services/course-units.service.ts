@@ -129,7 +129,7 @@ export class CourseUnitsService {
     this._isLoadingUserCourseUnits.set(true);
     this._error.set(null);
 
-    return this.http.get<ApiResponse<{ courseUnits: CourseUnit[] }>>(`${environment.apiUrl}/users/me/course-units`)
+    return this.http.get<ApiResponse<{ courseUnits: CourseUnit[] }>>(`${this.baseUrl}/my-courses`)
       .pipe(
         tap(response => {
           if (response.success) {
@@ -546,4 +546,5 @@ export class CourseUnitsService {
     this._error.set(errorMessage);
     return throwError(() => error);
   }
+
 }
