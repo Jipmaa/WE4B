@@ -1,8 +1,18 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { getPublicUrl, FILE_CONFIGS } from '../services/minio-service';
+import {CourseUnitType} from "./course-unit";
 
 export type UserRole = 'student' | 'teacher' | 'admin';
+
+export enum UserDepartment {
+	COMMON_CORE  = 'COMMON_CORE',
+	COMPUTER_SCIENCE  = 'COMPUTER_SCIENCE',
+	ENERGY = 'ENERGY',
+	EDIM = 'EDIM',
+	IMSI = 'IMSI',
+	GMC = 'GMC'
+}
 
 export interface IUser extends Document {
 	_id: mongoose.Types.ObjectId;
@@ -14,7 +24,7 @@ export interface IUser extends Document {
 	lastName: string;
 	avatar?: string;  // MinIO object key
 	roles: Array<UserRole>;
-	department?: string;
+	department?: UserDepartment;
 	isActive: boolean;
 	isEmailVerified: boolean;
 	isPhoneVerified: boolean;
@@ -84,6 +94,7 @@ const userSchema = new Schema<IUser>({
 	},
 	department: {
 		type: String,
+		enum: Object.values(UserDepartment),
 		trim: true,
 		maxlength: [100, 'Department must be less than 100 characters']
 	},

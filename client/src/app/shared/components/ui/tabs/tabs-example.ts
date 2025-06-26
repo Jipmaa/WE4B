@@ -14,7 +14,7 @@ import { TabContentComponent } from '../tab-content/tab-content';
   template: `
     <div class="p-6 space-y-8">
       <h2 class="text-2xl font-bold">Tabs Example</h2>
-      
+
       <!-- Basic Tabs -->
       <div>
         <h3 class="text-lg font-semibold mb-4">Basic Tabs</h3>
@@ -22,21 +22,21 @@ import { TabContentComponent } from '../tab-content/tab-content';
           <app-tab-item value="overview">Overview</app-tab-item>
           <app-tab-item value="details">Details</app-tab-item>
           <app-tab-item value="settings">Settings</app-tab-item>
-          
+
           <app-tab-content value="overview">
             <div class="p-4 border rounded-md">
               <h4 class="font-medium mb-2">Overview Content</h4>
               <p>This is the overview tab content. You can navigate between tabs using arrow keys or by clicking.</p>
             </div>
           </app-tab-content>
-          
+
           <app-tab-content value="details">
             <div class="p-4 border rounded-md">
               <h4 class="font-medium mb-2">Details Content</h4>
               <p>This tab contains detailed information. The active tab is preserved in the URL query parameters.</p>
             </div>
           </app-tab-content>
-          
+
           <app-tab-content value="settings">
             <div class="p-4 border rounded-md">
               <h4 class="font-medium mb-2">Settings Content</h4>
@@ -53,19 +53,19 @@ import { TabContentComponent } from '../tab-content/tab-content';
           <app-tab-item value="first">First</app-tab-item>
           <app-tab-item value="second">Second (Default)</app-tab-item>
           <app-tab-item value="third">Third</app-tab-item>
-          
+
           <app-tab-content value="first">
             <div class="p-4 border rounded-md">
               <p>First tab content</p>
             </div>
           </app-tab-content>
-          
+
           <app-tab-content value="second">
             <div class="p-4 border rounded-md">
               <p>Second tab content (this is the default tab)</p>
             </div>
           </app-tab-content>
-          
+
           <app-tab-content value="third">
             <div class="p-4 border rounded-md">
               <p>Third tab content</p>
@@ -81,19 +81,19 @@ import { TabContentComponent } from '../tab-content/tab-content';
           <app-tab-item value="enabled1">Enabled 1</app-tab-item>
           <app-tab-item value="disabled" [disabled]="true">Disabled</app-tab-item>
           <app-tab-item value="enabled2">Enabled 2</app-tab-item>
-          
+
           <app-tab-content value="enabled1">
             <div class="p-4 border rounded-md">
               <p>First enabled tab content</p>
             </div>
           </app-tab-content>
-          
+
           <app-tab-content value="disabled">
             <div class="p-4 border rounded-md">
               <p>This content won't be accessible because the tab is disabled</p>
             </div>
           </app-tab-content>
-          
+
           <app-tab-content value="enabled2">
             <div class="p-4 border rounded-md">
               <p>Second enabled tab content</p>

@@ -4,7 +4,7 @@ import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, 
 import { HttpClient } from '@angular/common/http';
 import { UsersService } from '@/core/services/users.service';
 import { Router } from '@angular/router';
-import {CreateUserRequest, UserRole} from '@/core/models/user.models';
+import {CreateUserRequest, StudentDepartment, UserRole} from '@/core/models/user.models';
 import {LucideAngularModule} from "lucide-angular";
 import { ButtonComponent } from "../../../../shared/components/ui/button/button";
 import { InputComponent } from "../../../../shared/components/ui/input/input";
@@ -27,6 +27,7 @@ export class Register implements OnInit {
     email: new FormControl<string>('', [Validators.required, Validators.email]),
     phone: new FormControl<string>('', [Validators.pattern(/^\+?[1-9]\d{1,14}$/)]),
     roles: new FormControl<string[]>([], [rolesValidator]),
+    department: new FormControl<string>(''),
     password: new FormControl<string>('', [Validators.required, passwordValidator]),
     avatar: new FormControl<string>('')
   });
@@ -36,8 +37,27 @@ export class Register implements OnInit {
   constructor(private http: HttpClient, private userService: UsersService, public router: Router) { }
 
 
+
   ngOnInit(): void {
-    // Initialization logic can go here
+    // Écouter les changements sur les rôles pour ajuster la validation du département
+    this.myForm.get('roles')?.valueChanges.subscribe(roles => {
+      this.updateDepartmentValidation(roles || []);
+    });
+  }
+
+  private updateDepartmentValidation(roles: string[]): void {
+    const departmentControl = this.myForm.get('department');
+
+    if (roles.includes('student')) {
+      // Si student est sélectionné, le département devient requis
+      departmentControl?.setValidators([Validators.required]);
+    } else {
+      // Sinon, pas de validation et on vide le champ
+      departmentControl?.clearValidators();
+      departmentControl?.setValue('');
+    }
+
+    departmentControl?.updateValueAndValidity();
   }
 
   onFileSelected(event: any) {
@@ -83,7 +103,11 @@ export class Register implements OnInit {
     this.myForm.get('roles')?.markAsTouched();
   }
 
+
+
   onSubmit() {
+    console.log('Form values:', this.myForm.value);
+
     if (this.myForm.invalid) {
       this.myForm.markAllAsTouched();
       alert('Formulaire invalide');
@@ -100,6 +124,7 @@ export class Register implements OnInit {
       birthdate: this.myForm.value.birthdate || '',
       email: this.myForm.value.email || '',
       phone: this.myForm.value.phone || undefined,
+      department: getRoles().includes('student') ? (this.myForm.value.department as StudentDepartment) || undefined : undefined,//TODO supp as StudentDepartment ?
       password: this.myForm.value.password || '',
       roles: getRoles()
     } satisfies CreateUserRequest;

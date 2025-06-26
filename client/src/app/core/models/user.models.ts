@@ -2,6 +2,8 @@ import {BaseFilters} from '@/core/models/_shared.models';
 
 export type UserRole = 'student' | 'teacher' | 'admin';
 
+export type StudentDepartment = 'Common core' | 'Computer Science' | 'Energy' | 'EDIM' | 'IMSI' | 'GMC';
+
 export interface User {
   _id: string;
   email: string;
@@ -11,7 +13,7 @@ export interface User {
   fullName: string;
   avatar?: string;
   roles: UserRole[];
-  department?: string;
+  department?: StudentDepartment;
   birthdate: Date;
   phone?: string;
   isActive: boolean;
@@ -25,7 +27,7 @@ export interface User {
 
 export interface UserFilters extends BaseFilters {
   role?: UserRole;
-  department?: string;
+  department?: StudentDepartment;
   isActive?: boolean;
   sortBy?: 'createdAt' | 'updatedAt' | 'email' | 'lastLogin' | 'firstName' | 'lastName';
 }
@@ -63,7 +65,7 @@ export interface UserSearchResult {
 export interface UpdateUserRequest {
   firstName?: string;
   lastName?: string;
-  department?: string;
+  department?: StudentDepartment;
   birthdate?: Date;
   avatar?: string;
   phone?: string;
@@ -77,7 +79,7 @@ export interface CreateUserRequest {
   birthdate: Date | string;
   phone?: string;
   roles?: UserRole[];
-  department?: string;
+  department?: StudentDepartment;
   avatar?: string;
   isActive?: boolean;
   isEmailVerified?: boolean;

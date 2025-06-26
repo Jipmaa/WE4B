@@ -144,7 +144,8 @@ export class UsersService {
       });
     }
 
-    if (userData.department) {
+    // Add department only if provided (typically for students)
+    if (userData.department && userData.department.trim() !== '') {
       formData.append('department', userData.department);
     }
 
