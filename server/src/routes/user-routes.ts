@@ -667,16 +667,23 @@ router.put('/me/avatar', uploadAvatar, handleFileUploadError, asyncHandler(async
 		success: true,
 		message: 'Avatar uploaded successfully',
 		data: {
-			avatar: objectKey,
-			avatarUrl,
 			user: {
 				id: user._id,
 				email: user.email,
 				firstName: user.firstName,
 				lastName: user.lastName,
 				fullName: user.getFullName(),
-				avatar: objectKey,
-				avatarUrl
+				avatar: avatarUrl,
+				roles: user.roles,
+				department: user.department,
+				birthdate: user.birthdate,
+				phone: user.phone,
+				isActive: user.isActive,
+				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
+				lastLogin: user.lastLogin,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt
 			}
 		}
 	});
@@ -717,7 +724,17 @@ router.delete('/me/avatar', asyncHandler(async (req: Request, res: Response) => 
 				firstName: user.firstName,
 				lastName: user.lastName,
 				fullName: user.getFullName(),
-				avatar: null
+				avatar: null,
+				roles: user.roles,
+				department: user.department,
+				birthdate: user.birthdate,
+				phone: user.phone,
+				isActive: user.isActive,
+				isEmailVerified: user.isEmailVerified,
+				isPhoneVerified: user.isPhoneVerified,
+				lastLogin: user.lastLogin,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt
 			}
 		}
 	});
