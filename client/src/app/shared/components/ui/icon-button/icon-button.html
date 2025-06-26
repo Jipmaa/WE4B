@@ -1,0 +1,53 @@
+<button
+  [type]="type"
+  [id]="id"
+  [name]="name"
+  [value]="value"
+  [disabled]="isDisabled"
+  [class]="buttonClasses"
+  [attr.aria-label]="ariaLabelValue || null"
+  [attr.aria-labelledby]="ariaLabelledBy || null"
+  [attr.aria-describedby]="ariaDescribedBy || null"
+  [attr.aria-expanded]="ariaExpanded"
+  [attr.aria-pressed]="ariaPressed"
+  [attr.aria-controls]="ariaControls || null"
+  [attr.aria-haspopup]="ariaHaspopup"
+  [attr.aria-busy]="loading || null"
+  (click)="onClick($event)"
+  (focus)="onFocus($event)"
+  (blur)="onBlur($event)"
+  (keydown)="onKeyDown($event)"
+  (keyup)="onKeyUp($event)">
+
+  <!-- Loading Spinner Overlay -->
+  @if (loading) {
+    <div class="absolute inset-0 flex items-center justify-center">
+      <lucide-icon
+        name="loader-circle"
+        [size]="computedIconSize"
+        class="animate-spin">
+      </lucide-icon>
+    </div>
+  }
+
+  <!-- Icon Content (hidden when loading) -->
+  <div
+    class="flex items-center justify-center"
+    [class.invisible]="loading">
+
+    <!-- Icon via input property -->
+    @if (icon) {
+      <lucide-icon
+        [name]="icon"
+        [size]="computedIconSize">
+      </lucide-icon>
+    }
+
+    <!-- Icon via content projection (when no icon input is provided) -->
+    @if (!icon) {
+      <ng-content></ng-content>
+    }
+
+  </div>
+
+</button>

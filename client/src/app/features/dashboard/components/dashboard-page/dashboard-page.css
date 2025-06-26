@@ -1,0 +1,70 @@
+@reference "../../../../../styles/tailwind.css";
+
+/* Dashboard Page Styles */
+
+/* Stats Cards Animation */
+.stats-card {
+  @apply transition-all duration-200 hover:shadow-md hover:-translate-y-1;
+}
+
+/* Course Progress Bar Animation */
+.progress-bar {
+  @apply transition-all duration-500 ease-out;
+}
+
+/* Activity Item Hover Effects */
+.activity-item {
+  @apply transition-all duration-200 hover:shadow-sm;
+}
+
+/* Quick Action Buttons */
+.quick-action-btn {
+  @apply transition-all duration-200 hover:bg-gray-100 active:scale-95;
+}
+
+/* Performance Insight Animation */
+.performance-insight {
+  @apply animate-fade-in;
+}
+
+/* Custom Scrollbar for Sidebar Content */
+.sidebar-content::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .stats-grid {
+    @apply grid-cols-2;
+  }
+
+  .course-grid {
+    @apply grid-cols-1;
+  }
+}
+
+/* Loading States */
+.loading-skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Success/Warning/Error States */
+.status-success {
+  @apply text-green-600 bg-green-50 border-green-200;
+}
+
+.status-warning {
+  @apply text-orange-600 bg-orange-50 border-orange-200;
+}
+
+.status-error {
+  @apply text-red-600 bg-red-50 border-red-200;
+}

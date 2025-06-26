@@ -1,0 +1,31 @@
+<app-sidebar-layout
+  title="Mes cours"
+  [leftSidebarOpen]="false"
+  [rightSidebarOpen]="true"
+  rightSidebarTitle="Activitées récentes"
+>
+
+  <ng-template #rightSidebar>
+    <!-- Recent activities content -->
+    <p>Recent activity content goes here.</p>
+  </ng-template>
+
+  <ng-template #actionButtons>
+    <app-input
+      type="text"
+      placeholder="Commencer à chercher..."
+      class="w-64"
+      >
+      <lucide-icon
+        name="search"
+        class="text-muted-foreground"
+        slot="leading"
+        size="12"
+      />
+    </app-input>
+    <!-- Add other actions here -->
+  </ng-template>
+
+  <app-course-box></app-course-box>
+
+</app-sidebar-layout>

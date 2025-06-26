@@ -1,0 +1,337 @@
+<!-- Backdrop overlay -->
+@if (isOpen) {
+  <div
+    (click)="onOverlayClick()"
+    (keydown)="onOverlayKeydown($event)"
+    class="fixed inset-0 bg-black/50 z-50 flex items-start justify-end pt-16 pr-4"
+    [attr.aria-hidden]="!isOpen"
+    tabindex="-1">
+
+    <!-- Profile popup -->
+    <div
+      #profilePopup
+      (click)="$event.stopPropagation()"
+      (keydown)="onPopupKeydown($event)"
+      class="bg-white rounded-lg shadow-lg w-80 max-w-full p-6 focus:outline-none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-popup-title"
+      tabindex="-1">
+
+      <!-- Profile View -->
+      @if (currentView === 'profile') {
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 id="profile-popup-title" class="text-lg font-semibold text-gray-900">
+              Mon compte
+            </h2>
+            <app-icon-button
+              #firstFocusable
+              icon="x"
+              [iconSize]="20"
+              variant="ghost"
+              size="sm"
+              ariaLabel="Fermer le popup"
+              (buttonClick)="onClose()">
+            </app-icon-button>
+          </div>
+
+          <!-- User Avatar -->
+          <div class="flex items-center mb-6">
+            <div class="relative">
+              <div class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+                @if (!user()?.avatar) {
+                  <span class="text-gray-600 text-lg font-medium">
+                    {{ authService.getInitiales() }}
+                  </span>
+
+                  <!-- Upload Avatar Button -->
+                  <div class="absolute -bottom-1 -right-1">
+                    <app-icon-button
+                      icon="camera"
+                      [iconSize]="12"
+                      variant="default"
+                      size="xs"
+                      shape="circle"
+                      ariaLabel="Changer la photo de profil"
+                      (buttonClick)="onAvatarClick()"
+                    />
+                  </div>
+                } @else {
+                  <app-auth-image
+                    [src]="user()!.avatar!"
+                    [width]="64"
+                    [height]="64"
+                    alt="Photo de profil"
+                    class="w-16 h-16 rounded-full object-cover">
+                  </app-auth-image>
+
+                  <!-- Remove Avatar Button -->
+                  <div class="absolute -bottom-1 -right-1">
+                    <app-icon-button
+                      icon="trash-2"
+                      [iconSize]="12"
+                      variant="destructive"
+                      size="xs"
+                      shape="circle"
+                      ariaLabel="Changer la photo de profil"
+                      (buttonClick)="onRemoveAvatar()"
+                    />
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="ml-4">
+              <h3 class="font-medium text-gray-900">
+                {{ user()?.firstName }} {{ user()?.lastName }}
+              </h3>
+              <p class="text-sm text-gray-500">{{ user()?.email }}</p>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          @if (uploadError) {
+            <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p class="text-sm text-red-600">{{ uploadError }}</p>
+            </div>
+          }
+
+          <!-- Upload Progress -->
+          @if (isUploading) {
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <p class="text-sm text-blue-600">Upload en cours...</p>
+            </div>
+          }
+
+          <!-- Profile Actions -->
+          <div class="flex flex-col gap-1 mb-2">
+            <button
+              class="flex gap-2 w-full items-center text-sm bg-secondary/40 rounded-sm p-1 cursor-pointer text-secondary-foreground hover:bg-secondary"
+              (click)="onEditInfo()"
+            >
+              <lucide-icon name="user" [size]="16"></lucide-icon>
+              Modifier mes informations
+            </button>
+
+            <button
+              class="flex gap-2 w-full items-center text-sm bg-secondary/40 rounded-sm p-1 cursor-pointer text-secondary-foreground hover:bg-secondary"
+              (click)="onChangePassword()"
+            >
+              <lucide-icon name="key" [size]="16"></lucide-icon>
+              Changer le mot de passe
+            </button>
+          </div>
+
+          <!-- Sign Out Button -->
+          <app-button
+            variant="ghost-destructive"
+            [fullWidth]="true"
+            (buttonClick)="onLogout()">
+            Se déconnecter
+          </app-button>
+        </div>
+      }
+
+      <!-- Edit Info View -->
+      @if (currentView === 'edit-info') {
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">
+              Modifier mon profil
+            </h2>
+            <app-icon-button
+              icon="x"
+              [iconSize]="20"
+              variant="ghost"
+              size="sm"
+              ariaLabel="Fermer le popup"
+              (buttonClick)="onClose()">
+            </app-icon-button>
+          </div>
+
+          <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()">
+            <!-- First Name -->
+            <div class="mb-4">
+              <app-input
+                #firstFocusable
+                label="Prénom"
+                id="firstName"
+                type="text"
+                formControlName="firstName"
+                [required]="true"
+                [hasError]="!!(profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched)"
+                errorText="Le prénom est requis (minimum 2 caractères)">
+              </app-input>
+            </div>
+
+            <!-- Last Name -->
+            <div class="mb-4">
+              <app-input
+                label="Nom"
+                id="lastName"
+                type="text"
+                formControlName="lastName"
+                [required]="true"
+                [hasError]="!!(profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched)"
+                errorText="Le nom est requis (minimum 2 caractères)">
+              </app-input>
+            </div>
+
+            <!-- Department -->
+            <div class="mb-4">
+              <app-input
+                label="Département"
+                id="department"
+                type="text"
+                formControlName="department"
+                placeholder="Votre département (optionnel)">
+              </app-input>
+            </div>
+
+            <!-- Birthdate -->
+            <div class="mb-4">
+              <app-input
+                label="Date de naissance"
+                id="birthdate"
+                type="date"
+                formControlName="birthdate">
+              </app-input>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-4">
+              <app-input
+                label="Téléphone"
+                id="phone"
+                type="tel"
+                formControlName="phone"
+                placeholder="Votre numéro de téléphone (optionnel)">
+              </app-input>
+            </div>
+
+            <!-- Error Messages -->
+            @if (uploadError) {
+              <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p class="text-sm text-red-600">{{ uploadError }}</p>
+              </div>
+            }
+
+            <!-- Form Actions -->
+            <div class="flex gap-3">
+              <app-button
+                type="button"
+                variant="ghost"
+                [fullWidth]="true"
+                (buttonClick)="onBackToProfile()">
+                Annuler
+              </app-button>
+              <app-button
+                type="submit"
+                variant="default"
+                [fullWidth]="true"
+                [disabled]="profileForm.invalid">
+                Enregistrer
+              </app-button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- Change Password View -->
+      @if (currentView === 'change-password') {
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">
+              Changer le mot de passe
+            </h2>
+            <app-icon-button
+              icon="x"
+              [iconSize]="20"
+              variant="ghost"
+              size="sm"
+              ariaLabel="Fermer le popup"
+              (buttonClick)="onClose()">
+            </app-icon-button>
+          </div>
+
+          <form [formGroup]="passwordForm" (ngSubmit)="onSavePassword()">
+            <!-- Current Password -->
+            <div class="mb-4">
+              <app-input
+                #firstFocusable
+                label="Mot de passe actuel"
+                id="currentPassword"
+                type="password"
+                formControlName="currentPassword"
+                [required]="true"
+                [hasError]="!!(passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched)"
+                errorText="Le mot de passe actuel est requis">
+              </app-input>
+            </div>
+
+            <!-- New Password -->
+            <div class="mb-4">
+              <app-input
+                label="Nouveau mot de passe"
+                id="newPassword"
+                type="password"
+                formControlName="newPassword"
+                [required]="true"
+                [hasError]="!!(passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched)"
+                errorText="Le nouveau mot de passe est requis (minimum 6 caractères)">
+              </app-input>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+              <app-input
+                label="Confirmer le mot de passe"
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                [required]="true"
+                [hasError]="!!(passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched)"
+                errorText="La confirmation du mot de passe est requise">
+              </app-input>
+            </div>
+
+            <!-- Error Messages -->
+            @if (uploadError) {
+              <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p class="text-sm text-red-600">{{ uploadError }}</p>
+              </div>
+            }
+
+            <!-- Form Actions -->
+            <div class="flex gap-3">
+              <app-button
+                type="button"
+                variant="ghost"
+                [fullWidth]="true"
+                (buttonClick)="onBackToProfile()">
+                Annuler
+              </app-button>
+              <app-button
+                type="submit"
+                variant="default"
+                [fullWidth]="true"
+                [disabled]="passwordForm.invalid">
+                Changer
+              </app-button>
+            </div>
+          </form>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Hidden file input for avatar upload -->
+<input
+  #avatarInput
+  type="file"
+  accept="image/*"
+  (change)="onAvatarChange($event)"
+  class="hidden"
+  aria-hidden="true">

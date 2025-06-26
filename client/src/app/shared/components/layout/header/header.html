@@ -1,0 +1,145 @@
+<header class="hidden w-full px-4 py-2 bg-primary md:inline-flex justify-between items-center">
+  <div class="flex justify-start items-center gap-3 text-white">
+    <span class="justify-start text-md font-medium">Mooodle</span>
+    <nav class="flex justify-start items-center gap-3">
+      <app-header-item [label]="'Accueil'" [link]="'/dashboard'"/>
+      <app-header-item [label]="'Mes cours'" [link]="'/courses'"/>
+      <app-header-item [label]="'Forum'" [link]="'/forum'"/>
+      <app-header-item [label]="'Administration'" [link]="'/administration'"/>
+      <!-- TODO: À supprimer, pout tests uniquement -->
+      <div class="w-4 h-1"></div>
+      <app-header-item [label]="'Add user'" [link]="'/administration'"/>
+      <app-header-item [label]="'Add ue'" [link]="'/courses'"/>
+      <!-- Fin À supprimer, pout tests uniquement -->
+    </nav>
+  </div>
+  <div class="flex justify-center items-center gap-4">
+    <button
+      (click)="onAvatarClick()"
+      class="size-8 relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-full hover:opacity-80 transition-opacity cursor-pointer"
+      aria-label="Ouvrir le menu profil">
+      <div class="inset-0 absolute bg-zinc-300 rounded-full"></div>
+      @if (!user() || !user()?.avatar) {
+        <div class="left-1/2 top-1/2 absolute justify-start text-black text-xs font-normal text-center transform -translate-x-1/2 -translate-y-1/2">
+          {{ authService.getInitiales() }}
+        </div>
+      } @else {
+        <app-auth-image
+          [src]="user()!.avatar!"
+          [width]="32"
+          [height]="32"
+          alt="avatar"
+          class="absolute inset-0 rounded-full">
+        </app-auth-image>
+      }
+    </button>
+  </div>
+</header>
+
+<!-- Mobile -->
+<header class="w-full px-4 py-2 bg-primary inline-flex md:hidden justify-between items-center z-20 sticky">
+  <button
+    #mobileMenuButton
+    (click)="onToggleMenu()"
+    (keydown)="onMenuButtonKeydown($event)"
+    [attr.aria-expanded]="isOpened"
+    [attr.aria-controls]="'mobile-menu'"
+    aria-label="Ouvrir le menu de navigation"
+    class="p-1 hover:bg-white/20 cursor-pointer rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+    <lucide-icon [name]="isOpened ? 'x' : 'menu'" [size]="24" class="text-white cursor-pointer"/>
+  </button>
+
+  <span class="justify-start text-md font-medium text-white">Mooodle</span>
+
+  <div class="flex justify-center items-center gap-4">
+    <button
+      (click)="onAvatarClick()"
+      class="size-8 relative focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 rounded-full hover:opacity-80 transition-opacity"
+      aria-label="Ouvrir le menu profil">
+      <div class="inset-0 absolute bg-zinc-300 rounded-full"></div>
+      @if (!user() || !user()?.avatar) {
+        <div class="left-1/2 top-1/2 absolute justify-start text-black text-xs font-normal text-center transform -translate-x-1/2 -translate-y-1/2">
+          {{ authService.getInitiales() }}
+        </div>
+      } @else {
+        <app-auth-image
+          [src]="user()!.avatar!"
+          [width]="32"
+          [height]="32"
+          alt="avatar"
+          class="absolute inset-0 rounded-full">
+        </app-auth-image>
+      }
+    </button>
+  </div>
+</header>
+
+<!-- Blur layer -->
+<div
+  (click)="onCloseMenu()"
+  (keydown)="onOverlayKeydown($event)"
+  [class]="isOpened ? 'fixed inset-0 bg-black/50 z-10 filter backdrop-blur' : 'hidden'"
+  [attr.aria-hidden]="!isOpened">
+</div>
+
+<!-- Mobile Menu -->
+<nav
+  #mobileMenu
+  id="mobile-menu"
+  (keydown)="onMenuKeydown($event)"
+  [attr.aria-hidden]="!isOpened"
+  [class]="isOpened ? 'flex flex-col justify-start items-start gap-1 absolute left-0 top-16 bg-white z-20 p-2 ml-4 rounded-md shadow-md focus:outline-none' : 'hidden'"
+  role="menu"
+  aria-label="Menu de navigation principal">
+
+  <app-header-item
+    #menuItem
+    [label]="'Accueil'"
+    [link]="'/dashboard'"
+    [variant]="'mobile'"
+    [menuRole]="'menuitem'"
+    [menuIndex]="0"
+    [isFirst]="true"
+    (menuFocus)="onMenuItemFocus($event)"
+    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
+    (menuActivate)="onMenuItemActivate()"/>
+
+  <app-header-item
+    #menuItem
+    [label]="'Mes cours'"
+    [link]="'/courses'"
+    [variant]="'mobile'"
+    [menuRole]="'menuitem'"
+    [menuIndex]="1"
+    (menuFocus)="onMenuItemFocus($event)"
+    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
+    (menuActivate)="onMenuItemActivate()"/>
+
+  <app-header-item
+    #menuItem
+    [label]="'Forum'"
+    [link]="'/forum'"
+    [variant]="'mobile'"
+    [menuRole]="'menuitem'"
+    [menuIndex]="2"
+    (menuFocus)="onMenuItemFocus($event)"
+    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
+    (menuActivate)="onMenuItemActivate()"/>
+
+  <app-header-item
+    #menuItem
+    [label]="'Administration'"
+    [link]="'/administration'"
+    [variant]="'mobile'"
+    [menuRole]="'menuitem'"
+    [menuIndex]="3"
+    (menuFocus)="onMenuItemFocus($event)"
+    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
+    (menuActivate)="onMenuItemActivate()"/>
+</nav>
+
+<!-- User Profile Popup - Moved outside nav -->
+<app-user-profile-popup
+  [isOpen]="isProfilePopupOpen"
+  (closePopup)="onProfilePopupClose()">
+</app-user-profile-popup>
