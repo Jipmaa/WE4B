@@ -5,13 +5,15 @@ import {LucideAngularModule} from 'lucide-angular';
 import {CourseUnitsService} from '@/core/services/course-units.service';
 import {CourseUnit, CourseUnitsResponse} from '@/core/models/course-unit.models';
 import {AuthService} from '@/core/services/auth.service';
+import {CourseCard} from '@/shared/components/ui/course-card/course-card';
 
 @Component({
   selector: 'app-courses-page',
   imports: [
     SidebarLayout,
     InputComponent,
-    LucideAngularModule
+    LucideAngularModule,
+    CourseCard
   ],
   templateUrl: './courses-page.html',
 })
@@ -36,6 +38,10 @@ export class CoursesPage implements OnInit {
         console.error('Failed to load user courses:', error);
       }
     });
+  }
+
+  get courses() {
+    return this.userCourses();
   }
 
 
