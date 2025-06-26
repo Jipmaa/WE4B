@@ -187,6 +187,59 @@ export class UsersService {
       );
   }
 
+  updateUser(userId: string, userData: CreateUserRequest, avatarFile?: File): Observable<ApiResponse<CreateUserResponse>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const formData = new FormData();
+
+    // Add user data to FormData
+    formData.append('email', userData.email);
+    formData.append('password', userData.password);
+    formData.append('firstName', userData.firstName);
+    formData.append('lastName', userData.lastName);
+    formData.append('birthdate', userData.birthdate.toString());
+
+    if (userData.roles && userData.roles.length > 0) {
+      userData.roles.forEach((role, index) => {
+        formData.append(`roles[${index}]`, role);
+      });
+    }
+
+    if (userData.department && userData.department.trim() !== '') {
+      formData.append('department', userData.department);
+    }
+
+    if (userData.isActive !== undefined) {
+      formData.append('isActive', userData.isActive.toString());
+    }
+
+    if (userData.isEmailVerified !== undefined) {
+      formData.append('isEmailVerified', userData.isEmailVerified.toString());
+    }
+
+    if (avatarFile) {
+      formData.append('avatar', avatarFile);
+    }
+
+    return this.http.put<ApiResponse<CreateUserResponse>>(`${this.baseUrl}/${userId}`, formData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Replace the updated user in the list
+            const currentUsers = this._users();
+            const updatedUsers = currentUsers.map(user =>
+              user._id === userId ? response.data.user : user
+            );
+            this._users.set(updatedUsers);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+
   toggleUserStatus(id: string): Observable<ApiResponse<{ user: User }>> {
     this._isLoading.set(true);
     this._error.set(null);

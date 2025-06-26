@@ -64,3 +64,11 @@
   </app-tabs>
 
 </app-sidebar-layout>
+
+<app-user-register-popup
+  [isOpen]="showEditUserPopup"
+  [isEditMode]="true"
+  [user]="selectedUser"
+  (closePopup)="showEditUserPopup = false"
+  (userSaved)="onUserUpdated($event)">
+</app-user-register-popup>

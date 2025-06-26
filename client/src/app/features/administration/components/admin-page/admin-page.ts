@@ -10,11 +10,12 @@ import { TabContentComponent } from "../../../../shared/components/ui/tab-conten
 import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { ArrayComponent, Columns, RowActions, Messages, LoadingState} from '@/shared/components/ui/array/array';
+import { UserRegisterPopup} from '@/shared/components/layout/user-register-popup/user-register-popup';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -22,6 +23,9 @@ export class AdminPage implements OnInit {
 
   UsersArray !: User[]
   CoursesArray !: CourseUnit[]
+
+  showEditUserPopup: boolean = false;
+  selectedUser: User | null = null;
 
   columnsUsers: Columns = [
     {
@@ -52,6 +56,8 @@ export class AdminPage implements OnInit {
       onTriggered: (user: User) => {
         console.log('Modifier utilisateur:', user);
         // Implémentez votre logique de modification ici
+        this.selectedUser = user;
+        this.showEditUserPopup = true;
       }
     },
     {
@@ -151,6 +157,23 @@ export class AdminPage implements OnInit {
       }
     )
   }
+
+  onUserUpdated(updatedUser: User): void {
+    // Chercher l'index de l'utilisateur mis à jour dans le tableau
+    const index = this.UsersArray.findIndex(u => u._id === updatedUser._id);
+
+    if (index !== -1) {
+      // Remplacer l'ancien utilisateur par le nouveau dans le tableau
+      this.UsersArray[index] = updatedUser;
+
+      // Forcer le tableau à se mettre à jour si besoin
+      this.UsersArray = [...this.UsersArray];
+    }
+
+    // Tu peux afficher une notif ou console.log
+    console.log('Utilisateur mis à jour :', updatedUser);
+  }
+
 
   ngOnInit(): void {
 
