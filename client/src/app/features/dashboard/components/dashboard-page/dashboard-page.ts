@@ -11,7 +11,6 @@ import {Activity} from '@/shared/components/ui/activity/activity';
     Activity,
   ],
   templateUrl: './dashboard-page.html',
-  styleUrl: './dashboard-page.css'
 })
 export class DashboardPage {
 }
