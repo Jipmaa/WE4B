@@ -1,0 +1,38 @@
+<div class="w-full p-2 bg-primary/10 rounded-lg flex flex-col items-start gap-2 overflow-hidden">
+  <div
+    class="collapsible-header self-stretch inline-flex justify-between items-center border-b-primary/15 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 p-1 -m-1"
+    [attr.id]="headerId"
+    [class.border-b]="isOpen()"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-controls]="contentId"
+    [attr.tabindex]="0"
+    role="button"
+    (click)="toggle()"
+    (keydown)="onKeydown($event)">
+    <div class="inline-flex items-center gap-2">
+      <span class="opacity-70 text-black text-sm font-medium leading-tight">{{label}}</span>
+      @if (notifications !== null && notifications > 0) {
+        <div class="px-1 py-0.5 aspect-square min-w-5 bg-red-500 rounded-sm inline-flex flex-col justify-center items-center gap-2.5">
+          <div class="self-stretch text-center justify-center text-white text-xs font-normal">{{notifications}}</div>
+        </div>
+      }
+    </div>
+    <span [attr.aria-hidden]="true">
+      <app-icon-button
+        [icon]="actionIcon()"
+        size="sm"
+        [tabindex]="-1"
+        variant="ghost"
+      />
+    </span>
+  </div>
+  <div
+    class="self-stretch flex flex-col items-start gap-2 transition-all duration-200 ease-in-out"
+    [attr.id]="contentId"
+    [attr.aria-labelledby]="headerId"
+    [attr.aria-hidden]="!isOpen()"
+    [class.hidden]="!isOpen()"
+    role="region">
+    <ng-content/>
+  </div>
+</div>
