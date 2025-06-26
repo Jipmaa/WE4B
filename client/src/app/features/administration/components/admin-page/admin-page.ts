@@ -9,7 +9,6 @@ import { TabItemComponent } from "../../../../shared/components/ui/tab-item/tab-
 import { TabContentComponent } from "../../../../shared/components/ui/tab-content/tab-content";
 import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
-//import { InfiniteTableComponent, Columns, RowActions, Messages, LoadingState } from './infinite-table.component';
 import { ArrayComponent, Columns, RowActions, Messages, LoadingState} from '@/shared/components/ui/array/array';
 
 @Component({

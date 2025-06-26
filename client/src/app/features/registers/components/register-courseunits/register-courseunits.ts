@@ -18,7 +18,7 @@ export class RegisterCourseunits implements OnInit {
 
   myForm = new FormGroup({
     name: new FormControl<string>('', Validators.required),
-    code: new FormControl<string>('', Validators.required),
+    code: new FormControl<string>('', [Validators.required, codeValidator]),
     capacity: new FormControl(null, [Validators.required, capacityValidator]),
     type: new FormControl<string>('', Validators.required),
     image: new FormControl<string>('')
@@ -117,6 +117,19 @@ function capacityValidator(control: AbstractControl): ValidationErrors | null {
   // Vérifie que la valeur est un nombre entier positif (et non vide)
   if (!/^\d+$/.test(control.value))
     errors["number"] = 'ok'
+
+  return Object.keys(errors).length ? errors : null;
+}
+
+function codeValidator(control: AbstractControl): ValidationErrors | null {
+
+  const errors: any = {}  //dictionary to store all the errors
+  const value = control.value || '';
+
+  if (value.length < 2 || value.length > 20)
+    errors["minLengthCode"] = 'ok'
+  if (!/^[A-Z0-9]+$/.test(value))
+    errors["codeValid"] = 'ok'
 
   return Object.keys(errors).length ? errors : null;
 }

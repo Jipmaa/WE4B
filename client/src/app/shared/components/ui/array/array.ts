@@ -1,19 +1,3 @@
-/*import { Component, Input } from '@angular/core';
-
-@Component({
-  selector: 'app-array',
-  imports: [],
-  templateUrl: './array.html'
-})
-
-export class Array {
-  @Input() data: any[] = []; // Les données à afficher dans le tableau
-  @Input() columns: { label: string; mapToKey: string; showOnSmall?: boolean }[] = []; // Configuration des colonnes
-  @Input() messages = { onLoading: '', onAllLoaded: '', onError: '' }; // Messages d'état
-  loading: boolean = false; // Indique si on charge des données
-  error: boolean = false; // Indique s'il y a une erreur
-}*/
-
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

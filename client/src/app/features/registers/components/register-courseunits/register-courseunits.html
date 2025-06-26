@@ -1,5 +1,3 @@
-<p>register-courseunits works!</p>
-
 <div
     class="max-w-3xl bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col justify-evenly mt-[3em] p-[2vh] mx-auto px-4 py-8">
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="row g-3">
@@ -26,12 +24,19 @@
                 <app-input type="text" class="form-control" id="inputCode" name="nom" placeholder="ex: WE4A"
                 formControlName="code" [required]="true"></app-input>
             <ng-container *ngIf="myForm.get('code')?.dirty || myForm.get('code')?.touched">
-                <div *ngIf="myForm.get('code')?.errors?.['required']; else codeValid">
-                    ❌ Code requis
+                <div *ngIf="myForm.get('code')?.errors?.['minLengthCode']; else minLengthCodeValid">
+                    ❌ Code must be between 2 and 20 characters
                 </div>
-                <ng-template #codeValid>
-                    <div class="text-success small">✅ Code valide</div>
+                <ng-template #minLengthCodeValid>
+                    <div class="text-success small">✅ Length OK</div>
                 </ng-template>
+
+              <div *ngIf="myForm.get('code')?.errors?.['codeValid']; else codeValid">
+                ❌ Code must contain only uppercase letters and numbers
+              </div>
+              <ng-template #codeValid>
+                <div class="text-success small">✅ Code valide</div>
+              </ng-template>
             </ng-container>
         </div>
 
