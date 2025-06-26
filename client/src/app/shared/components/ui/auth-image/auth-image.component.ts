@@ -9,7 +9,7 @@ import {LucideAngularModule} from 'lucide-angular';
   standalone: true,
   imports: [CommonModule, LucideAngularModule],
   template: `
-    @if (imageUrl()) {
+    @if (src && imageUrl()) {
       <img
         [src]="imageUrl()"
         [alt]="alt"
@@ -38,10 +38,10 @@ import {LucideAngularModule} from 'lucide-angular';
 export class AuthImageComponent implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
 
-  @Input({ required: true }) src!: string;
+  @Input({required: true}) src: string | null = null;
   @Input() alt: string = '';
-  @Input() width: number = 32;
-  @Input() height: number = 32;
+  @Input() width: number | null = null;
+  @Input() height: number | null = null;
   @Input() className: string = '';
   @Input() fallbackIcon: string = 'image-off';
 

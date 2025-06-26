@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { query, param, body } from 'express-validator';
 import CourseUnit from '../models/course-unit';
+import CourseGroup from '../models/course-group';
+import User from '../models/user';
 import { authMiddleware } from '../middleware/auth-middleware';
 import { adminMiddleware } from '../middleware/roles-middleware';
 import { validateRequest } from '../middleware/validate-request';
@@ -175,6 +177,95 @@ router.get('/', getCourseUnitsValidation, validateRequest, asyncHandler(async (r
 				hasNextPage,
 				hasPrevPage
 			}
+		}
+	});
+}));
+
+// @route   GET /api/course-units/my-courses
+// @desc    Get current user's course units based on their group membership
+// @access  Private (All authenticated users)
+router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
+	const user = await User.findById(req.user?.userId).select('memberOfGroups');
+
+	if (!user) {
+		throw new AppError('User not found', 404);
+	}
+
+	// Single aggregation pipeline to get course units from user's memberOfGroups
+	const courseUnits = await CourseGroup.aggregate([
+		// Match groups that the user is a member of
+		{
+			$match: {
+				_id: { $in: user.memberOfGroups }
+			}
+		},
+		// Lookup the course unit for each group
+		{
+			$lookup: {
+				from: 'courseunits',
+				localField: 'courseUnit',
+				foreignField: '_id',
+				as: 'courseUnitData'
+			}
+		},
+		// Unwind the course unit data
+		{
+			$unwind: '$courseUnitData'
+		},
+		// Find user's role in each group
+		{
+			$addFields: {
+				userRole: {
+					$arrayElemAt: [
+						{
+							$filter: {
+								input: '$users',
+								cond: { $eq: ['$$this.user', user._id] }
+							}
+						},
+						0
+					]
+				}
+			}
+		},
+		// Group by course unit to avoid duplicates and collect roles
+		{
+			$group: {
+				_id: '$courseUnitData._id',
+				slug: { $first: '$courseUnitData.slug' },
+				name: { $first: '$courseUnitData.name' },
+				code: { $first: '$courseUnitData.code' },
+				img: { $first: '$courseUnitData.img' },
+				capacity: { $first: '$courseUnitData.capacity' },
+				createdAt: { $first: '$courseUnitData.createdAt' },
+				updatedAt: { $first: '$courseUnitData.updatedAt' },
+				userRoles: { $addToSet: '$userRole.role' }
+			}
+		},
+		// Format the output
+		{
+			$project: {
+				_id: 1,
+				slug: 1,
+				name: 1,
+				code: 1,
+				img: 1,
+				capacity: 1,
+				createdAt: 1,
+				updatedAt: 1,
+				userRole: { $arrayElemAt: ['$userRoles', 0] } // Take first role if multiple
+			}
+		},
+		// Sort by name
+		{
+			$sort: { name: 1 }
+		}
+	]);
+
+	res.json({
+		success: true,
+		data: {
+			courseUnits
 		}
 	});
 }));
