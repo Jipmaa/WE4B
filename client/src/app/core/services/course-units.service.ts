@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import {
   CapacityRangeResponse,
   CourseUnit,
+  CourseUnitPopulated,
   CourseUnitFilters,
   CourseUnitSearchResult, CourseUnitSortBy,
   CourseUnitsResponse,
@@ -404,9 +405,19 @@ export class CourseUnitsService {
     return userCourseUnits.some(unit => unit.slug === courseUnitSlug);
   }
 
-  getUserCourseUnitBySlug(slug: string): CourseUnit | null {
-    const userCourseUnits = this._userCourseUnits();
-    return userCourseUnits.find(unit => unit.slug === slug) || null;
+  getUserCourseUnitBySlug(slug: string): Observable<ApiResponse<{ courseUnit: CourseUnitPopulated }>> {
+    this._isLoading.set(true);
+
+    return this.http.get<ApiResponse<{ courseUnit: CourseUnitPopulated }>>(`${this.baseUrl}/by-slug/${slug}`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            this._selectedCourseUnit.set(response.data.courseUnit);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
   }
 
   // Helper methods

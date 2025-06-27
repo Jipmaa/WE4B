@@ -1,5 +1,5 @@
 <app-sidebar-layout
-  title="Course name"
+  [title]="courseUnit?.name ?? 'Loading...'"
   [leftSidebarOpen]="true"
   [rightSidebarOpen]="false"
   leftSidebarTitle="Table des matières"
@@ -13,7 +13,7 @@
 
   <ng-template #rightSidebar>
     <!-- Recent activities content -->
-    <p>Recent dfdfdfddfdfgdfgererf activity content goes here.</p>
+    <p>Recent activity content goes here.</p>
   </ng-template>
 
   <ng-template #actionButtons>
@@ -29,6 +29,32 @@
     <!-- Add other actions here -->
   </ng-template>
 
-  <h1>Coucou</h1>
+  <div class="flex flex-col gap-4">
+    <app-collapsible label="Activités récentes" [defaultOpen]="false">
+      <p>Recent activities content goes here.</p>
+    </app-collapsible>
+
+    <app-collapsible label="Prochainement et épinglés" [defaultOpen]="true">
+      <p>Upcoming activities and pinned ones goes here.</p>
+    </app-collapsible>
+
+    @for (category of courseUnit?.activities; track category._id) {
+      <div class="self-stretch flex flex-col gap-2">
+        <div>
+          <h2 class="font-medium leading-tight">{{ category.name }}</h2>
+          <p class="text-sm text-gray-500">{{ category.description }}</p>
+        </div>
+
+        @for (activity of category.activities; track activity._id) {
+          <span>Id: {{ activity._id }}</span>
+        }
+
+        @if (category.activities.length === 0) {
+          <p class="bg-primary/10 rounded px-2 py-1">Aucune activité dans cette catégorie.</p>
+        }
+
+      </div>
+    }
+  </div>
 
 </app-sidebar-layout>

@@ -1,5 +1,6 @@
 import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
+import {CourseActivity} from '@/core/models/course-activity.models';
 
 export interface CourseUnit {
   _id: string;
@@ -21,6 +22,19 @@ export interface CourseUnitActivitiesCategory {
   name: string;
   description: string;
   activities: string[];
+}
+
+// Populated version for when activities are fully loaded
+export interface CourseUnitActivitiesCategoryPopulated {
+  _id: string;
+  name: string;
+  description: string;
+  activities: CourseActivity[];
+}
+
+// CourseUnit with populated activities
+export interface CourseUnitPopulated extends Omit<CourseUnit, 'activities'> {
+  activities: CourseUnitActivitiesCategoryPopulated[];
 }
 
 export interface CourseUnitFilters extends BaseFilters {

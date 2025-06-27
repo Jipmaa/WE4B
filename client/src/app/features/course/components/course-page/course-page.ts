@@ -1,7 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
+import { map, switchMap } from 'rxjs';
 import { LucideAngularModule } from "lucide-angular";
 import { SidebarLayout } from "@/shared/components/layout/sidebar-layout/sidebar-layout";
 import { ButtonComponent } from '@/shared/components/ui/button/button';
@@ -9,6 +9,7 @@ import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-but
 import { AuthService } from '@/core/services/auth.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import {Activity} from '@/shared/components/ui/activity/activity';
+import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
 
 @Component({
   selector: 'app-course-page',
@@ -17,7 +18,8 @@ import {Activity} from '@/shared/components/ui/activity/activity';
     SidebarLayout,
     ButtonComponent,
     IconButtonComponent,
-    Activity
+    Activity,
+    Collapsible
   ],
   templateUrl: './course-page.html',
 })
@@ -35,14 +37,23 @@ export class CoursePage {
     { initialValue: '' }
   );
 
-  // Get current course unit (access is already validated by guard)
-  readonly currentCourseUnit = computed(() => {
-    const slug = this.courseSlug();
-    return this.courseUnitsService.getUserCourseUnitBySlug(slug);
-  });
+  // Get current course unit by calling the API when slug changes
+  readonly currentCourseUnit = toSignal(
+    this.route.paramMap.pipe(
+      map(params => params.get('slug') || ''),
+      switchMap(slug => {
+        if (!slug) {
+          throw new Error('Course slug is required');
+        }
+        return this.courseUnitsService.getUserCourseUnitBySlug(slug);
+      }),
+      map(response => response.success ? response.data.courseUnit : null)
+    ),
+    { initialValue: null }
+  );
 
   readonly isLoading = computed(() => {
-    return this.courseUnitsService.isLoadingUserCourseUnits() || this.authService.isLoading();
+    return this.courseUnitsService.isLoading() || this.authService.isLoading();
   });
 
   get courseUnit() {

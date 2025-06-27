@@ -578,7 +578,9 @@ router.get('/by-slug/:slug', [
 ], validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	const slug = req.params.slug;
 
-	const courseUnit = await CourseUnit.findOne({ slug }).select('-__v');
+	const courseUnit = await CourseUnit.findOne({ slug })
+		.select('-__v +activities.activities')
+		.populate('activities.activities');
 
 	if (!courseUnit) {
 		throw new AppError('Course unit not found', 404);
