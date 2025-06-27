@@ -31,7 +31,7 @@ export class DiscussionCreationComponent implements OnInit {
     this.discussionForm = this.fb.group({
       title: ['', Validators.required],
       message: ['', Validators.required],
-      course: [null],
+      course: [''],
     });
   }
 

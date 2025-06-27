@@ -1,8 +1,8 @@
 import { Component, OnInit, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ForumService } from '../../../../core/services/forum.service';
-import { Discussion } from '../../../../core/models/discussion.models';
+import { ForumService } from '@/core/services/forum.service';
+import { Discussion } from '@/core/models/discussion.models';
 import { of, switchMap } from 'rxjs';
 
 @Component({

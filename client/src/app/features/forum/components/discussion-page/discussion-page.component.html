@@ -1,22 +1,37 @@
-<div class="flex h-screen bg-gray-100">
-  <div [ngClass]="{'w-full': !selectedDiscussionId && !showCreationForm, 'w-1/3': selectedDiscussionId || showCreationForm}" class="border-r border-gray-200 bg-white flex flex-col">
-    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-      <h1 class="text-2xl font-semibold text-gray-800">Discussions</h1>
-      <button (click)="onNewDiscussionClick()" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">Nouvelle Discussion</button>
-    </div>
-    <div class="flex-grow overflow-y-auto">
-      <app-discussion-list (discussionSelected)="onDiscussionSelected($event)" [selectedDiscussionId]="selectedDiscussionId"></app-discussion-list>
+<div class="flex h-screen bg-background">
+
+  <div
+    [ngClass]="{'w-full': !selectedDiscussionId && !showCreationForm, 'w-1/2': selectedDiscussionId || showCreationForm}"
+    class="bg-white rounded-lg shadow-md m-4 flex flex-col">
+    <div class="flex-grow">
+      <div class="p-4 border-b border-border flex justify-between items-center">
+        <h1 class="text-3xl font-bold mb-4 text-primary">Forum</h1>
+        <button (click)="onNewDiscussionClick()"
+                class="px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition duration-150 ease-in-out"
+                img="">
+          Nouvelle Discussion
+        </button>
+      </div>
+      <div class="flex-grow overflow-y-auto">
+        <app-discussion-list (discussionSelected)="onDiscussionSelected($event)"
+                             [selectedDiscussionId]="selectedDiscussionId">
+        </app-discussion-list>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="selectedDiscussionId" class="w-2/3 bg-white flex flex-col relative p-4">
-    <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl" (click)="onCloseDiscussion()">X</button>
+  <div *ngIf="selectedDiscussionId" class="w-2/3 bg-white flex flex-col relative p-4 rounded-lg shadow-md m-4">
+    <button class="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
+            (click)="onCloseDiscussion()">X
+    </button>
     <app-discussion-view [discussionId]="selectedDiscussionId"></app-discussion-view>
   </div>
 
-  <div *ngIf="showCreationForm" class="w-2/3 bg-white flex flex-col relative p-4">
-    <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-xl" (click)="showCreationForm = false">X</button>
-    <h2 class="text-xl font-semibold mb-4">Créer une nouvelle discussion</h2>
+  <div *ngIf="showCreationForm" class="w-2/3 bg-white flex flex-col relative p-4 rounded-lg shadow-md m-4">
+    <button class="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-xl"
+            (click)="showCreationForm = false">X
+    </button>
+    <h2 class="text-3xl font-bold mb-4 text-primary">Créer une nouvelle discussion</h2>
     <app-discussion-creation (discussionCreated)="onDiscussionCreated($event)"></app-discussion-creation>
   </div>
 </div>

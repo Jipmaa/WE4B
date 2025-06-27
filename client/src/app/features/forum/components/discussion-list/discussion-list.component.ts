@@ -1,5 +1,5 @@
-import { Component, OnInit, inject, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { ForumService } from '../../../../core/services/forum.service';
 import { Discussion } from '../../../../core/models/discussion.models';
 import { Subscription } from 'rxjs';
