@@ -27,7 +27,7 @@ export class CourseUnitsService {
   // State management with signals
   private readonly _courseUnits = signal<CourseUnit[]>([]);
   private readonly _userCourseUnits = signal<CourseUnit[]>([]);
-  private readonly _selectedCourseUnit = signal<CourseUnit | null>(null);
+  private readonly _selectedCourseUnit = signal<CourseUnit | CourseUnitPopulated | null>(null);
   private readonly _courseUnitStats = signal<CourseUnitStats | null>(null);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _isLoadingUserCourseUnits = signal<boolean>(false);

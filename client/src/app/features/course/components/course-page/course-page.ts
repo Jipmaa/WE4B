@@ -8,7 +8,6 @@ import { ButtonComponent } from '@/shared/components/ui/button/button';
 import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
 import { AuthService } from '@/core/services/auth.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
-import {Activity} from '@/shared/components/ui/activity/activity';
 import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
 
 @Component({
@@ -18,7 +17,6 @@ import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
     SidebarLayout,
     ButtonComponent,
     IconButtonComponent,
-    Activity,
     Collapsible
   ],
   templateUrl: './course-page.html',
