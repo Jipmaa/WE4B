@@ -4,10 +4,6 @@
     <!-- En-tête -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-gray-800">Forum</h1>
-      <button (click)="createNewDiscussion()"
-              class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
-        Nouvelle Discussion
-      </button>
     </div>
 
     <!-- État de chargement -->
@@ -35,6 +31,7 @@
         <!-- Élément de la liste -->
         <li *ngFor="let discussion of discussions; else noDiscussions"
             (click)="viewDiscussion(discussion._id)"
+            [ngClass]="{'bg-indigo-100': discussion._id === selectedDiscussionId}"
             class="grid grid-cols-12 gap-4 px-6 py-5 hover:bg-gray-100 cursor-pointer transition duration-150 ease-in-out">
 
           <!-- Sujet et cours -->

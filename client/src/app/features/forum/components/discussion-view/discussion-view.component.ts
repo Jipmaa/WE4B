@@ -1,5 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ForumService } from '../../../../core/services/forum.service';
@@ -12,9 +11,10 @@ import { of, switchMap } from 'rxjs';
   imports: [CommonModule, FormsModule],
   templateUrl: './discussion-view.component.html',
 })
-export class DiscussionViewComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
+export class DiscussionViewComponent implements OnInit, OnChanges {
   private readonly forumService = inject(ForumService);
+
+  @Input() discussionId!: string;
 
   discussion: Discussion | null = null;
   newMessageContent = '';
@@ -22,18 +22,27 @@ export class DiscussionViewComponent implements OnInit {
   isLoading = true;
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(
-      switchMap(params => {
-        const id = params.get('id');
-        if (id) {
-          this.isLoading = true;
-          return this.forumService.getDiscussionById(id);
-        }
-        this.isLoading = false;
-        this.error = "Aucun ID de discussion n'a été fourni.";
-        return of(null);
-      })
-    ).subscribe({
+    // Initial load if discussionId is already set (e.g., from route resolver, though not used here anymore)
+    if (this.discussionId) {
+      this.loadDiscussion(this.discussionId);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['discussionId'] && changes['discussionId'].currentValue) {
+      this.loadDiscussion(changes['discussionId'].currentValue);
+    } else if (changes['discussionId'] && !changes['discussionId'].currentValue) {
+      // Clear discussion if discussionId becomes null (e.g., when closing the view)
+      this.discussion = null;
+      this.error = null;
+      this.isLoading = false;
+    }
+  }
+
+  loadDiscussion(id: string): void {
+    this.isLoading = true;
+    this.error = null;
+    this.forumService.getDiscussionById(id).subscribe({
       next: (discussion) => {
         this.discussion = discussion;
         this.isLoading = false;
@@ -46,19 +55,15 @@ export class DiscussionViewComponent implements OnInit {
   }
 
   sendMessage(): void {
-    if (!this.newMessageContent.trim() || !this.discussion) {
+    if (!this.newMessageContent.trim() || !this.discussionId) {
       return;
     }
 
-    this.forumService.addMessageToDiscussion(this.discussion._id, this.newMessageContent).subscribe({
+    this.forumService.addMessageToDiscussion(this.discussionId, this.newMessageContent).subscribe({
       next: () => {
-        // Recharge la discussion pour afficher le nouveau message.
-        // Une approche plus optimisée pourrait être de recevoir le nouveau message de l'API
-        // et de l'ajouter directement au tableau local.
-        if (this.discussion) {
-            this.forumService.getDiscussionById(this.discussion._id).subscribe(d => this.discussion = d);
-        }
-        this.newMessageContent = ''; // Vide le champ de saisie
+        // Reload the discussion to display the new message.
+        this.loadDiscussion(this.discussionId);
+        this.newMessageContent = ''; // Clear the input field
       },
       error: (err) => {
         this.error = `Erreur lors de l'envoi du message : ${err.message}`;

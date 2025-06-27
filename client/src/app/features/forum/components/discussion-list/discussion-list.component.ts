@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { ForumService } from '../../../../core/services/forum.service';
 import { Discussion } from '../../../../core/models/discussion.models';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-discussion-list',
@@ -10,9 +10,12 @@ import { Discussion } from '../../../../core/models/discussion.models';
   imports: [CommonModule],
   templateUrl: './discussion-list.component.html',
 })
-export class DiscussionListComponent implements OnInit {
+export class DiscussionListComponent implements OnInit, OnDestroy {
   private readonly forumService = inject(ForumService);
-  private readonly router = inject(Router);
+  private discussionUpdateSubscription: Subscription | undefined;
+
+  @Output() discussionSelected = new EventEmitter<string>();
+  @Input() selectedDiscussionId: string | null = null;
 
   discussions: Discussion[] = [];
   error: string | null = null;
@@ -20,6 +23,13 @@ export class DiscussionListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDiscussions();
+    this.discussionUpdateSubscription = this.forumService.discussionUpdated$.subscribe(() => {
+      this.loadDiscussions();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.discussionUpdateSubscription?.unsubscribe();
   }
 
   loadDiscussions(): void {
@@ -37,10 +47,6 @@ export class DiscussionListComponent implements OnInit {
   }
 
   viewDiscussion(id: string): void {
-    this.router.navigate(['/forum/discussions', id]);
-  }
-
-  createNewDiscussion(): void {
-    this.router.navigate(['/forum/new']);
+    this.discussionSelected.emit(id);
   }
 }

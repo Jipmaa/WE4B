@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+
 import { ForumService } from '@/core/services/forum.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { CourseUnit } from '@/core/models/course-unit.models';
@@ -19,13 +19,14 @@ export class DiscussionCreationComponent implements OnInit {
   private readonly AuthService = inject(AuthService);
   protected readonly user = this.AuthService.user;
 
+  @Output() discussionCreated = new EventEmitter<string>();
+
 
   private readonly courseUnitsService = inject(CourseUnitsService);
 
   constructor(
     private fb: FormBuilder,
-    private forumService: ForumService,
-    private router: Router
+    private forumService: ForumService
   ) {
     this.discussionForm = this.fb.group({
       title: ['', Validators.required],
@@ -70,7 +71,8 @@ export class DiscussionCreationComponent implements OnInit {
       this.forumService.createDiscussion(formValue).subscribe({
         next: async (newDiscussion) => {
           try {
-            await this.router.navigate(['/forum/discussions', newDiscussion.data._id]);
+            this.discussionCreated.emit(newDiscussion.data._id);
+            this.discussionForm.reset();
           } catch (err) {
             console.error('Erreur de navigation :', err);
           }
