@@ -1,0 +1,197 @@
+<div
+  class="max-w-3xl bg-card rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex flex-col justify-evenly mt-[3em] p-[2vh] mx-auto px-4 py-8">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <h1 class="text-2xl font-bold text-gray-800">Créer un utilisateur</h1>
+
+    <!-- Prénom -->
+    <div>
+      <label for="inputPrenom"
+             class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Prénom</label>
+      <!--<input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom" formControlName="firstName" required
+          class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-input inline-flex justify-start items-center">-->
+      <app-input type="text" id="inputPrenom" name="firstName" placeholder="Ton prénom"
+                 formControlName="firstName"></app-input>
+
+      <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
+        <div *ngIf="myForm.get('firstName')?.errors?.['required']; else firstNameValid"
+             class="text-red-600 text-sm">❌ Prénom requis
+        </div>
+        <ng-template #firstNameValid>
+          <div class="text-green-600 text-sm">✅ Prénom valide</div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- Nom -->
+    <div>
+      <label for="inputNom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
+      <app-input type="text" id="inputNom" name="lastName" placeholder="Ton nom de famille"
+                 formControlName="lastName"></app-input>
+
+      <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
+        <div *ngIf="myForm.get('lastName')?.errors?.['required']; else lastNameValid"
+             class="text-red-600 text-sm">❌ Nom requis
+        </div>
+        <ng-template #lastNameValid>
+          <div class="text-green-600 text-sm">✅ Nom valide</div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- Date de naissance -->
+    <div>
+      <label for="birthDate" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Date de
+        naissance</label>
+      <app-input type="date" id="birthDate" name="birthdate" formControlName="birthdate"></app-input>
+
+      <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
+        <div *ngIf="myForm.get('birthdate')?.errors?.['required']" class="text-red-600 text-sm">❌ Date requise
+        </div>
+        <div *ngIf="!myForm.get('birthdate')?.invalid" class="text-green-600 text-sm">✅ Date valide</div>
+      </ng-container>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label for="inputEmail4" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Email</label>
+      <app-input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr"
+                 formControlName="email"></app-input>
+
+      <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
+        <div *ngIf="myForm.get('email')?.errors?.['required']" class="text-red-600 text-sm">❌ Email requis</div>
+        <div *ngIf="myForm.get('email')?.errors?.['email']" class="text-red-600 text-sm">❌ Email invalide</div>
+        <div *ngIf="!myForm.get('email')?.invalid" class="text-green-600 text-sm">✅ Email valide</div>
+      </ng-container>
+    </div>
+
+    <!-- Téléphone -->
+    <div>
+      <label for="inputPhone" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Téléphone
+        (optionnel)</label>
+      <app-input type="tel" id="inputPhone" name="phone" placeholder="+XX XX XX XX XX"
+                 formControlName="phone"></app-input>
+
+      <ng-container *ngIf="myForm.get('phone')?.dirty || myForm.get('phone')?.touched">
+        <div *ngIf="myForm.get('phone')?.errors?.['pattern']" class="text-red-600 text-sm">❌ Format de téléphone
+          invalide
+        </div>
+        <div *ngIf="!myForm.get('phone')?.invalid" class="text-green-600 text-sm">✅ Téléphone valide</div>
+      </ng-container>
+    </div>
+
+
+    <!-- Rôles -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Rôles</label>
+      <div class="space-y-2 mt-1">
+        <div>
+          <input type="checkbox" value="student" name="roles" id="roleStudent" (change)="onRoleChange($event)"
+                 [checked]="myForm.value.roles?.includes('student')" class="mr-2">
+          <label for="roleStudent">Student</label>
+        </div>
+        <div>
+          <input type="checkbox" value="teacher" name="roles" id="roleTeacher" (change)="onRoleChange($event)"
+                 [checked]="myForm.value.roles?.includes('teacher')" class="mr-2">
+          <label for="roleTeacher">Teacher</label>
+        </div>
+        <div>
+          <input type="checkbox" value="admin" name="roles" id="roleAdmin" (change)="onRoleChange($event)"
+                 [checked]="myForm.value.roles?.includes('admin')" class="mr-2">
+          <label for="roleAdmin">Admin</label>
+        </div>
+        <ng-container *ngIf="myForm.get('roles')?.touched">
+          <div *ngIf="myForm.get('roles')?.errors?.['rolesRequired']" class="text-danger small">
+            ❌ Au moins un rôle doit être sélectionné
+          </div>
+          <div *ngIf="myForm.get('roles')?.errors?.['rolesInvalid']" class="text-danger small">
+            ❌ Combinaison de rôles non autorisée
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Champ Département (affiché seulement si le rôle student est sélectionné) -->
+    <div class="mb-3" *ngIf="myForm.value.roles?.includes('student')">
+      <label for="inputDepartment" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Department</label>
+      <select id="inputDepartment" formControlName="department" class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+        <option value="" selected>Sélectionner une option</option>
+        <option value="COMMON_CORE">Common Core</option>
+        <option value="COMPUTER_SCIENCE">Computer Science</option>
+        <option value="ENERGY">Energy</option>
+        <option value="EDIM">EDIM</option>
+        <option value="IMSI">IMSI</option>
+        <option value="GMC">GMC</option>
+      </select>
+      <ng-container *ngIf="myForm.get('department')?.dirty || myForm.get('department')?.touched">
+        <div *ngIf="myForm.get('department')?.errors?.['required']; else departmentValid">
+          ❌ Department required
+        </div>
+        <ng-template #departmentValid>
+          <div class="text-success small">✅ Valid department</div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- Mot de passe -->
+    <div>
+      <label for="inputPassword" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Mot de
+        passe</label>
+      <div class="relative">
+        <input type="password" id="inputPassword" name="password" placeholder="Mot de passe"
+                   formControlName="password" class="w-full text-sm pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center"/>
+        <lucide-icon [name]="iconName" (click)="TogglePass($event.target)"
+                     class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer w-5 h-5"></lucide-icon>
+      </div>
+      <ng-container *ngIf="myForm.get('password')?.dirty || myForm.get('password')?.touched">
+        <div *ngIf="myForm.get('password')?.errors?.['minLength']; else minLengthValid"
+             class="text-danger small">
+          ❌ Password must be at least 10 characters
+        </div>
+        <ng-template #minLengthValid>
+          <div class="text-success small">✅ Length OK</div>
+        </ng-template>
+
+        <div *ngIf="myForm.get('password')?.errors?.['uppercase']; else uppercaseValid"
+             class="text-danger small">
+          ❌ Must have 2 uppercase letters
+        </div>
+        <ng-template #uppercaseValid>
+          <div class="text-success small">✅ Uppercase OK</div>
+        </ng-template>
+
+        <div *ngIf="myForm.get('password')?.errors?.['number']; else numberValid" class="text-danger small">
+          ❌ Must include a number
+        </div>
+        <ng-template #numberValid>
+          <div class="text-success small">✅ Number OK</div>
+        </ng-template>
+        <!--specialChars nom des erreurs définit dans le .ts-->
+        <div *ngIf="myForm.get('password')?.errors?.['specialChars']; else specialValid"
+             class="text-danger small">
+          ❌ Must include 2 special characters
+        </div>
+        <ng-template #specialValid>
+          <div class="text-success small">✅ Special characters OK</div>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- Avatar -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Photo de profil</label>
+      <input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="cursor-pointer block w-full text-sm text-gray-500
+             file:mr-4 file:py-2 file:px-4
+             file:rounded-full file:border-0
+             file:text-sm file:font-semibold
+             file:bg-blue-50 file:text-blue-700
+             hover:file:bg-blue-100" (change)="onFileSelected($event)">
+
+      <div class="text-sm text-gray-500 mt-1">Formats acceptés: JPEG, PNG, GIF, WebP (max 5MB)</div>
+    </div>
+
+    <!-- Bouton -->
+    <div>
+      <app-button type="submit" [fullWidth]="true">Enregistrer</app-button>
+    </div>
+  </form>
+</div>

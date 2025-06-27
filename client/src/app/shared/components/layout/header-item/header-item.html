@@ -1,0 +1,27 @@
+@if (link && !isDisabled) {
+  <a
+    #focusableElement
+    [href]="link"
+    [attr.role]="menuRole"
+    [attr.tabindex]="menuRole ? tabIndex : null"
+    [attr.aria-disabled]="isDisabled"
+    (focus)="onFocus()"
+    (keydown)="onKeydown($event)"
+    (click)="onActivate()"
+    [class]="componentClasses">
+      <span class="justify-start font-normal min-w-max">{{ label }}</span>
+  </a>
+} @else {
+  <button
+    #focusableElement
+    [attr.role]="menuRole"
+    [attr.tabindex]="menuRole ? tabIndex : null"
+    [attr.aria-disabled]="isDisabled"
+    [disabled]="isDisabled"
+    (focus)="onFocus()"
+    (keydown)="onKeydown($event)"
+    (click)="onActivate()"
+    [class]="componentClasses">
+    <span class="justify-start font-normal min-w-max">{{ label }}</span>
+  </button>
+}

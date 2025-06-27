@@ -1,0 +1,89 @@
+<div class="w-full flex flex-col gap-1.5">
+  <!-- Label (if provided) -->
+@if (label) {
+  <div class="flex justify-between items-baseline">
+    <label
+      [for]="inputId"
+      class="justify-start text-gray-900 text-sm font-medium leading-tight">
+      {{ label }}
+      @if (required) {
+        <span class="text-red-500 ml-1" aria-label="required">*</span>
+      }
+    </label>
+
+    <ng-content select="[slot=label-hint]"></ng-content>
+  </div>
+}
+
+  <!-- Input Container -->
+  <div
+    [class]="containerClasses"
+    [attr.data-validation-error]="hasError || null"
+    [attr.data-validation-warning]="hasWarning || null"
+    [attr.data-validation-success]="isValid || null"
+    [attr.data-focused]="isFocused || null"
+    (click)="onContainerClick()">
+
+    <ng-content select="[slot=leading]"></ng-content>
+
+    <input
+      #inputRef
+      [type]="type"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [readonly]="readonly"
+      [required]="required"
+      [value]="value"
+      [id]="inputId"
+      [name]="name"
+      [class]="inputClasses"
+      [autocomplete]="autocomplete"
+      [attr.aria-label]="ariaLabel || null"
+      [attr.aria-invalid]="hasError || null"
+      [attr.aria-required]="required || null"
+      (input)="onInput($event)"
+      (blur)="onBlur($event)"
+      (focus)="onFocus($event)"
+      (keyup)="onKeyUp($event)"
+      (keydown)="onKeyDown($event)"
+    />
+
+    <ng-content select="[slot=trailing]"></ng-content>
+  </div>
+
+  <!-- Help Text -->
+  @if (helpText && !hasError) {
+    <p [id]="inputId + '-help'"
+       class="mt-1 text-xs text-gray-500">
+      {{ helpText }}
+    </p>
+  }
+
+  <!-- Error Message -->
+  @if (errorText && hasError) {
+    <p [id]="inputId + '-error'"
+      class="mt-1 text-xs text-red-600"
+      role="alert"
+      aria-live="polite">
+      {{ errorText }}
+    </p>
+  }
+
+  <!-- Warning Message -->
+  @if (warningText && hasWarning && !hasError) {
+    <p [id]="inputId + '-warning'"
+       class="mt-1 text-xs text-yellow-600"
+       role="alert"
+       aria-live="polite">
+      {{ warningText }}
+    </p>
+  }
+
+  <!-- Success Message -->
+  @if (successText && isValid && !hasError && !hasWarning) {
+    <p [id]="inputId + '-success'"
+      class="mt-1 text-xs text-green-600">
+      {{ successText }}
+    </p>
+  }
+</div>

@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@config "../tailwind.config.mjs";
+
+@theme {
+  --color-background: #E8ECEE;
+  --color-foreground: #3C7186;
+
+  --color-card: #F3F9FB;
+  --color-card-foreground: #3C7186;
+
+  --color-popover: white;
+  --color-popover-foreground: #3C7186;
+
+  --color-primary: #37A0C9;
+  --color-primary-foreground: white;
+
+  --color-secondary: #D7ECF4;
+  --color-secondary-foreground: #3C7186;
+
+  --color-muted: #E2EFF4;
+  --color-muted-foreground: #3C7186;
+
+  --color-accent: #E2EFF4;
+  --color-accent-foreground: #3C7186;
+
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: white;
+
+  --color-border: #D8E3E7;
+  --color-input: #D8E3E7;
+  --color-ring: #37A0C9;
+
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply overflow-x-hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      @apply transition-none;
+      animation: none !important;
+    }
+  }
+}

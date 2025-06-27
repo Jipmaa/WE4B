@@ -1,0 +1,74 @@
+<app-sidebar-layout
+  title="Administration"
+  [leftSidebarOpen]="false"
+  [rightSidebarOpen]="false"
+>
+
+  <ng-template #actionButtons>
+    <div data-property-1="placeholder" data-show-leading-icon="true"
+         class="self-stretch px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-sky-500/20 flex justify-start items-center gap-2.5 overflow-hidden">
+      <lucide-icon name="search" size="16" />
+      <input placeholder="Chercher une UE ou un groupe..."
+             class="flex-1 opacity-60 justify-start text-black text-sm font-normal leading-tight" />
+    </div>
+
+    <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
+         class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon name="graduation-cap" size="16" />
+      </div>
+      <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter une
+        UE</div>
+    </div>
+
+    <div data-show-leading="true" data-show-trailing="false" data-state="Default" data-variant="secondary"
+         class="px-3 py-2 bg-sky-500/20 rounded flex justify-center items-center gap-2 overflow-hidden">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon name="folder" size="16" />
+      </div>
+      <div class="cursor-pointer justify-start text-black text-sm font-medium  leading-normal">Ajouter un
+        groupe</div>
+    </div>
+  </ng-template>
+
+  <app-tabs id="tabs">
+    <app-tab-item value="ues">Unités d’enseignement</app-tab-item>
+    <app-tab-item value="users">Utilisateurs</app-tab-item>
+
+    <!--Contenu affiché si l'onglet Unités d'enseignement est cliqué-->
+    <app-tab-content value="ues">
+
+      <app-array
+        [data]="CoursesArray"
+        [columns]="columnsCourses"
+        [rowActions]="rowActionsCourses"
+        [messages]="messagesCourses"
+        [loadingState]="loadingState"
+        (loadMore)="loadMoreUsers()"
+      ></app-array>
+    </app-tab-content>
+
+    <!--Contenu affiché si l'onglet utilisateurs est cliqué-->
+    <app-tab-content value="users">
+
+      <app-array
+        [data]="UsersArray"
+        [columns]="columnsUsers"
+        [rowActions]="rowActionsUsers"
+        [messages]="messagesUsers"
+        [loadingState]="loadingState"
+        (loadMore)="loadMoreUsers()"
+      ></app-array>
+
+    </app-tab-content>
+  </app-tabs>
+
+</app-sidebar-layout>
+
+<app-user-register-popup
+  [isOpen]="showEditUserPopup"
+  [isEditMode]="true"
+  [user]="selectedUser"
+  (closePopup)="showEditUserPopup = false"
+  (userSaved)="onUserUpdated($event)">
+</app-user-register-popup>

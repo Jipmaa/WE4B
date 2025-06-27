@@ -1,0 +1,280 @@
+<p>user-register-popup works!</p>
+
+<!-- Backdrop overlay -->
+@if (isOpen) {
+  <div
+    (click)="onOverlayClick()"
+    (keydown)="onOverlayKeydown($event)"
+    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    [attr.aria-hidden]="!isOpen"
+    tabindex="-1">
+
+    <!-- Register popup -->
+    <div
+      (click)="$event.stopPropagation()"
+      (keydown)="onPopupKeydown($event)"
+      class="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto focus:outline-none"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="isEditMode ? 'edit-user-title' : 'create-user-title'"
+      tabindex="-1">
+
+      <div class="p-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <h1 [id]="isEditMode ? 'edit-user-title' : 'create-user-title'"
+              class="text-2xl font-bold text-gray-800">
+            {{ formTitle }}
+          </h1>
+          <app-icon-button
+            icon="x"
+            [iconSize]="20"
+            variant="ghost"
+            size="sm"
+            ariaLabel="Fermer le popup"
+            (buttonClick)="onClose()">
+          </app-icon-button>
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+          <!-- Error Message -->
+          @if (submitError) {
+            <div class="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p class="text-sm text-red-600">{{ submitError }}</p>
+            </div>
+          }
+
+          <!-- Prénom -->
+          <div>
+            <label for="inputPrenom"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Prénom</label>
+            <app-input
+              #firstFocusable
+              type="text"
+              id="inputPrenom"
+              name="firstName"
+              placeholder="Prénom"
+              formControlName="firstName">
+            </app-input>
+
+            <ng-container *ngIf="myForm.get('firstName')?.dirty || myForm.get('firstName')?.touched">
+              <div *ngIf="myForm.get('firstName')?.errors?.['required']; else firstNameValid"
+                   class="text-red-600 text-sm">❌ Prénom requis
+              </div>
+              <ng-template #firstNameValid>
+                <div class="text-green-600 text-sm">✅ Prénom valide</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Nom -->
+          <div>
+            <label for="inputNom" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
+            <app-input type="text" id="inputNom" name="lastName" placeholder="Nom de famille"
+                       formControlName="lastName"></app-input>
+
+            <ng-container *ngIf="myForm.get('lastName')?.dirty || myForm.get('lastName')?.touched">
+              <div *ngIf="myForm.get('lastName')?.errors?.['required']; else lastNameValid"
+                   class="text-red-600 text-sm">❌ Nom requis
+              </div>
+              <ng-template #lastNameValid>
+                <div class="text-green-600 text-sm">✅ Nom valide</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Date de naissance -->
+          <div>
+            <label for="birthDate" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Date de
+              naissance</label>
+            <app-input type="date" id="birthDate" name="birthdate" formControlName="birthdate"></app-input>
+
+            <ng-container *ngIf="myForm.get('birthdate')?.dirty || myForm.get('birthdate')?.touched">
+              <div *ngIf="myForm.get('birthdate')?.errors?.['required']" class="text-red-600 text-sm">❌ Date requise
+              </div>
+              <div *ngIf="!myForm.get('birthdate')?.invalid" class="text-green-600 text-sm">✅ Date valide</div>
+            </ng-container>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="inputEmail4" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Email</label>
+            <app-input type="email" id="inputEmail4" name="email" placeholder="prenom.nom@utbm.fr"
+                       formControlName="email"></app-input>
+
+            <ng-container *ngIf="myForm.get('email')?.dirty || myForm.get('email')?.touched">
+              <div *ngIf="myForm.get('email')?.errors?.['required']" class="text-red-600 text-sm">❌ Email requis</div>
+              <div *ngIf="myForm.get('email')?.errors?.['email']" class="text-red-600 text-sm">❌ Email invalide</div>
+              <div *ngIf="!myForm.get('email')?.invalid" class="text-green-600 text-sm">✅ Email valide</div>
+            </ng-container>
+          </div>
+
+          <!-- Téléphone -->
+          <div>
+            <label for="inputPhone" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Téléphone
+              (optionnel)</label>
+            <app-input type="tel" id="inputPhone" name="phone" placeholder="+XX XX XX XX XX"
+                       formControlName="phone"></app-input>
+
+            <ng-container *ngIf="myForm.get('phone')?.dirty || myForm.get('phone')?.touched">
+              <div *ngIf="myForm.get('phone')?.errors?.['pattern']" class="text-red-600 text-sm">❌ Format de téléphone
+                invalide
+              </div>
+              <div *ngIf="!myForm.get('phone')?.invalid" class="text-green-600 text-sm">✅ Téléphone valide</div>
+            </ng-container>
+          </div>
+
+          <!-- Rôles -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Rôles</label>
+            <div class="space-y-2 mt-1">
+              <div>
+                <input type="checkbox" value="student" name="roles" id="roleStudent" (change)="onRoleChange($event)"
+                       [checked]="myForm.value.roles?.includes('student')" class="mr-2">
+                <label for="roleStudent">Student</label>
+              </div>
+              <div>
+                <input type="checkbox" value="teacher" name="roles" id="roleTeacher" (change)="onRoleChange($event)"
+                       [checked]="myForm.value.roles?.includes('teacher')" class="mr-2">
+                <label for="roleTeacher">Teacher</label>
+              </div>
+              <div>
+                <input type="checkbox" value="admin" name="roles" id="roleAdmin" (change)="onRoleChange($event)"
+                       [checked]="myForm.value.roles?.includes('admin')" class="mr-2">
+                <label for="roleAdmin">Admin</label>
+              </div>
+              <ng-container *ngIf="myForm.get('roles')?.touched">
+                <div *ngIf="myForm.get('roles')?.errors?.['rolesRequired']" class="text-red-600 text-sm">
+                  ❌ Au moins un rôle doit être sélectionné
+                </div>
+                <div *ngIf="myForm.get('roles')?.errors?.['rolesInvalid']" class="text-red-600 text-sm">
+                  ❌ Combinaison de rôles non autorisée
+                </div>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Champ Département (affiché seulement si le rôle student est sélectionné) -->
+          <div class="mb-3" *ngIf="myForm.value.roles?.includes('student')">
+            <label for="inputDepartment" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Department</label>
+            <select id="inputDepartment" formControlName="department"
+                    class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center"
+                    aria-label="Select department">
+              <option value="" selected>Sélectionner une option</option>
+              <option value="COMMON_CORE">Common Core</option>
+              <option value="COMPUTER_SCIENCE">Computer Science</option>
+              <option value="ENERGY">Energy</option>
+              <option value="EDIM">EDIM</option>
+              <option value="IMSI">IMSI</option>
+              <option value="GMC">GMC</option>
+            </select>
+            <ng-container *ngIf="myForm.get('department')?.dirty || myForm.get('department')?.touched">
+              <div *ngIf="myForm.get('department')?.errors?.['required']; else departmentValid"
+                   class="text-red-600 text-sm">
+                ❌ Department required
+              </div>
+              <ng-template #departmentValid>
+                <div class="text-green-600 text-sm">✅ Valid department</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Mot de passe -->
+          <div>
+            <label for="inputPassword" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">
+              Mot de passe
+              @if (isEditMode) {
+                <span class="text-gray-500 text-xs">(laisser vide pour ne pas changer)</span>
+              }
+            </label>
+            <div class="relative">
+              <input type="password" id="inputPassword" name="password"
+                     [placeholder]="isEditMode ? 'Nouveau mot de passe (optionnel)' : 'Mot de passe'"
+                     formControlName="password"
+                     class="w-full text-sm pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center"/>
+              <lucide-icon [name]="iconName" (click)="togglePassword($event)"
+                           class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer w-5 h-5"></lucide-icon>
+            </div>
+
+            <!-- Validation du mot de passe (seulement si requis ou renseigné) -->
+            <ng-container *ngIf="(!isEditMode || myForm.get('password')?.value) && (myForm.get('password')?.dirty || myForm.get('password')?.touched)">
+              <div *ngIf="myForm.get('password')?.errors?.['minLength']; else minLengthValid"
+                   class="text-red-600 text-sm">
+                ❌ Le mot de passe doit contenir au moins 10 caractères
+              </div>
+              <ng-template #minLengthValid>
+                <div class="text-green-600 text-sm">✅ Longueur OK</div>
+              </ng-template>
+
+              <div *ngIf="myForm.get('password')?.errors?.['uppercase']; else uppercaseValid"
+                   class="text-red-600 text-sm">
+                ❌ Doit contenir 2 lettres majuscules
+              </div>
+              <ng-template #uppercaseValid>
+                <div class="text-green-600 text-sm">✅ Majuscules OK</div>
+              </ng-template>
+
+              <div *ngIf="myForm.get('password')?.errors?.['number']; else numberValid"
+                   class="text-red-600 text-sm">
+                ❌ Doit inclure un chiffre
+              </div>
+              <ng-template #numberValid>
+                <div class="text-green-600 text-sm">✅ Chiffre OK</div>
+              </ng-template>
+
+              <div *ngIf="myForm.get('password')?.errors?.['specialChars']; else specialValid"
+                   class="text-red-600 text-sm">
+                ❌ Doit inclure 2 caractères spéciaux
+              </div>
+              <ng-template #specialValid>
+                <div class="text-green-600 text-sm">✅ Caractères spéciaux OK</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Avatar -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">
+              Photo de profil
+              @if (isEditMode) {
+                <span class="text-gray-500 text-xs">(optionnel - remplacera l'avatar actuel)</span>
+              }
+            </label>
+            <input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                   class="cursor-pointer block w-full text-sm text-gray-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-full file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-blue-50 file:text-blue-700
+                          hover:file:bg-blue-100"
+                   (change)="onFileSelected($event)">
+
+            <div class="text-sm text-gray-500 mt-1">Formats acceptés: JPEG, PNG, GIF, WebP (max 5MB)</div>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div class="flex gap-3 pt-4">
+            <app-button
+              type="button"
+              variant="ghost"
+              [fullWidth]="true"
+              (buttonClick)="onClose()">
+              Annuler
+            </app-button>
+            <app-button
+              type="submit"
+              [fullWidth]="true"
+              [disabled]="myForm.invalid || isSubmitting">
+              @if (isSubmitting) {
+                <lucide-icon name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+              }
+              {{ submitButtonText }}
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

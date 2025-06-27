@@ -1,0 +1,58 @@
+@if (short){
+
+   <div class="p-2 bg-slate-100 rounded-lg inline-flex justify-start items-center gap-6 overflow-hidden m-2">
+     <div class="flex-1 inline-flex flex-col justify-start items-start">
+       <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ title }}</div>
+       <div class="self-stretch opacity-80 justify-start text-black text-sm font-normal  leading-tight">À rendre dans {{ deadline }} jours</div>
+     </div>
+     <div data-show-leading="false" data-show-trailing="false" data-state="Default" data-variant="primary" class="px-3 py-2 bg-primary hover:bg-slate-500 rounded flex justify-center items-center gap-2 overflow-hidden">
+       <div class="justify-start text-white text-sm font-medium  leading-normal">Déposer</div>
+     </div>
+   </div>
+
+} @else {
+
+  <div class="w-full inline-flex justify-start items-center gap-2 m-2">
+    <div class="flex-1 p-2 bg-slate-100 rounded-2xl flex justify-start items-center gap-2">
+        @if (alert) {
+          <div class="p-4 bg-amber-100 rounded-md inline-flex flex-col justify-center items-start gap-2.5">
+            <div class="w-6 h-6 relative overflow-hidden">
+              <lucide-icon name="message-square-x" class="w-6 h-6 text-amber-500"></lucide-icon>
+            </div>
+          </div>
+        } @else {
+          <div class="p-4 bg-sky-100 rounded-md inline-flex flex-col justify-center items-start gap-2.5">
+            <div class="w-6 h-6 relative overflow-hidden">
+              <lucide-icon name="message-square" class="w-6 h-6 text-slate-500"></lucide-icon>
+            </div>
+          </div>
+        }
+      <div class="flex-1 inline-flex flex-col justify-center items-start gap-0.5">
+        <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ title }}</div>
+        <div class="self-stretch justify-start text-black text-sm font-normal  leading-tight">{{ content }}</div>
+      </div>
+    </div>
+    <div data-state="default" data-type="edit" class="self-stretch px-3 py-6 bg-secondary rounded-2xl flex justify-center items-center gap-2.5 overflow-hidden hover:bg-primary group">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon name="pen" class="w-4 h-4 text-black group-hover:text-white"></lucide-icon>
+      </div>
+    </div>
+    <div
+      data-state="default" data-type="pin" class="self-stretch px-3 py-6 rounded-2xl flex justify-center items-center gap-2.5 overflow-hidden group"
+      [ngClass]="{
+    'bg-secondary hover:bg-primary': !isPinned,
+    'bg-red-100 hover:bg-red-400': isPinned
+  }"
+      (click)="togglePin()">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon [name]="isPinned ? 'pin-off' : 'pin'" class="w-4 h-4 group-hover:text-white" [ngClass]="{'text-black': !isPinned, 'text-red-500': isPinned} "></lucide-icon>
+      </div>
+    </div>
+    <div data-state="default" data-type="delete" class="self-stretch px-3 py-6 bg-red-100 rounded-2xl flex justify-center items-center gap-2.5 overflow-hidden hover:bg-red-400 group">
+      <div class="w-4 h-4 relative overflow-hidden">
+        <lucide-icon name="trash" class="w-4 h-4 text-black group-hover:text-white"></lucide-icon>
+      </div>
+    </div>
+  </div>
+
+ }
