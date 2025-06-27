@@ -1,0 +1,70 @@
+<!-- Conteneur principal -->
+<div class="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- État de chargement -->
+    <div *ngIf="isLoading" class="text-center py-12">
+      <p class="text-lg text-gray-500">Chargement de la discussion...</p>
+    </div>
+
+    <!-- État d'erreur -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+      <strong class="font-bold">Erreur :</strong>
+      <span class="block sm:inline">{{ error }}</span>
+    </div>
+
+    <!-- Contenu de la discussion -->
+    <div *ngIf="!isLoading && discussion" class="bg-white shadow-md rounded-lg overflow-hidden">
+      <!-- En-tête de la discussion -->
+      <div class="p-6 border-b border-gray-200">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">{{ discussion.title }}</h1>
+        <p class="text-sm text-gray-500 mt-2">
+          Initié par <span class="font-semibold">{{ discussion.author.firstName }} {{ discussion.author.lastName }}</span>
+          le {{ discussion.createdAt | date:'dd/MM/yyyy' }}
+        </p>
+      </div>
+
+      <!-- Liste des messages -->
+      <div class="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+        <div *ngFor="let message of discussion.messages" class="flex items-start gap-4">
+          <!-- Idéalement, un avatar irait ici -->
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+            {{ message.author.firstName.charAt(0) }}{{ message.author.lastName.charAt(0) }}
+          </div>
+          <div class="flex-grow bg-gray-100 p-4 rounded-lg">
+            <div class="flex justify-between items-center">
+              <p class="font-semibold text-indigo-700">{{ message.author.firstName }} {{ message.author.lastName }}</p>
+              <p class="text-xs text-gray-500">{{ message.createdAt | date:'HH:mm' }}</p>
+            </div>
+            <p class="text-gray-700 mt-2">{{ message.content }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulaire pour un nouveau message -->
+      <div class="p-6 bg-gray-50 border-t border-gray-200">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300"></div> <!-- Placeholder pour l'avatar de l'utilisateur actuel -->
+          <div class="flex-grow">
+            <textarea
+              [(ngModel)]="newMessageContent"
+              (keyup.enter)="sendMessage()"
+              placeholder="Participez à la discussion..."
+              class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+              rows="3"
+            ></textarea>
+            <div class="flex justify-end mt-2">
+              <button
+                (click)="sendMessage()"
+                [disabled]="!newMessageContent.trim()"
+                class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-150 ease-in-out">
+                Envoyer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

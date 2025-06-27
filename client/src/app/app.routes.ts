@@ -23,6 +23,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/course/course.routes').then(m => m.courseRoutes)
   },
+  {
+    path: 'forum',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/forum/forum.routes').then(m => m.FORUM_ROUTES)
+  },
 
   {
     path: '',
