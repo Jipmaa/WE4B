@@ -33,6 +33,27 @@
 
   </div>
 
+  @if (hasMain2) {
+    <div class="grow h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8">
+
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="grow text-2xl font-bold text-black">
+          {{ main2Title }}
+        </h2>
+        @if (hasMain2ActionButtons) {
+          <div class="flex items-center gap-2">
+            <ng-container *ngTemplateOutlet="main2ActionButtonsContent"></ng-container>
+          </div>
+        }
+      </div>
+
+      <div class="flex-1">
+        <ng-container *ngTemplateOutlet="main2ContentTemplate"></ng-container>
+      </div>
+
+    </div>
+  }
+
   @if (hasRightSidebar) {
     <app-sidebar
       direction="right"

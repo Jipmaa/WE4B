@@ -10,7 +10,7 @@
 </div>
 
 <!-- Contenu de la discussion -->
-<div *ngIf="!isLoading && discussion" class="bg-white">
+<div *ngIf="!isLoading && discussion" class="bg-white flex flex-col">
     <!-- En-tête de la discussion -->
     <div class="p-6 border-b border-border">
         <h1 class="text-2xl sm:text-3xl font-bold text-foreground">{{ discussion.title }}</h1>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Liste des messages -->
-    <div class="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+    <div class="p-6 space-y-6 overflow-y-auto grow">
         <div *ngFor="let message of discussion.messages" class="flex items-start gap-4">
             <!-- Idéalement, un avatar irait ici -->
             <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">
@@ -65,6 +65,5 @@
             </div>
         </div>
     </div>
-
 </div>
 
