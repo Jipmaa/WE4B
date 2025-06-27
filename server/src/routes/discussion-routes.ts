@@ -77,7 +77,7 @@ router.post('/', createDiscussionValidation, validateRequest, asyncHandler(async
 // @access  Private
 router.post('/:id/messages', [...discussionIdValidation, ...addMessageValidation], validateRequest, asyncHandler(async (req: Request, res: Response) => {
   const { content } = req.body;
-  const author = (req as any).user.id;
+  const author = (req as any).user.userId;
 
   const discussion = await Discussion.findById(req.params.id);
 
