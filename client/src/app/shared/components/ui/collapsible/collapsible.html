@@ -1,4 +1,4 @@
-<div class="w-full p-2 bg-primary/10 rounded-lg flex flex-col items-start gap-2 overflow-hidden">
+<div class="w-full p-2 bg-primary/10 rounded-lg flex flex-col gap-2 overflow-hidden @container">
   <div
     class="collapsible-header self-stretch inline-flex justify-between items-center border-b-primary/15 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 p-1 -m-1"
     [attr.id]="headerId"
@@ -27,11 +27,10 @@
     </span>
   </div>
   <div
-    class="self-stretch flex flex-col items-start gap-2 transition-all duration-200 ease-in-out"
+    class="self-stretch flex flex-col gap-2 mt-1 @md:grid @md:grid-cols-2 @lg:grid-cols-3 transition-all duration-200 ease-in-out aria-hidden:hidden"
     [attr.id]="contentId"
     [attr.aria-labelledby]="headerId"
     [attr.aria-hidden]="!isOpen()"
-    [class.hidden]="!isOpen()"
     role="region">
     <ng-content/>
   </div>

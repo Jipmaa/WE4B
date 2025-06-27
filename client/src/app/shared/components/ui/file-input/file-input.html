@@ -1,0 +1,142 @@
+<div class="space-y-2">
+  @if (label) {
+    <label class="block text-sm font-medium text-gray-700">
+      {{ label }}
+      @if (required) {
+        <span class="text-red-500 ml-1">*</span>
+      }
+    </label>
+  }
+
+  @if (!selectedFile) {
+    <div 
+      class="relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+      [ngClass]="{
+        'border-gray-300 hover:border-gray-400': !isDragOver && !hasError && !disabled,
+        'border-blue-500 bg-blue-50': isDragOver && !disabled,
+        'border-red-300 bg-red-50': hasError,
+        'border-gray-200 bg-gray-50 cursor-not-allowed': disabled
+      }"
+      (click)="triggerFileInput()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (keydown)="onKeyDown($event)"
+      [tabindex]="disabled ? -1 : 0"
+      role="button"
+      [attr.aria-label]="'Sélectionner un fichier. ' + placeholder"
+      [attr.aria-disabled]="disabled"
+    >
+      <lucide-icon 
+        name="upload" 
+        size="32" 
+        class="mx-auto mb-2"
+        [ngClass]="{
+          'text-gray-400': !isDragOver && !hasError && !disabled,
+          'text-blue-500': isDragOver && !disabled,
+          'text-red-400': hasError,
+          'text-gray-300': disabled
+        }"
+      />
+      
+      <p 
+        class="mb-2"
+        [ngClass]="{
+          'text-gray-600': !isDragOver && !hasError && !disabled,
+          'text-blue-600': isDragOver && !disabled,
+          'text-red-600': hasError,
+          'text-gray-400': disabled
+        }"
+      >
+        {{ placeholder }}
+      </p>
+      
+      @if (helpText) {
+        <p 
+          class="text-sm"
+          [ngClass]="{
+            'text-gray-500': !hasError && !disabled,
+            'text-red-500': hasError,
+            'text-gray-400': disabled
+          }"
+        >
+          {{ helpText }}
+        </p>
+      } @else {
+        <p 
+          class="text-sm"
+          [ngClass]="{
+            'text-gray-500': !hasError && !disabled,
+            'text-red-500': hasError,
+            'text-gray-400': disabled
+          }"
+        >
+          Maximum {{ getMaxSizeDisplay() }}
+        </p>
+      }
+
+      <input
+        #fileInput
+        type="file"
+        [accept]="acceptedTypes"
+        [disabled]="disabled"
+        (change)="onFileSelected($event)"
+        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+      />
+    </div>
+  }
+
+  @if (selectedFile) {
+    <div 
+      class="flex items-center gap-3 p-3 border rounded-lg"
+      [ngClass]="{
+        'border-gray-300 bg-gray-50': !hasError,
+        'border-red-300 bg-red-50': hasError
+      }"
+    >
+      <lucide-icon 
+        name="file" 
+        size="20" 
+        [ngClass]="{
+          'text-gray-600': !hasError,
+          'text-red-600': hasError
+        }"
+      />
+      
+      <div class="flex-1 min-w-0">
+        <p 
+          class="text-sm font-medium truncate"
+          [ngClass]="{
+            'text-gray-900': !hasError,
+            'text-red-900': hasError
+          }"
+        >
+          {{ selectedFile.name }}
+        </p>
+        <p 
+          class="text-xs"
+          [ngClass]="{
+            'text-gray-500': !hasError,
+            'text-red-500': hasError
+          }"
+        >
+          {{ getFileSizeDisplay() }}
+        </p>
+      </div>
+      
+      <button
+        type="button"
+        (click)="onRemoveFile()"
+        [disabled]="disabled"
+        class="text-red-600 hover:text-red-800 disabled:text-gray-400 disabled:cursor-not-allowed"
+        aria-label="Supprimer le fichier"
+      >
+        <lucide-icon name="x" size="16"/>
+      </button>
+    </div>
+  }
+
+  @if (hasError && errorText) {
+    <p class="text-sm text-red-600">{{ errorText }}</p>
+  }
+</div>

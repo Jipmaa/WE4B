@@ -1,62 +1,81 @@
 import { BaseFilters } from '@/core/models/_shared.models';
 
 export type CourseActivityType = 'message' | 'file' | 'file-depository';
+export type MessageLevel = 'normal' | 'important' | 'urgent';
+export type FileType = 'text-file' | 'image' | 'presentation' | 'video' | 'audio' | 'spreadsheet' | 'archive' | 'other';
 
-export interface CourseActivity {
+interface BaseCourseActivity {
   _id: string;
-  title: string;
-  description: string;
-  type: CourseActivityType;
   courseUnit: string;
+  restrictedGroups?: string[];
+  isPinned: boolean;
+  completion: {
+    user: string;
+    completedAt: Date;
+  }[];
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface MessageActivity extends CourseActivity {
-  type: 'message';
-  content: string;
-}
+export type CourseActivity = 
+  | {
+      activityType: 'message';
+      title: string;
+      content: string;
+      level: MessageLevel;
+    } & BaseCourseActivity
+  | {
+      activityType: 'file';
+      title: string;
+      content: string;
+      fileType: FileType;
+      file: string;
+    } & BaseCourseActivity
+  | {
+      activityType: 'file-depository';
+      title: string;
+      content: string;
+      instructions: { type: 'file'; file: string } | { type: 'text'; text: string };
+      restrictedFileTypes?: FileType[];
+      maxFiles: number;
+      dueAt?: Date;
+    } & BaseCourseActivity;
 
-export interface FileActivity extends CourseActivity {
-  type: 'file';
-  file: string;
-  originalFileName?: string;
-}
-
-export interface FileDepositoryActivity extends CourseActivity {
-  type: 'file-depository';
-  maxFiles: number;
-  restrictedFileTypes?: string[];
-}
+export type MessageActivity = Extract<CourseActivity, { activityType: 'message' }>;
+export type FileActivity = Extract<CourseActivity, { activityType: 'file' }>;
+export type FileDepositoryActivity = Extract<CourseActivity, { activityType: 'file-depository' }>;
 
 export interface CourseActivityFilters extends BaseFilters {
-  type?: CourseActivityType;
+  activityType?: CourseActivityType;
   courseUnit?: string;
   createdBy?: string;
-  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'type';
+  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'type' | 'activityType';
 }
 
 export interface CreateMessageActivityRequest {
   title: string;
-  description: string;
   content: string;
+  level?: MessageLevel;
   courseUnit: string;
 }
 
 export interface CreateFileActivityRequest {
   title: string;
-  description: string;
+  content: string;
   courseUnit: string;
   file?: File;
+  fileType: FileType;
 }
 
 export interface CreateFileDepositoryActivityRequest {
   title: string;
-  description: string;
+  content: string;
   courseUnit: string;
+  instructions: { type: 'file'; file: string } | { type: 'text'; text: string };
   maxFiles: number;
-  restrictedFileTypes?: string[];
+  restrictedFileTypes?: FileType[];
+  dueAt?: Date;
 }
 
 export interface CourseActivitiesResponse {

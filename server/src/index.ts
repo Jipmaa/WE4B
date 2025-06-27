@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 // Import routes
 import userRoutes from './routes/user-routes';
 import courseUnitRoutes from './routes/course-unit-routes';
+import courseActivityRoutes from './routes/course-activity-routes';
 import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
 import fileRoutes from './routes/file-routes';
@@ -28,7 +29,7 @@ class Server {
 
 	public static start() {
 		const server = new Server();
-		server.initializeServer().then(r => {
+		server.initializeServer().then(_r => {
 			server.start();
 		}).catch(e => {
 			console.error("Could not start server", e);
@@ -169,6 +170,7 @@ class Server {
 		// API routes
 		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/course-units', courseUnitRoutes);
+		this.app.use('/api/course-activities', courseActivityRoutes);
 		this.app.use('/api/users', userRoutes);
 		this.app.use('/api/files', fileRoutes);
 

@@ -62,7 +62,7 @@ export const FILE_CONFIGS = {
 			'image/jpeg', 'image/png', 'image/gif', 'image/webp',
 			'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 			'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
 			'text/plain', 'text/csv',
 			'video/mp4', 'video/webm',
 			'audio/mpeg', 'audio/wav',
@@ -70,7 +70,7 @@ export const FILE_CONFIGS = {
 		],
 		allowedExtensions: [
 			'.jpg', '.jpeg', '.png', '.gif', '.webp',
-			'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+			'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.ppsx',
 			'.txt', '.csv',
 			'.mp4', '.webm',
 			'.mp3', '.wav',
@@ -84,7 +84,7 @@ export const FILE_CONFIGS = {
 			'image/jpeg', 'image/png', 'image/gif', 'image/webp',
 			'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 			'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
 			'text/plain', 'text/csv',
 			'video/mp4', 'video/webm',
 			'audio/mpeg', 'audio/wav',
@@ -92,7 +92,7 @@ export const FILE_CONFIGS = {
 		],
 		allowedExtensions: [
 			'.jpg', '.jpeg', '.png', '.gif', '.webp',
-			'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+			'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.ppsx',
 			'.txt', '.csv',
 			'.mp4', '.webm',
 			'.mp3', '.wav',
@@ -106,7 +106,7 @@ export const FILE_CONFIGS = {
 			'image/jpeg', 'image/png', 'image/gif', 'image/webp',
 			'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 			'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+			'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
 			'text/plain', 'text/csv',
 			'video/mp4', 'video/webm',
 			'audio/mpeg', 'audio/wav',
@@ -114,7 +114,7 @@ export const FILE_CONFIGS = {
 		],
 		allowedExtensions: [
 			'.jpg', '.jpeg', '.png', '.gif', '.webp',
-			'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+			'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.ppsx',
 			'.txt', '.csv',
 			'.mp4', '.webm',
 			'.mp3', '.wav',
@@ -156,12 +156,22 @@ export const initializeBuckets = async (): Promise<void> => {
 	}
 };
 
+// Sanitize filename by removing special characters and normalizing
+const sanitizeFileName = (filename: string): string => {
+	return filename
+		.normalize('NFD') // Decompose accented characters
+		.replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+		.replace(/[^a-zA-Z0-9.-]/g, '_') // Replace non-alphanumeric chars with underscore
+		.replace(/_{2,}/g, '_') // Replace multiple underscores with single one
+		.replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+};
+
 // Generate unique file name
 export const generateFileName = (originalName: string, prefix?: string): string => {
 	const ext = path.extname(originalName);
 	const uuid = uuidv4();
 	const timestamp = Date.now();
-	const baseName = path.basename(originalName, ext).substring(0, 20); // Limit base name length
+	const baseName = sanitizeFileName(path.basename(originalName, ext)).substring(0, 20); // Limit base name length
 
 	return prefix
 		 ? `${prefix}-${timestamp}-${uuid}-${baseName}${ext}`
@@ -178,12 +188,16 @@ export const uploadFile = async (
 	try {
 		const metaData = {
 			'Content-Type': file.mimetype,
-			'X-Amz-Meta-Original-Name': file.originalname,
+			'X-Amz-Meta-Original-Name': Buffer.from(file.originalname, 'utf8').toString('base64'),
 			'X-Amz-Meta-Upload-Date': new Date().toISOString(),
 			...metadata
 		};
 
-		await minioClient.putObject(bucket, objectName, file.buffer, file.size, metaData);
+		// Use putObject with Readable stream instead of buffer
+		const { Readable } = await import('stream');
+		const stream = Readable.from(file.buffer);
+		
+		await minioClient.putObject(bucket, objectName, stream, file.size, metaData);
 		return objectName;
 	} catch (error) {
 		console.error('❌ Error uploading file to MinIO:', error);

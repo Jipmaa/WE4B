@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, catchError, tap, throwError } from 'rxjs';
+import { Observable, catchError, tap, throwError, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CapacityRangeResponse,
@@ -34,6 +35,7 @@ export class CourseUnitsService {
   private readonly _error = signal<string | null>(null);
   private readonly _currentFilters = signal<CourseUnitFilters>({});
   private readonly _pagination = signal<CourseUnitsResponse['pagination'] | null>(null);
+  private readonly _refreshTrigger = signal(0);
 
   // Public readonly signals
   readonly courseUnits = this._courseUnits.asReadonly();
@@ -373,10 +375,31 @@ export class CourseUnitsService {
       );
   }
 
+  createCategory(courseUnitId: string, categoryData: { name: string; description?: string }): Observable<ApiResponse<{ category: any }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.post<ApiResponse<{ category: any }>>(`${this.baseUrl}/${courseUnitId}/categories`, categoryData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Trigger a refresh of the course data to update the categories
+            this.triggerCourseDataRefresh();
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
   // Utility Methods
   refreshCourseUnits(): void {
     const currentFilters = this._currentFilters();
     this.getCourseUnits(currentFilters).subscribe();
+  }
+
+  triggerCourseDataRefresh(): void {
+    this._refreshTrigger.update(v => v + 1);
   }
 
   clearError(): void {
@@ -408,16 +431,16 @@ export class CourseUnitsService {
   getUserCourseUnitBySlug(slug: string): Observable<ApiResponse<{ courseUnit: CourseUnitPopulated }>> {
     this._isLoading.set(true);
 
-    return this.http.get<ApiResponse<{ courseUnit: CourseUnitPopulated }>>(`${this.baseUrl}/by-slug/${slug}`)
-      .pipe(
-        tap(response => {
-          if (response.success) {
-            this._selectedCourseUnit.set(response.data.courseUnit);
-          }
-        }),
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
+    return toObservable(this._refreshTrigger).pipe(
+      switchMap(() => this.http.get<ApiResponse<{ courseUnit: CourseUnitPopulated }>>(`${this.baseUrl}/by-slug/${slug}`)),
+      tap(response => {
+        if (response.success) {
+          this._selectedCourseUnit.set(response.data.courseUnit);
+        }
+      }),
+      catchError(error => this.handleError(error)),
+      tap(() => this._isLoading.set(false))
+    );
   }
 
   // Helper methods

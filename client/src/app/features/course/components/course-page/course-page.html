@@ -21,40 +21,64 @@
       Participants
     </app-button>
     @if (isTeacherOrAdminInCourse()) {
-      <app-button leadingIcon="plus" class="hidden md:inline-flex">
+      <app-button leadingIcon="plus" class="hidden md:inline-flex" (buttonClick)="onAddActivity()">
         Ajouter une activité
       </app-button>
-      <app-icon-button icon="plus" class="md:hidden" size="sm"/>
+      <app-icon-button icon="plus" class="md:hidden" size="sm" (buttonClick)="onAddActivity()"/>
     }
     <!-- Add other actions here -->
   </ng-template>
 
-  <div class="flex flex-col gap-4">
-    <app-collapsible label="Activités récentes" [defaultOpen]="false">
-      <p>Recent activities content goes here.</p>
-    </app-collapsible>
+  @if (!courseUnit) {
+    <div class="flex items-center justify-center h-full">
+      <lucide-icon name="loader-circle" class="animate-spin" size="24" />
+    </div>
+  } @else {
+    <div class="flex flex-col gap-4">
+      @if (recentActivities().length > 0) {
+        <app-collapsible label="Activitée récente" [defaultOpen]="false">
+          @for (activity of recentActivities(); track activity._id) {
+            <app-activity [activity]="activity" [showActions]="false" />
+          }
+        </app-collapsible>
+      }
 
-    <app-collapsible label="Prochainement et épinglés" [defaultOpen]="true">
-      <p>Upcoming activities and pinned ones goes here.</p>
-    </app-collapsible>
+      @if (pinnedActivities().length > 0) {
+        <app-collapsible label="Prochainement et épinglés" [defaultOpen]="true">
+          @for (activity of pinnedActivities(); track activity._id) {
+            <app-activity [activity]="activity" />
+          }
+        </app-collapsible>
+      }
 
-    @for (category of courseUnit?.activities; track category._id) {
-      <div class="self-stretch flex flex-col gap-2">
-        <div>
-          <h2 class="font-medium leading-tight">{{ category.name }}</h2>
-          <p class="text-sm text-gray-500">{{ category.description }}</p>
+      @for (category of courseUnit?.activities; track category._id) {
+        <div class="self-stretch flex flex-col gap-2">
+          <div>
+            <h2 class="font-medium leading-tight">{{ category.name }}</h2>
+            <p class="text-sm text-gray-500">{{ category.description }}</p>
+          </div>
+
+          @for (activity of category.activities || []; track activity._id) {
+            <app-activity [activity]="activity" variant="display" />
+          }
+
+          @if ((category.activities || []).length === 0) {
+            <p class="bg-primary/10 rounded px-2 py-1">Aucune activité dans cette catégorie.</p>
+          }
+
         </div>
-
-        @for (activity of category.activities; track activity._id) {
-          <span>Id: {{ activity._id }}</span>
-        }
-
-        @if (category.activities.length === 0) {
-          <p class="bg-primary/10 rounded px-2 py-1">Aucune activité dans cette catégorie.</p>
-        }
-
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 
 </app-sidebar-layout>
+
+<!-- Add Activity Popup -->
+<app-add-activity-popup
+  [isOpen]="showAddActivityPopup()"
+  [courseUnitId]="courseUnit?._id || ''"
+  [existingCategories]="courseUnit?.activities || []"
+  (closePopup)="onCloseAddActivityPopup()"
+  (activityCreated)="onActivityCreated()"
+  (categoryCreated)="onCategoryCreated($event)"
+/>

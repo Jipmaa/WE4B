@@ -492,4 +492,9 @@ export class AuthService {
   clearError(): void {
     this._error.set(null);
   }
+
+  getId(): string {
+    const user = this._user();
+    return user ? user._id : '';
+  }
 }

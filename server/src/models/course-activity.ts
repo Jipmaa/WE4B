@@ -16,6 +16,7 @@ export interface CourseActivity extends Document {
 	activityType: typeof activityTypeValues[number]; // This is our discriminator key
 	courseUnit: Types.ObjectId;
 	restrictedGroups?: Types.ObjectId[];
+	isPinned: boolean;
 	completion: {
 		user: Types.ObjectId;
 		completedAt: Date;
@@ -50,6 +51,7 @@ export interface FileDepositoryActivity extends CourseActivity {
 	instructions: ({ type: 'file', file: string } | { type: 'text', text: string });
 	restrictedFileTypes?: (typeof fileTypeValues[number])[];
 	maxFiles: number;
+	dueAt?: Date;
 	getInstructionsFileUrl(): Promise<string | null>;
 }
 
@@ -71,6 +73,10 @@ const baseActivitySchema = new Schema<CourseActivity>({
 		type: Schema.Types.ObjectId,
 		ref: 'CourseGroup',
 	}],
+	isPinned: {
+		type: Boolean,
+		default: false,
+	},
 	completion: [{
 		user: {
 			type: Schema.Types.ObjectId,
@@ -186,6 +192,7 @@ const fileDepositoryActivitySchema = new Schema<FileDepositoryActivity>({
 	},
 	restrictedFileTypes: [{ type: String, enum: fileTypeValues }],
 	maxFiles: { type: Number, required: true, min: 1, default: 1 },
+	dueAt: { type: Date },
 });
 
 fileDepositoryActivitySchema.methods.getInstructionsFileUrl = async function(this: FileDepositoryActivity): Promise<string | null> {

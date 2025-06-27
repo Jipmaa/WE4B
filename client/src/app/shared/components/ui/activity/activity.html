@@ -1,58 +1,80 @@
-@if (short){
+@if (variant === 'quick'){
 
-   <div class="p-2 bg-slate-100 rounded-lg inline-flex justify-start items-center gap-6 overflow-hidden m-2">
+   <div class="p-2 w-full bg-primary/10 rounded-lg inline-flex justify-start items-center gap-6 overflow-hidden">
      <div class="flex-1 inline-flex flex-col justify-start items-start">
-       <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ title }}</div>
-       <div class="self-stretch opacity-80 justify-start text-black text-sm font-normal  leading-tight">À rendre dans {{ deadline }} jours</div>
+       <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ activity.title }}</div>
+       <div class="self-stretch opacity-80 justify-start text-black text-sm font-normal  leading-tight">{{ descriptionText }}</div>
      </div>
-     <div data-show-leading="false" data-show-trailing="false" data-state="Default" data-variant="primary" class="px-3 py-2 bg-primary hover:bg-slate-500 rounded flex justify-center items-center gap-2 overflow-hidden">
-       <div class="justify-start text-white text-sm font-medium  leading-normal">Déposer</div>
-     </div>
+     @if (showActions) {
+       @if (authService.isTeacher()) {
+         <app-icon-button
+           size="sm"
+           icon="pin-off"
+           variant="destructive"
+           (click)="togglePin()"
+           [loading]="pinLoading"
+         />
+       } @else {
+         <app-button size="sm" (click)="handleQuickAction()" [loading]="false">
+           {{ activity.activityType === 'file-depository' ? 'Déposer' : 'Voir' }}
+         </app-button>
+       }
+     }
    </div>
 
 } @else {
 
-  <div class="w-full inline-flex justify-start items-center gap-2 m-2">
-    <div class="flex-1 p-2 bg-slate-100 rounded-2xl flex justify-start items-center gap-2">
-        @if (alert) {
-          <div class="p-4 bg-amber-100 rounded-md inline-flex flex-col justify-center items-start gap-2.5">
-            <div class="w-6 h-6 relative overflow-hidden">
-              <lucide-icon name="message-square-x" class="w-6 h-6 text-amber-500"></lucide-icon>
-            </div>
+  <div class="w-full inline-flex justify-start items-center gap-2">
+    <div class="flex-1 p-2 bg-primary/10 rounded-2xl flex justify-start items-center gap-2">
+
+      <!-- Icon -->
+        <div [class]="`p-4 rounded-md inline-flex flex-col justify-center items-start gap-2.5 ${icon.bg}`">
+          <div class="w-6 h-6 relative overflow-hidden">
+            <lucide-icon [name]="icon.name" size="24" [class]="icon.color"/>
           </div>
-        } @else {
-          <div class="p-4 bg-sky-100 rounded-md inline-flex flex-col justify-center items-start gap-2.5">
-            <div class="w-6 h-6 relative overflow-hidden">
-              <lucide-icon name="message-square" class="w-6 h-6 text-slate-500"></lucide-icon>
-            </div>
-          </div>
-        }
+        </div>
+
       <div class="flex-1 inline-flex flex-col justify-center items-start gap-0.5">
-        <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ title }}</div>
-        <div class="self-stretch justify-start text-black text-sm font-normal  leading-tight">{{ content }}</div>
+        <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ activity.title }}</div>
+        <div class="self-stretch justify-start text-black text-sm font-normal  leading-tight">{{ activity.content }}</div>
       </div>
     </div>
-    <div data-state="default" data-type="edit" class="self-stretch px-3 py-6 bg-secondary rounded-2xl flex justify-center items-center gap-2.5 overflow-hidden hover:bg-primary group">
-      <div class="w-4 h-4 relative overflow-hidden">
-        <lucide-icon name="pen" class="w-4 h-4 text-black group-hover:text-white"></lucide-icon>
-      </div>
-    </div>
-    <div
-      data-state="default" data-type="pin" class="self-stretch px-3 py-6 rounded-2xl flex justify-center items-center gap-2.5 overflow-hidden group"
-      [ngClass]="{
-    'bg-secondary hover:bg-primary': !isPinned,
-    'bg-red-100 hover:bg-red-400': isPinned
-  }"
-      (click)="togglePin()">
-      <div class="w-4 h-4 relative overflow-hidden">
-        <lucide-icon [name]="isPinned ? 'pin-off' : 'pin'" class="w-4 h-4 group-hover:text-white" [ngClass]="{'text-black': !isPinned, 'text-red-500': isPinned} "></lucide-icon>
-      </div>
-    </div>
-    <div data-state="default" data-type="delete" class="self-stretch px-3 py-6 bg-red-100 rounded-2xl flex justify-center items-center gap-2.5 overflow-hidden hover:bg-red-400 group">
-      <div class="w-4 h-4 relative overflow-hidden">
-        <lucide-icon name="trash" class="w-4 h-4 text-black group-hover:text-white"></lucide-icon>
-      </div>
-    </div>
+    @if (showActions && authService.isTeacher()) {
+      <app-icon-button class="group w-10 h-[4.5rem] rounded-2xl bg-primary/10 hover:bg-primary/20">
+        <lucide-icon
+          name="pen"
+          class="text-black"
+          size="16"
+        />
+      </app-icon-button>
+      <app-icon-button
+        [class]="pinButtonClasses"
+        [variant]="activity.isPinned ? 'destructive' : 'default'"
+        (click)="togglePin()"
+        [loading]="pinLoading"
+      >
+        <lucide-icon
+          [name]="activity.isPinned ? 'pin-off' : 'pin'"
+          class="text-black"
+          [class.group-hover:text-white]="!activity.isPinned"
+          [class.text-red-500]="activity.isPinned"
+          [class.text-black]="!activity.isPinned"
+          size="16"
+        />
+      </app-icon-button>
+      <app-icon-button
+        class="group w-10 h-[4.5rem] rounded-2xl bg-red-100 hover:bg-red-200"
+        variant="destructive"
+        (click)="handleDelete()"
+        [loading]="deleteLoading"
+      >
+        <lucide-icon
+          name="trash"
+          class="text-black"
+          size="16"
+        />
+      </app-icon-button>
+    }
   </div>
 
  }

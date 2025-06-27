@@ -1,23 +1,196 @@
-import { Component, Input } from '@angular/core';
+import {Component, inject, Input, signal} from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
-import {NgClass} from '@angular/common';
+import {CourseActivity, FileActivity, MessageActivity, FileDepositoryActivity} from "@/core/models/course-activity.models";
+import {ButtonComponent} from "@/shared/components/ui/button/button";
+import {IconButtonComponent} from "@/shared/components/ui/icon-button/icon-button";
+import {CourseActivitiesService} from "@/core/services/course-activities.service";
+import {AuthService} from '@/core/services/auth.service';
+
+
+interface ActivityIcon {
+  bg: string;
+  color: string;
+  name: string;
+}
+
 @Component({
   selector: 'app-activity',
   imports: [
     LucideAngularModule,
-    NgClass
+    ButtonComponent,
+    IconButtonComponent
   ],
   templateUrl: './activity.html',
 })
 export class Activity {
-  @Input() title: string = '[Message]';
-  @Input() deadline: number = 3;
-  @Input() content: string = '[Content]';
-  @Input() short: boolean = true;
-  @Input() alert: boolean = false;
-  isPinned: boolean = false;
+  private readonly activityService = inject(CourseActivitiesService);
+  readonly authService = inject(AuthService);
+
+  private _pinLoading = signal<boolean>(false);
+  private _deleteLoading = signal<boolean>(false);
+
+  @Input({required: true}) activity!: CourseActivity;
+  @Input() variant: 'display' | 'quick' = 'quick';
+  @Input() showActions: boolean = true;
 
   togglePin() {
-    this.isPinned = !this.isPinned;
+    if (this._pinLoading()) {
+      return;
+    }
+    this._pinLoading.set(true);
+    this.activityService.togglePin(this.activity._id, !this.activity.isPinned)
+      .subscribe(res => {
+        this.activity.isPinned = res.data.isPinned;
+        this._pinLoading.set(false);
+      })
+  }
+
+  handleDelete() {
+    if (this._deleteLoading()) {
+      return;
+    }
+
+    const confirmed = confirm(`Êtes-vous sûr de vouloir supprimer l'activité "${this.activity.title}" ? Cette action est irréversible.`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this._deleteLoading.set(true);
+    this.activityService.deleteActivity(this.activity._id)
+      .subscribe({
+        next: () => {
+          this._deleteLoading.set(false);
+        },
+        error: (error) => {
+          this._deleteLoading.set(false);
+          console.error('Error deleting activity:', error);
+        }
+      });
+  }
+
+  get pinLoading(): boolean {
+    return this._pinLoading();
+  }
+
+  get deleteLoading(): boolean {
+    return this._deleteLoading();
+  }
+
+  get descriptionText(): string {
+    if (this.activity.activityType === 'file-depository') {
+      const fileDepositoryActivity = this.activity as FileDepositoryActivity;
+      if (fileDepositoryActivity.dueAt) {
+        const now = new Date();
+        const dueDate = new Date(fileDepositoryActivity.dueAt);
+        const diffTime = now.getTime() - dueDate.getTime();
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+        const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto', style: "short" });
+        return `À rendre ${rtf.format(diffDays, 'day')}`;
+      }
+    }
+    const createdAt = new Date(this.activity.createdAt);
+    const updatedAt = new Date(this.activity.updatedAt);
+    const now = new Date();
+
+    const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto', style: 'short' });
+
+    if (createdAt.getTime() === updatedAt.getTime()) {
+      const diffTime = createdAt.getTime() - now.getTime();
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays < 1) {
+        const diffHours = Math.round(diffTime / (1000 * 60 * 60));
+        if (diffHours < 1) {
+          const diffMinutes = Math.round(diffTime / (1000 * 60));
+          return `Créé ${rtf.format(diffMinutes, 'minutes')}`;
+        }
+        return `Créé ${rtf.format(diffHours, 'hour')}`;
+      }
+      return `Créé ${rtf.format(diffDays, 'day')}`;
+    }
+    const diffTime = updatedAt.getTime() - now.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 1) {
+      const diffHours = Math.round(diffTime / (1000 * 60 * 60));
+      if (diffHours < 1) {
+        const diffMinutes = Math.round(diffTime / (1000 * 60));
+        return `Mis à jour ${rtf.format(diffMinutes, 'minutes')}`;
+      }
+      return `Mis à jour ${rtf.format(diffHours, 'hour')}`;
+    }
+    return `Mis à jour ${rtf.format(diffDays, 'day')}`;
+  }
+
+  get icon(): ActivityIcon {
+    switch (this.activity.activityType) {
+      case 'message': return this.getMessageActivityIcon()
+      case 'file': return {
+        bg: 'bg-green-100',
+        color: 'text-green-500',
+        name: this.getFileActivityIcon()
+      }
+      case 'file-depository': return {
+        bg: 'bg-blue-100',
+        color: 'text-blue-500',
+        name: 'file-up'
+      }
+    }
+  }
+
+  get pinButtonClasses(): string {
+    const baseClass = 'group w-10 h-[4.5rem] rounded-2xl';
+
+    const pinnedClass = 'bg-red-100 hover:bg-red-200';
+    const unpinnedClass = 'bg-primary/10 hover:bg-primary/20';
+
+    return `${baseClass} ${this.activity.isPinned ? pinnedClass : unpinnedClass}`;
+  }
+
+  private getMessageActivityIcon(): ActivityIcon {
+    const act = this.activity as MessageActivity
+    switch (act.level) {
+      case 'normal':
+        return {
+          bg: 'bg-primary/10',
+          color: 'text-primary',
+          name: 'message-square'
+        }
+      case 'important':
+        return {
+          bg: 'bg-yellow-100',
+          color: 'text-yellow-500',
+          name: 'message-square-warning'
+        }
+      case 'urgent':
+        return {
+          bg: 'bg-red-100',
+          color: 'text-red-500',
+          name: 'message-square-x'
+        }
+      default:
+        throw new Error("Unknown message level: " + act.level);
+    }
+  }
+
+  private getFileActivityIcon(): string {
+    const act = this.activity as FileActivity
+    switch (act.fileType) {
+      case 'text-file': return 'file-text'
+      case 'image': return 'file-image'
+      case 'video': return 'file-video'
+      case 'audio': return 'file-audio'
+      case 'spreadsheet': return 'file-spreadsheet'
+      case 'archive': return 'file-archive'
+      default: return 'file'
+    }
+  }
+
+  handleQuickAction(): void {
+    if (this.authService.isTeacher()) {
+      return this.togglePin();
+    }
+    // TODO: Implement quick action for students (see / deposit)
+    alert('Not implemented yet');
   }
 }

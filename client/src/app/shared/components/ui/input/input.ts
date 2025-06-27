@@ -33,7 +33,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() label: string = '';
   @Input() ariaLabel: string = '';
   @Input() helpText: string = '';
-  @Input() errorText: string = '';
+  @Input() errorText?: string;
   @Input() warningText: string = '';
   @Input() successText: string = '';
   @Input() hasError: boolean = false;
@@ -74,7 +74,7 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   get containerClasses(): string {
-    const baseClasses = 'w-full inline-flex justify-start items-center gap-2.5 overflow-hidden transition-all duration-200';
+    const baseClasses = 'bg-white w-full inline-flex justify-start items-center gap-2.5 overflow-hidden transition-all duration-200';
 
     const sizeClasses = {
       sm: 'px-2 py-1.5 text-xs',

@@ -55,7 +55,7 @@ const baseActivityValidation = [
 		.custom((groups) => {
 			return groups.every((group: string) => /^[0-9a-fA-F]{24}$/.test(group));
 		})
-		.withMessage('All restricted group IDs must be valid MongoDB ObjectIds')
+		.withMessage('All restricted group IDs must be valid MongoDB ObjectIds'),
 ];
 
 const messageActivityValidation = [
@@ -113,13 +113,6 @@ const fileDepositoryValidation = [
 	body('instructions')
 		.notEmpty()
 		.withMessage('Instructions are required'),
-	body('instructions.type')
-		.isIn(['file', 'text'])
-		.withMessage('Instructions type must be file or text'),
-	body('restrictedFileTypes')
-		.optional()
-		.isArray()
-		.withMessage('Restricted file types must be an array'),
 	body('maxFiles')
 		.optional()
 		.isInt({ min: 1, max: 20 })
@@ -217,7 +210,7 @@ router.get('/:id', activityIdValidation, validateRequest, asyncHandler(async (re
 // @desc    Create new message activity
 // @access  Private (Teacher only)
 router.post('/message', teacherMiddleware, messageActivityValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { courseUnit, title, content, level, restrictedGroups } = req.body;
+	const { courseUnit, title, content, level, restrictedGroups, category } = req.body;
 
 	// Verify course unit exists
 	const courseUnitDoc = await CourseUnit.findById(courseUnit);
@@ -244,6 +237,34 @@ router.post('/message', teacherMiddleware, messageActivityValidation, validateRe
 
 	await activity.save();
 
+	// Add activity to course unit category
+	if (category) {
+		// Use atomic updates to prevent race conditions and read-modify-write issues.
+		// First, try to push the new activity ID to an existing category.
+		const updateResult = await CourseUnit.updateOne(
+			{ _id: courseUnit, 'activities.name': category },
+			{ $push: { 'activities.$.activities': activity._id } }
+		);
+
+		// If the category doesn't exist (no document was modified), create it.
+		// The condition 'activities.name': { $ne: category } prevents adding a duplicate category in a race condition.
+		if (updateResult.modifiedCount === 0) {
+			await CourseUnit.updateOne(
+				{ _id: courseUnit, 'activities.name': { $ne: category } },
+				{
+					$push: {
+						activities: {
+							_id: new (require('mongoose')).Types.ObjectId(),
+							name: category,
+							description: `Catégorie ${category}`,
+							activities: [activity._id]
+						}
+					}
+				}
+			);
+		}
+	}
+
 	const populatedActivity = await MessageActivityModel.findById(activity._id)
 		.populate('courseUnit', 'name code slug')
 		.populate('restrictedGroups', 'name slug');
@@ -265,7 +286,7 @@ router.post('/file', teacherMiddleware, uploadActivityFile, handleFileUploadErro
 		throw new AppError('File is required for file activity', 400);
 	}
 
-	const { courseUnit, title, content, fileType, restrictedGroups } = req.body;
+	const { courseUnit, title, content, fileType, restrictedGroups, category } = req.body;
 
 	// Verify course unit exists
 	const courseUnitDoc = await CourseUnit.findById(courseUnit);
@@ -306,6 +327,34 @@ router.post('/file', teacherMiddleware, uploadActivityFile, handleFileUploadErro
 
 	await activity.save();
 
+	// Add activity to course unit category
+	if (category) {
+		// Use atomic updates to prevent race conditions and read-modify-write issues.
+		// First, try to push the new activity ID to an existing category.
+		const updateResult = await CourseUnit.updateOne(
+			{ _id: courseUnit, 'activities.name': category },
+			{ $push: { 'activities.$.activities': activity._id } }
+		);
+
+		// If the category doesn't exist (no document was modified), create it.
+		// The condition 'activities.name': { $ne: category } prevents adding a duplicate category in a race condition.
+		if (updateResult.modifiedCount === 0) {
+			await CourseUnit.updateOne(
+				{ _id: courseUnit, 'activities.name': { $ne: category } },
+				{
+					$push: {
+						activities: {
+							_id: new (require('mongoose')).Types.ObjectId(),
+							name: category,
+							description: `Catégorie ${category}`,
+							activities: [activity._id]
+						}
+					}
+				}
+			);
+		}
+	}
+
 	const populatedActivity = await FileActivityModel.findById(activity._id)
 		.populate('courseUnit', 'name code slug')
 		.populate('restrictedGroups', 'name slug');
@@ -327,7 +376,42 @@ router.post('/file', teacherMiddleware, uploadActivityFile, handleFileUploadErro
 // @desc    Create new file depository activity
 // @access  Private (Teacher only)
 router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFileUploadError, fileDepositoryValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { courseUnit, title, content, instructions, restrictedFileTypes, maxFiles, restrictedGroups } = req.body;
+	const { courseUnit, title, content, maxFiles, restrictedGroups, category } = req.body;
+	
+	// Parse JSON strings from FormData
+	let instructions, restrictedFileTypes;
+	
+	try {
+		instructions = typeof req.body.instructions === 'string' ? JSON.parse(req.body.instructions) : req.body.instructions;
+	} catch (error) {
+		throw new AppError('Invalid instructions format', 400);
+	}
+	
+	try {
+		restrictedFileTypes = req.body.restrictedFileTypes ? 
+			(typeof req.body.restrictedFileTypes === 'string' ? JSON.parse(req.body.restrictedFileTypes) : req.body.restrictedFileTypes) : 
+			[];
+	} catch (error) {
+		throw new AppError('Invalid restrictedFileTypes format', 400);
+	}
+	
+	// Validate parsed instructions
+	if (!instructions || typeof instructions !== 'object') {
+		throw new AppError('Instructions are required and must be an object', 400);
+	}
+	
+	if (!['file', 'text'].includes(instructions.type)) {
+		throw new AppError('Instructions type must be file or text', 400);
+	}
+	
+	if (instructions.type === 'text' && (!instructions.text || typeof instructions.text !== 'string')) {
+		throw new AppError('Text instructions must have a valid text field', 400);
+	}
+	
+	// Validate parsed restrictedFileTypes
+	if (!Array.isArray(restrictedFileTypes)) {
+		throw new AppError('Restricted file types must be an array', 400);
+	}
 
 	// Verify course unit exists
 	const courseUnitDoc = await CourseUnit.findById(courseUnit);
@@ -372,6 +456,34 @@ router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFil
 	});
 
 	await activity.save();
+
+	// Add activity to course unit category
+	if (category) {
+		// Use atomic updates to prevent race conditions and read-modify-write issues.
+		// First, try to push the new activity ID to an existing category.
+		const updateResult = await CourseUnit.updateOne(
+			{ _id: courseUnit, 'activities.name': category },
+			{ $push: { 'activities.$.activities': activity._id } }
+		);
+
+		// If the category doesn't exist (no document was modified), create it.
+		// The condition 'activities.name': { $ne: category } prevents adding a duplicate category in a race condition.
+		if (updateResult.modifiedCount === 0) {
+			await CourseUnit.updateOne(
+				{ _id: courseUnit, 'activities.name': { $ne: category } },
+				{
+					$push: {
+						activities: {
+							_id: new (require('mongoose')).Types.ObjectId(),
+							name: category,
+							description: `Catégorie ${category}`,
+							activities: [activity._id]
+						}
+					}
+				}
+			);
+		}
+	}
 
 	const populatedActivity = await FileDepositoryActivityModel.findById(activity._id)
 		.populate('courseUnit', 'name code slug')
@@ -436,6 +548,36 @@ router.put('/:id/complete', activityIdValidation, validateRequest, asyncHandler(
 			completionRate,
 			completedAt: new Date()
 		}
+	});
+}));
+
+// @route   PATCH /api/course-activities/:id
+// @desc    Update activity (e.g., toggle pin)
+// @access  Private (Teacher only)
+router.patch('/:id', teacherMiddleware, activityIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const activity = await CourseActivityModel.findById(req.params.id);
+
+	if (!activity) {
+		throw new AppError('Activity not found', 404);
+	}
+
+	// Update fields that are provided in the request body
+	const { pin } = req.body;
+
+	if (pin !== undefined) {
+		(activity as any).isPinned = pin;
+	}
+
+	await activity.save();
+
+	const populatedActivity = await CourseActivityModel.findById(activity._id)
+		.populate('courseUnit', 'name code slug')
+		.populate('restrictedGroups', 'name slug');
+
+	res.json({
+		success: true,
+		message: 'Activity updated successfully',
+		data: populatedActivity
 	});
 }));
 

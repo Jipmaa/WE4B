@@ -4,7 +4,7 @@ import CourseUnit from '../models/course-unit';
 import CourseGroup from '../models/course-group';
 import User from '../models/user';
 import { authMiddleware } from '../middleware/auth-middleware';
-import { adminMiddleware } from '../middleware/roles-middleware';
+import { adminMiddleware, teacherMiddleware } from '../middleware/roles-middleware';
 import { validateRequest } from '../middleware/validate-request';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
@@ -586,6 +586,8 @@ router.get('/by-slug/:slug', [
 		throw new AppError('Course unit not found', 404);
 	}
 
+	console.log(courseUnit.activities[0]!.activities);
+
 	res.json({
 		success: true,
 		data: {
@@ -761,6 +763,64 @@ router.delete('/:id/image', adminMiddleware, courseUnitIdValidation, validateReq
 				capacity: courseUnit.capacity,
 				img: null
 			}
+		}
+	});
+}));
+
+// Category creation validation
+const createCategoryValidation = [
+	param('id')
+		.isMongoId()
+		.withMessage('Invalid course unit ID format'),
+	body('name')
+		.notEmpty()
+		.withMessage('Category name is required')
+		.isLength({ max: 50 })
+		.withMessage('Category name must be less than 50 characters')
+		.trim(),
+	body('description')
+		.optional()
+		.isLength({ max: 200 })
+		.withMessage('Category description must be less than 200 characters')
+		.trim()
+];
+
+// @route   POST /api/course-units/:id/categories
+// @desc    Create a new category for a course unit
+// @access  Private (Teacher only)
+router.post('/:id/categories', teacherMiddleware, createCategoryValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const { name, description } = req.body;
+	const courseUnitId = req.params.id;
+
+	// Check if course unit exists
+	const courseUnit = await CourseUnit.findById(courseUnitId);
+	if (!courseUnit) {
+		throw new AppError('Course unit not found', 404);
+	}
+
+	// Check if category with this name already exists
+	const existingCategory = courseUnit.activities.find(cat => cat.name === name);
+	if (existingCategory) {
+		throw new AppError('A category with this name already exists', 400);
+	}
+
+	// Create new category
+	const newCategory = {
+		_id: new (require('mongoose')).Types.ObjectId(),
+		name: name.trim(),
+		description: description?.trim() || `Catégorie ${name.trim()}`,
+		activities: []
+	};
+
+	// Add category to course unit
+	courseUnit.activities.push(newCategory as any);
+	await courseUnit.save();
+
+	res.status(201).json({
+		success: true,
+		message: 'Category created successfully',
+		data: {
+			category: newCategory
 		}
 	});
 }));

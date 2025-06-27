@@ -13,11 +13,14 @@ import {
 } from '../models/course-activity.models';
 import { ApiResponse } from '../models/_shared.models';
 
+import { CourseUnitsService } from './course-units.service';
+
 @Injectable({
   providedIn: 'root'
 })
 export class CourseActivitiesService {
   private readonly http = inject(HttpClient);
+  private readonly courseUnitsService = inject(CourseUnitsService);
   private readonly baseUrl = `${environment.apiUrl}/course-activities`;
 
   // State management with signals
@@ -39,16 +42,16 @@ export class CourseActivitiesService {
   // Computed signals
   readonly totalActivities = computed(() => this._pagination()?.totalActivities || 0);
   readonly hasActivities = computed(() => this._activities().length > 0);
-  readonly messageActivities = computed(() => this._activities().filter(activity => activity.type === 'message'));
-  readonly fileActivities = computed(() => this._activities().filter(activity => activity.type === 'file'));
-  readonly fileDepositoryActivities = computed(() => this._activities().filter(activity => activity.type === 'file-depository'));
+  readonly messageActivities = computed(() => this._activities().filter(activity => activity.activityType === 'message'));
+  readonly fileActivities = computed(() => this._activities().filter(activity => activity.activityType === 'file'));
+  readonly fileDepositoryActivities = computed(() => this._activities().filter(activity => activity.activityType === 'file-depository'));
 
   readonly activitiesByType = computed(() => {
     const activities = this._activities();
     const types = {
-      message: activities.filter(activity => activity.type === 'message'),
-      file: activities.filter(activity => activity.type === 'file'),
-      'file-depository': activities.filter(activity => activity.type === 'file-depository')
+      message: activities.filter(activity => activity.activityType === 'message'),
+      file: activities.filter(activity => activity.activityType === 'file'),
+      'file-depository': activities.filter(activity => activity.activityType === 'file-depository')
     };
     return types;
   });
@@ -64,7 +67,7 @@ export class CourseActivitiesService {
     if (filters.page) params = params.set('page', filters.page.toString());
     if (filters.limit) params = params.set('limit', filters.limit.toString());
     if (filters.search) params = params.set('search', filters.search);
-    if (filters.type) params = params.set('type', filters.type);
+    if (filters.activityType) params = params.set('activityType', filters.activityType);
     if (filters.courseUnit) params = params.set('courseUnit', filters.courseUnit);
     if (filters.createdBy) params = params.set('createdBy', filters.createdBy);
     if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
@@ -98,7 +101,7 @@ export class CourseActivitiesService {
       );
   }
 
-  createMessageActivity(activityData: CreateMessageActivityRequest): Observable<ApiResponse<{ activity: CourseActivity }>> {
+  createMessageActivity(activityData: CreateMessageActivityRequest & { category?: string }): Observable<ApiResponse<{ activity: CourseActivity }>> {
     this._isLoading.set(true);
     this._error.set(null);
 
@@ -109,6 +112,7 @@ export class CourseActivitiesService {
             // Add the new activity to the current list
             const currentActivities = this._activities();
             this._activities.set([response.data.activity, ...currentActivities]);
+            this.courseUnitsService.triggerCourseDataRefresh();
           }
         }),
         catchError(error => this.handleError(error)),
@@ -116,15 +120,42 @@ export class CourseActivitiesService {
       );
   }
 
-  createFileActivity(activityData: CreateFileActivityRequest): Observable<ApiResponse<{ activity: CourseActivity }>> {
+  createFileActivity(activityData: CreateFileActivityRequest & { category?: string }): Observable<ApiResponse<{ activity: CourseActivity }>> {
     this._isLoading.set(true);
     this._error.set(null);
 
     const formData = new FormData();
     formData.append('title', activityData.title);
-    formData.append('description', activityData.description);
+    formData.append('content', activityData.content);
     formData.append('courseUnit', activityData.courseUnit);
+
+    if (activityData.category) {
+      formData.append('category', activityData.category);
+    }
+
     if (activityData.file) {
+      // Determine file type based on file extension or MIME type
+      let fileType = 'other';
+      const mimeType = activityData.file.type;
+      const fileName = activityData.file.name.toLowerCase();
+
+      if (mimeType.startsWith('image/')) {
+        fileType = 'image';
+      } else if (mimeType.startsWith('video/')) {
+        fileType = 'video';
+      } else if (mimeType.startsWith('audio/')) {
+        fileType = 'audio';
+      } else if (mimeType.includes('presentation') || mimeType.includes('powerpoint') || fileName.includes('.ppt')) {
+        fileType = 'presentation';
+      } else if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || fileName.includes('.xls')) {
+        fileType = 'spreadsheet';
+      } else if (mimeType.startsWith('text/') || mimeType.includes('document') || fileName.includes('.doc') || fileName.includes('.txt')) {
+        fileType = 'text-file';
+      } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive') || fileName.includes('.zip') || fileName.includes('.rar')) {
+        fileType = 'archive';
+      }
+
+      formData.append('fileType', fileType);
       formData.append('file', activityData.file);
     }
 
@@ -135,6 +166,7 @@ export class CourseActivitiesService {
             // Add the new activity to the current list
             const currentActivities = this._activities();
             this._activities.set([response.data.activity, ...currentActivities]);
+            this.courseUnitsService.triggerCourseDataRefresh();
           }
         }),
         catchError(error => this.handleError(error)),
@@ -142,17 +174,39 @@ export class CourseActivitiesService {
       );
   }
 
-  createFileDepositoryActivity(activityData: CreateFileDepositoryActivityRequest): Observable<ApiResponse<{ activity: CourseActivity }>> {
+  createFileDepositoryActivity(activityData: CreateFileDepositoryActivityRequest & { category?: string }, instructionsFile?: File): Observable<ApiResponse<{ activity: CourseActivity }>> {
     this._isLoading.set(true);
     this._error.set(null);
 
-    return this.http.post<ApiResponse<{ activity: CourseActivity }>>(`${this.baseUrl}/file-depository`, activityData)
+    const formData = new FormData();
+    formData.append('title', activityData.title);
+    formData.append('content', activityData.content);
+    formData.append('courseUnit', activityData.courseUnit);
+    formData.append('maxFiles', activityData.maxFiles.toString());
+
+    if (activityData.category) {
+      formData.append('category', activityData.category);
+    }
+
+    if (activityData.restrictedFileTypes && activityData.restrictedFileTypes.length > 0) {
+      formData.append('restrictedFileTypes', JSON.stringify(activityData.restrictedFileTypes));
+    }
+
+    if (instructionsFile) {
+      formData.append('instructions', JSON.stringify({ type: 'file' }));
+      formData.append('file', instructionsFile);
+    } else {
+      formData.append('instructions', JSON.stringify({ type: 'text', text: activityData.content }));
+    }
+
+    return this.http.post<ApiResponse<{ activity: CourseActivity }>>(`${this.baseUrl}/file-depository`, formData)
       .pipe(
         tap(response => {
           if (response.success) {
             // Add the new activity to the current list
             const currentActivities = this._activities();
             this._activities.set([response.data.activity, ...currentActivities]);
+            this.courseUnitsService.triggerCourseDataRefresh();
           }
         }),
         catchError(error => this.handleError(error)),
@@ -179,6 +233,7 @@ export class CourseActivitiesService {
             if (this._selectedActivity()?._id === id) {
               this._selectedActivity.set(response.data.activity);
             }
+            this.courseUnitsService.triggerCourseDataRefresh();
           }
         }),
         catchError(error => this.handleError(error)),
@@ -202,6 +257,7 @@ export class CourseActivitiesService {
             if (this._selectedActivity()?._id === id) {
               this._selectedActivity.set(null);
             }
+            this.courseUnitsService.triggerCourseDataRefresh();
           }
         }),
         catchError(error => this.handleError(error)),
@@ -291,5 +347,30 @@ export class CourseActivitiesService {
 
     this._error.set(errorMessage);
     return throwError(() => error);
+  }
+
+  togglePin(id: string, newValue: boolean): Observable<ApiResponse<CourseActivity>> {
+    return this.http.patch<ApiResponse<CourseActivity>>(`${this.baseUrl}/${id}`, { pin: newValue })
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the activity in the current list
+            const currentActivities = this._activities();
+            const updatedActivities = currentActivities.map(activity =>
+              activity._id === id ? response.data : activity
+            );
+            this._activities.set(updatedActivities);
+
+            // Update selected activity if it's the same activity
+            if (this._selectedActivity()?._id === id) {
+              this._selectedActivity.set(response.data);
+            }
+
+            // Request a refresh of course data
+            this.courseUnitsService.triggerCourseDataRefresh();
+          }
+        }),
+        catchError(error => this.handleError(error))
+      );
   }
 }

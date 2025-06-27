@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import {Component, inject, computed, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs';
@@ -9,6 +9,8 @@ import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-but
 import { AuthService } from '@/core/services/auth.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
+import { AddActivityPopup } from '../add-activity-popup/add-activity-popup';
+import {Activity} from '@/shared/components/ui/activity/activity';
 
 @Component({
   selector: 'app-course-page',
@@ -17,7 +19,9 @@ import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
     SidebarLayout,
     ButtonComponent,
     IconButtonComponent,
-    Collapsible
+    Collapsible,
+    AddActivityPopup,
+    Activity
   ],
   templateUrl: './course-page.html',
 })
@@ -50,9 +54,28 @@ export class CoursePage {
     { initialValue: null }
   );
 
+  readonly pinnedActivities = computed(
+    () => this.courseUnit?.activities?.flatMap(
+      category => category.activities
+    ).filter(activity => activity.isPinned) || []
+  );
+
+  readonly recentActivities = computed(
+    () => this.courseUnit?.activities?.flatMap(
+      category => category.activities
+    ).sort((a, b) => {
+      const aDate = a.createdAt || a.updatedAt;
+      const bDate = b.createdAt || b.updatedAt;
+      return new Date(bDate).getTime() - new Date(aDate).getTime();
+    }).slice(0, 4) || []
+  );
+
   readonly isLoading = computed(() => {
     return this.courseUnitsService.isLoading() || this.authService.isLoading();
   });
+
+  // Popup state
+  readonly showAddActivityPopup = signal(false);
 
   get courseUnit() {
     return this.currentCourseUnit();
@@ -76,5 +99,31 @@ export class CoursePage {
 
   async onClickMembersList() {
     await this.router.navigate(['/courses', this.courseSlug(), 'members']);
+  }
+
+  onAddActivity() {
+    this.showAddActivityPopup.set(true);
+  }
+
+  onCloseAddActivityPopup() {
+    this.showAddActivityPopup.set(false);
+  }
+
+  onActivityCreated() {
+    this.showAddActivityPopup.set(false);
+  }
+
+  onCategoryCreated(newCategory: any) {
+    // Add the new category to the current course unit's activities list
+    const currentCourseUnit = this.currentCourseUnit();
+    if (currentCourseUnit) {
+      const updatedCourseUnit = {
+        ...currentCourseUnit,
+        activities: [...(currentCourseUnit.activities || []), newCategory]
+      };
+      // Update the signal with the new course unit data
+      // Note: This is a temporary update until the next data refresh
+      // The actual category will be created when an activity is added to it
+    }
   }
 }

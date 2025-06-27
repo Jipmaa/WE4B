@@ -1,0 +1,83 @@
+<div class="w-full">
+
+  <div class="w-full flex items-baseline justify-between">
+    <!-- Label -->
+    @if (label) {
+      <label
+        for="textarea-element"
+        [class]="labelClasses"
+      >
+        <span>{{ label }}</span>
+        @if (required) {
+          <span class="text-red-500 ml-1" aria-label="required">*</span>
+        }
+      </label>
+
+      <!-- Label Hint Slot -->
+      <ng-content select="[slot=label-hint]">
+        <!-- Character Count -->
+        @if (maxLength) {
+          <p [class]="characterCountClasses">
+            {{ value().length }}/{{ maxLength }}
+          </p>
+        }
+      </ng-content>
+    }
+  </div>
+
+  <!-- Textarea Container -->
+  <div class="relative">
+    <!-- Leading Content Slot -->
+    <ng-content select="[slot=leading]"></ng-content>
+
+    <!-- Textarea Element -->
+    <textarea
+      #textareaElement
+      id="textarea-element"
+      [class]="baseClasses"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [readonly]="readonly"
+      [required]="required"
+      [rows]="rows"
+      [attr.maxlength]="maxLength"
+      [value]="value()"
+      [attr.aria-label]="ariaLabel"
+      [attr.aria-describedby]="ariaDescribedBy"
+      [attr.aria-invalid]="hasError"
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    ></textarea>
+
+    <!-- Trailing Content Slot -->
+    <ng-content select="[slot=trailing]"></ng-content>
+  </div>
+
+  <!-- Help Text -->
+  @if (helpText && !hasError && !hasWarning && !hasSuccess) {
+    <p [class]="helpTextClasses">{{ helpText }}</p>
+  }
+
+  <!-- Validation Messages -->
+  @if (hasError && errorText) {
+    <p [class]="validationTextClasses">
+      <lucide-icon name="alert-circle" size="12" />
+      {{ errorText }}
+    </p>
+  }
+
+  @if (hasWarning && warningText && !hasError) {
+    <p [class]="validationTextClasses">
+      <lucide-icon name="alert-triangle" size="12" />
+      {{ warningText }}
+    </p>
+  }
+
+  @if (hasSuccess && successText && !hasError && !hasWarning) {
+    <p [class]="validationTextClasses">
+      <lucide-icon name="check-circle" size="12" />
+      {{ successText }}
+    </p>
+  }
+</div>
