@@ -1,22 +1,24 @@
-<div class="relative w-full bg-white rounded-lg shadow border-border/50 inline-flex flex-col justify-start items-start overflow-hidden">
+<a
+  [href]="`/courses/${course.slug}`"
+  class="relative group w-full bg-white rounded-lg shadow border-border/50 inline-flex flex-col justify-start items-start overflow-hidden hover:shadow-lg transition-all duration-300 ease-in-out">
   @if (variant === 'with-image') {
     <app-auth-image
       [src]="course.img ?? null"
       [alt]="course.name"
       class="w-full"
-      className="w-full h-32 object-cover object-center"
+      className="w-full h-32 object-cover object-center group-hover:brightness-95 transition-all duration-300 ease-in-out"
     />
   }
-  <div class="w-full p-3 left-0 bottom-0 absolute bg-white/50 backdrop-blur-3xl flex flex-col justify-start items-start gap-0.5">
+  <div class="w-full p-3 left-0 bottom-0 absolute bg-white/50 backdrop-blur-3xl flex flex-col justify-start items-start gap-0.5 group-hover:bg-white/80 transition-all duration-300 ease-in-out">
     <div class="self-stretch inline-flex justify-start items-center gap-1">
       <p class="flex-1 justify-start text-black text-sm font-semibold leading-tight">{{ course.name }}</p>
     </div>
     <p class="self-stretch opacity-60 justify-start text-black text-xs font-normal">{{ course.code }}</p>
   </div>
-  <div class="w-full p-3 opacity-0 pointer-events-none bg-white/50 backdrop-blur-3xl flex flex-col justify-start items-start gap-0.5">
+  <div class="w-full p-3 opacity-0 pointer-events-none flex flex-col justify-start items-start gap-0.5">
     <div class="self-stretch inline-flex justify-start items-center gap-1">
-      <p class="flex-1 justify-start text-black text-sm font-semibold leading-tight">{{ course.name }}</p>
+      <p class="flex-1 justify-start text-sm font-semibold leading-tight">{{ course.name }}</p>
     </div>
-    <p class="self-stretch opacity-60 justify-start text-black text-xs font-normal">{{ course.code }}</p>
+    <p class="self-stretch justify-start text-xs font-normal">{{ course.code }}</p>
   </div>
-</div>
+</a>
