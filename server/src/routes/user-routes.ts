@@ -435,8 +435,19 @@ router.put('/:id/roles', adminMiddleware, [
 // @route   PUT /api/users/:id/profile
 // @desc    Update user profile (Admin only)
 // @access  Private (Admin only)
-router.put('/:id/profile', adminMiddleware, [
+router.put('/:id', adminMiddleware, uploadAvatar, handleFileUploadError, [
 	...userIdValidation,
+	body('email')
+		 .optional()
+		 .isEmail()
+		 .withMessage('Please provide a valid email address')
+		 .normalizeEmail()
+		 .toLowerCase()
+		 .trim(),
+	body('password')
+		 .optional()
+		 .isLength({ min: 6 })
+		 .withMessage('Password must be at least 6 characters long'),
 	body('firstName')
 		 .optional()
 		 .isLength({ max: 50 })
@@ -447,16 +458,25 @@ router.put('/:id/profile', adminMiddleware, [
 		 .isLength({ max: 50 })
 		 .withMessage('Last name must be less than 50 characters')
 		 .trim(),
-	body('department')
-		 .optional()
-		 .isLength({ max: 100 })
-		 .withMessage('Department must be less than 100 characters')
-		 .trim(),
 	body('birthdate')
 		 .optional()
 		 .isISO8601()
 		 .toDate()
 		 .withMessage('Please provide a valid birthdate'),
+	body('roles')
+		 .optional()
+		 .isArray()
+		 .withMessage('Roles must be an array')
+		 .custom((roles) => {
+			 const validRoles = ['student', 'teacher', 'admin'];
+			 return roles.every((role: string) => validRoles.includes(role)) && roles.length > 0;
+		 })
+		 .withMessage('Roles must contain valid values: student, teacher, admin and cannot be empty'),
+	body('department')
+		 .optional()
+		 .isLength({ max: 100 })
+		 .withMessage('Department must be less than 100 characters')
+		 .trim(),
 	body('phone')
 		 .optional()
 		 .custom((value) => {
@@ -466,33 +486,56 @@ router.put('/:id/profile', adminMiddleware, [
 			 // Match the User model regex pattern: /^\+?\d{7,14}$/
 			 return /^\+?\d{7,14}$/.test(cleanPhone);
 		 })
-		 .withMessage('Please provide a valid phone number (7-14 digits, optional +)'),
-	body('avatar')
-		 .optional()
-		 .isURL()
-		 .withMessage('Avatar must be a valid URL')
+		 .withMessage('Please provide a valid phone number (7-14 digits, optional +)')
 ], validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { firstName, lastName, department, birthdate, avatar, phone } = req.body;
+	const { email, password, firstName, lastName, birthdate, roles, department, phone } = req.body;
 
-	const user = await User.findById(req.params.id);
+	const user = await User.findById(req.params.id).select('+password');
 
 	if (!user) {
 		throw new AppError('User not found', 404);
 	}
 
 	// Update fields if provided
+	if (email !== undefined) user.email = email;
+	if (password !== undefined) user.password = password;
 	if (firstName !== undefined) user.firstName = firstName;
 	if (lastName !== undefined) user.lastName = lastName;
-	if (department !== undefined) user.department = department;
 	if (birthdate !== undefined) user.birthdate = birthdate;
-	if (avatar !== undefined) user.avatar = avatar;
+	if (roles !== undefined) user.roles = roles;
+	if (department !== undefined) user.department = department;
 	if (phone !== undefined) user.phone = phone;
+
+	// Handle avatar update/removal
+	if (req.file) {
+		// Delete old avatar if exists
+		if (user.avatar) {
+			try {
+				await deleteFile(FILE_CONFIGS.avatar.bucket, user.avatar);
+			} catch (error) {
+				console.warn('Failed to delete old avatar:', error);
+			}
+		}
+		// Generate unique filename and upload new avatar
+		const fileName = generateFileName(req.file.originalname, `avatar-${user._id}`);
+		user.avatar = await uploadFile(req.file, FILE_CONFIGS.avatar.bucket, fileName, {
+			'X-Amz-Meta-Upload-Type': 'avatar',
+			'X-Amz-Meta-User-Id': user._id.toString()
+		});
+	} else if (user.avatar && req.body.avatar === '') { // If avatar field is explicitly empty, remove it
+		try {
+			await deleteFile(FILE_CONFIGS.avatar.bucket, user.avatar);
+		} catch (error) {
+			console.warn('Failed to delete old avatar:', error);
+		}
+		user.avatar = undefined;
+	}
 
 	await user.save();
 
 	res.json({
 		success: true,
-		message: 'User profile updated successfully',
+		message: 'User updated successfully',
 		data: {
 			user: {
 				id: user._id,

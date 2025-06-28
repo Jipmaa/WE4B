@@ -7,6 +7,7 @@ import {CourseUnit, CourseUnitsResponse} from '@/core/models/course-unit.models'
 import {AuthService} from '@/core/services/auth.service';
 // import {CourseCard} from '@/shared/components/ui/course-card/course-card';
 import { CourseBox } from '@/shared/components/ui/course-box/course-box';
+import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 
 @Component({
   selector: 'app-courses-page',
@@ -14,7 +15,8 @@ import { CourseBox } from '@/shared/components/ui/course-box/course-box';
     SidebarLayout,
     InputComponent,
     LucideAngularModule,
-    CourseBox
+    CourseBox,
+    IconButtonComponent
   ],
   templateUrl: './courses-page.html',
 })
@@ -23,6 +25,7 @@ export class CoursesPage implements OnInit {
   private readonly coursesService = inject(CourseUnitsService);
   private readonly authService = inject(AuthService);
   private userCourses = signal<CourseUnit[] | null>(null);
+  readonly showImages = signal<boolean>(true);
 
   ngOnInit(): void {
     this.loadUserCourses();
@@ -44,6 +47,11 @@ export class CoursesPage implements OnInit {
   get courses() {
     return this.userCourses();
   }
+
+  public switchShowImages(): void{
+    this.showImages.update(old=>!old);
+  }
+
 
 
 }

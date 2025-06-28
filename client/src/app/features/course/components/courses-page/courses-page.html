@@ -23,6 +23,14 @@
         size="12"
       />
     </app-input>
+
+    <app-icon-button
+      [icon]="showImages() ? 'image-off' : 'image'"
+      size="sm"
+      (click)="switchShowImages()"
+      variant="ghost"
+    />
+
     <!-- Add other actions here -->
   </ng-template>
 
@@ -30,7 +38,7 @@
     @for (course of courses; track course._id) {
         <app-course-box
                 [course]="course"
-                [showImage]="false">
+                [showImage]="showImages()">
         </app-course-box>
     }
   </div>
