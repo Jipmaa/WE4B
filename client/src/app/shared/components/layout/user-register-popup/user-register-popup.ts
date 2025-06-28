@@ -45,7 +45,7 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
     lastName: new FormControl<string>('', Validators.required),
     birthdate: new FormControl<string>('', Validators.required),
     email: new FormControl<string>('', [Validators.required, Validators.email]),
-    phone: new FormControl<string>('', [Validators.pattern(/^\+?[1-9]\d{1,14}$/)]),
+    phone: new FormControl<string>('', [Validators.pattern(/^\+?\d{7,14}$/)]),
     roles: new FormControl<string[]>([], [rolesValidator]),
     department: new FormControl<string>(''),
     password: new FormControl<string>('', []),
@@ -216,7 +216,7 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
       lastName: this.myForm.value.lastName || '',
       birthdate: this.myForm.value.birthdate || '',
       email: this.myForm.value.email || '',
-      phone: this.myForm.value.phone || undefined,
+      phone: this.myForm.value.phone || null,
       department: getRoles().includes('student') ? (this.myForm.value.department as StudentDepartment) || undefined : undefined,
       roles: getRoles()
     };

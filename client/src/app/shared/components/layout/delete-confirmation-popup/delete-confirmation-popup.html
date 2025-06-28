@@ -1,0 +1,36 @@
+<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+  (click)="onOverlayClick()"
+  (keydown)="onOverlayKeydown($event)"
+  tabindex="-1">
+  <div (click)="$event.stopPropagation()" class="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto focus:outline-none" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Confirmation</h2>
+        <app-icon-button
+          icon="x"
+          [iconSize]="20"
+          variant="ghost"
+          size="sm"
+          ariaLabel="Fermer le popup"
+          (buttonClick)="onCancel()">
+        </app-icon-button>
+      </div>
+    <p class="mb-6 text-gray-700">{{ message }}</p>
+    <div class="flex gap-3 pt-4">
+      <app-button
+        type="button"
+        variant="ghost"
+        [fullWidth]="true"
+        (buttonClick)="onCancel()">
+        Annuler
+      </app-button>
+      <app-button
+        type="button"
+        variant="destructive"
+        [fullWidth]="true"
+        (buttonClick)="onConfirm()">
+        Supprimer
+      </app-button>
+    </div>
+  </div>
+</div>

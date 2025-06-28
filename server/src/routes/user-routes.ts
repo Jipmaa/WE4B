@@ -104,7 +104,17 @@ const createUserValidation = [
 	body('isEmailVerified')
 		 .optional()
 		 .isBoolean()
-		 .withMessage('isEmailVerified must be a boolean')
+		 .withMessage('isEmailVerified must be a boolean'),
+	body('phone')
+		 .optional()
+		 .custom((value) => {
+			 if (!value) return true; // Allow empty since it's optional
+			 // Remove common formatting characters before validation
+			 const cleanPhone = value.replace(/[\s\-.()]/g, '');
+			 // Match the User model regex pattern: /^\+?\d{7,14}$/
+			 return /^\+?\d{7,14}$/.test(cleanPhone);
+		 })
+		 .withMessage('Please provide a valid phone number (7-14 digits, optional +)')
 ];
 
 // @route   POST /api/users
@@ -120,7 +130,8 @@ router.post('/', adminMiddleware, uploadAvatar, handleFileUploadError, createUse
 		roles,
 		department,
 		isActive,
-		isEmailVerified
+		isEmailVerified,
+		phone
 	} = req.body;
 
 	// Check if user already exists
@@ -139,7 +150,8 @@ router.post('/', adminMiddleware, uploadAvatar, handleFileUploadError, createUse
 		roles: roles || ['student'], // Default to student role if not provided
 		department: department || undefined,
 		isActive: isActive !== undefined ? isActive : true, // Default to active
-		isEmailVerified: isEmailVerified !== undefined ? isEmailVerified : false // Default to unverified
+		isEmailVerified: isEmailVerified !== undefined ? isEmailVerified : false, // Default to unverified
+		phone: phone ? phone.replace(/[\s\-.()]/g, '') : undefined
 	};
 
 	// Handle avatar upload if provided
@@ -170,9 +182,10 @@ router.post('/', adminMiddleware, uploadAvatar, handleFileUploadError, createUse
 				avatar: user.avatar,
 				roles: user.roles,
 				isActive: user.isActive,
-				isEmailVerified: user.isEmailVerified,
-				createdAt: user.createdAt,
-				updatedAt: user.updatedAt
+											isEmailVerified: user.isEmailVerified,
+							phone: user.phone,
+							createdAt: user.createdAt,
+							updatedAt: user.updatedAt
 			}
 		}
 	});
@@ -504,7 +517,10 @@ router.put('/:id', adminMiddleware, uploadAvatar, handleFileUploadError, [
 	if (birthdate !== undefined) user.birthdate = birthdate;
 	if (roles !== undefined) user.roles = roles;
 	if (department !== undefined) user.department = department;
-	if (phone !== undefined) user.phone = phone;
+	if (phone !== undefined) {
+		// Clean the phone number before assigning it
+		user.phone = phone ? phone.replace(/[\s\-.()]/g, '') : null;
+	}
 
 	// Handle avatar update/removal
 	if (req.file) {

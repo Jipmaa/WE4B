@@ -23,13 +23,14 @@ import { UserRegisterPopup} from '@/shared/components/layout/user-register-popup
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import { Router } from '@angular/router';
+import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent, DeleteConfirmationPopupComponent],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -48,6 +49,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
   showCreateGroupPopup: boolean = false;
 
   readonly createdGroupPopUp = signal<CourseUnit | null>(null);
+  showDeleteUserPopup: boolean = false;
+  userToDelete: User | null = null;
 
   constructor(
     public servUsers: UsersService,
@@ -68,7 +71,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
         console.log(response);
         this.CoursesArray = response.data.courseUnits;
       }
-    );
+    )
   }
 
   ngOnInit(): void {
@@ -122,15 +125,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
     {
       label: 'Supprimer',
       onTriggered: (user: User) => {
-        console.log('Supprimer utilisateur:', user);
-        // Implémentez votre logique de suppression ici
-      }
-    },
-    {
-      label: 'Voir détails',
-      onTriggered: (user: User) => {
-        console.log('Voir détails utilisateur:', user);
-        // Implémentez votre logique de visualisation ici
+        this.userToDelete = user;
+        this.showDeleteUserPopup = true;
       }
     }
   ];
@@ -231,16 +227,34 @@ export class AdminPage implements OnInit, AfterViewChecked {
     // Chercher l'index de l'utilisateur mis à jour dans le tableau
     const index = this.UsersArray.findIndex(u => u._id === updatedUser._id);
 
-    if (index !== -1) {
-      // Remplacer l'ancien utilisateur par le nouveau dans le tableau
-      this.UsersArray[index] = updatedUser;
-
-      // Forcer le tableau à se mettre à jour si besoin
-      this.UsersArray = [...this.UsersArray];
-    }
+    this.servUsers.getUsers().subscribe(
+      response => {
+        this.UsersArray = response.data.users;
+      }
+    );
 
     // Tu peux afficher une notif ou console.log
     console.log('Utilisateur mis à jour :', updatedUser);
+  }
+
+  confirmDeleteUser(): void {
+    if (this.userToDelete) {
+      this.servUsers.deleteUser(this.userToDelete._id).subscribe(
+        () => {
+          this.UsersArray = this.UsersArray.filter(u => u._id !== this.userToDelete!._id);
+          this.cancelDeleteUser();
+        },
+        error => {
+          console.error('Error deleting user:', error);
+          this.cancelDeleteUser();
+        }
+      );
+    }
+  }
+
+  cancelDeleteUser(): void {
+    this.showDeleteUserPopup = false;
+    this.userToDelete = null;
   }
 
   navigateToRegister() {
