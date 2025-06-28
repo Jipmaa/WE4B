@@ -4,14 +4,14 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CourseGroup,
-  CourseGroupWithMembers,
   CourseGroupFilters,
   CourseGroupsResponse,
   CourseGroupSearchResult,
   CourseGroupMembersResponse,
   CreateCourseGroupRequest,
   UpdateCourseGroupRequest,
-  AddUserToCourseGroupRequest
+  AddUserToCourseGroupRequest,
+  CourseGroupsByCourseUnitResponse
 } from '../models/course-group.models';
 import { ApiResponse } from '../models/_shared.models';
 
@@ -124,36 +124,6 @@ export class CourseGroupsService {
         tap(() => this._isLoading.set(false))
       );
   }
-
-  //createGroup(groupData: CreateCourseGroupRequest): Observable<ApiResponse<CreateCourseGroupResponse>> {
-  /*createGroup(groupData: CreateCourseGroupRequest): Observable<ApiResponse<{ group: CourseGroup }>> {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    // Create FormData to handle both course data and file upload
-    const formData = new FormData();
-
-    // Add course data to FormData
-    formData.append('name', groupData.name);
-    //formData.append('slug', "course");
-    //formData.append('slug', slugify(courseUnitData.name, { lower: true, strict: true }));
-    //formData.append('kind', groupData.kind);
-    //formData.append('day', groupData.day);
-    //formData.append('from', groupData.from.toString());
-
-    return this.http.post<ApiResponse<{ group: CourseGroup }>>(this.baseUrl, groupData)
-      .pipe(
-        tap(response => {
-          if (response.success) {
-            // Add the new group to the current list
-            const currentGroups = this._groups();
-            this._groups.set([response.data.group, ...currentGroups]);
-          }
-        }),
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
-  }*/
 
   updateGroup(id: string, groupData: UpdateCourseGroupRequest): Observable<ApiResponse<{ group: CourseGroup }>> {
     this._isLoading.set(true);
@@ -421,5 +391,21 @@ export class CourseGroupsService {
 
     this._error.set(errorMessage);
     return throwError(() => error);
+  }
+
+  getGroupsByCourseUnitSlug(slug: string): Observable<ApiResponse<CourseGroupsByCourseUnitResponse>> {
+    this._isLoading.set(true);
+
+    return this.http.get<ApiResponse<CourseGroupsByCourseUnitResponse>>(`${this.baseUrl}/by-course-unit-slug/${slug}`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // You might want to merge these with existing groups or handle separately
+            // For now, we'll just trigger a refresh of the current groups
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
   }
 }

@@ -12,6 +12,7 @@ import userRoutes from './routes/user-routes';
 import courseUnitRoutes from './routes/course-unit-routes';
 import courseGroupRoutes from "./routes/course-group-routes";
 import courseActivityRoutes from './routes/course-activity-routes';
+import courseGroupRoutes from './routes/course-group-routes';
 import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
 import fileRoutes from './routes/file-routes';
@@ -173,6 +174,7 @@ class Server {
 		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/course-units', courseUnitRoutes);
 		this.app.use('/api/course-activities', courseActivityRoutes);
+		this.app.use('/api/course-groups', courseGroupRoutes);
 		this.app.use('/api/users', userRoutes);
 		this.app.use('/api/files', fileRoutes);
 		this.app.use('/api/discussions', discussionRoutes);
