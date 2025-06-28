@@ -25,11 +25,12 @@ import {ButtonComponent} from '@/shared/components/ui/button/button';
 import { Router } from '@angular/router';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
+import {CourseRegisterPopup} from '@/shared/components/layout/course-register-popup/course-register-popup';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent, CourseRegisterPopup],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -41,6 +42,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
   CoursesArray !: CourseUnit[]
 
   showEditUserPopup: boolean = false;
+  showEditCourseUnitPopup: boolean = false;
   selectedUser: User | null = null;
   selectedCourseUnit: CourseUnit | null = null;
   selectedGroup: CourseGroup | null = null;
@@ -155,7 +157,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
         this.servCourse.getCourseUnitById(courseUnit._id).subscribe(
           response => {
             this.selectedCourseUnit = response.data.courseUnit;
-            this.showEditUserPopup = true;
+            this.showEditCourseUnitPopup = true;
           }
         );
       }
@@ -241,6 +243,16 @@ export class AdminPage implements OnInit, AfterViewChecked {
 
     // Tu peux afficher une notif ou console.log
     console.log('Utilisateur mis à jour :', updatedUser);
+  }
+
+  onCourseUnitUpdated(updatedCourseUnit: CourseUnit): void {
+    const index = this.CoursesArray.findIndex(cu => cu._id === updatedCourseUnit._id);
+
+    if (index !== -1) {
+      this.CoursesArray[index] = updatedCourseUnit;
+      this.CoursesArray = [...this.CoursesArray];
+    }
+    console.log('UE mise à jour :', updatedCourseUnit);
   }
 
   navigateToRegister() {

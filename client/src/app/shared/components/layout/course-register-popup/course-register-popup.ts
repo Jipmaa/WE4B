@@ -1,4 +1,4 @@
-/*import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import {InputComponent} from '@/shared/components/ui/input/input';
@@ -163,7 +163,7 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
       name: this.myForm.value.name || '',
       code: this.myForm.value.code || '',
       capacity: capacityValue ? parseInt(String(capacityValue), 10) : 0,
-      type: this.myForm.value.type || '',
+      type: this.myForm.value.type as "CS" | "TM" | "EC" | "QC" | "OM",
     };
 
     if (this.isEditMode && this.courseUnit) {
@@ -241,4 +241,4 @@ function codeValidator(control: AbstractControl): ValidationErrors | null {
     errors["codeValid"] = 'ok'
 
   return Object.keys(errors).length ? errors : null;
-}*/
+}
