@@ -4,7 +4,6 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CourseGroup,
-  CourseGroupWithMembers,
   CourseGroupFilters,
   CourseGroupsResponse,
   CourseGroupSearchResult,
@@ -45,8 +44,8 @@ export class CourseGroupsService {
   // Computed signals
   readonly totalGroups = computed(() => this._pagination()?.totalGroups || 0);
   readonly hasGroups = computed(() => this._groups().length > 0);
-  readonly groupsWithMembers = computed(() => this._groups().filter(group => group.members.length > 0));
-  readonly groupsWithoutMembers = computed(() => this._groups().filter(group => group.members.length === 0));
+  readonly groupsWithMembers = computed(() => this._groups().filter(group => group.users.length > 0));
+  readonly groupsWithoutMembers = computed(() => this._groups().filter(group => group.users.length === 0));
 
   readonly groupsByCourseUnit = computed(() => {
     const groups = this._groups();
@@ -125,35 +124,6 @@ export class CourseGroupsService {
       );
   }
 
-  //createGroup(groupData: CreateCourseGroupRequest): Observable<ApiResponse<CreateCourseGroupResponse>> {
-  /*createGroup(groupData: CreateCourseGroupRequest): Observable<ApiResponse<{ group: CourseGroup }>> {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    // Create FormData to handle both course data and file upload
-    const formData = new FormData();
-
-    // Add course data to FormData
-    formData.append('name', groupData.name);
-    //formData.append('slug', "course");
-    //formData.append('slug', slugify(courseUnitData.name, { lower: true, strict: true }));
-    //formData.append('kind', groupData.kind);
-    //formData.append('day', groupData.day);
-    //formData.append('from', groupData.from.toString());
-
-    return this.http.post<ApiResponse<{ group: CourseGroup }>>(this.baseUrl, groupData)
-      .pipe(
-        tap(response => {
-          if (response.success) {
-            // Add the new group to the current list
-            const currentGroups = this._groups();
-            this._groups.set([response.data.group, ...currentGroups]);
-          }
-        }),
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
-  }*/
 
   updateGroup(id: string, groupData: UpdateCourseGroupRequest): Observable<ApiResponse<{ group: CourseGroup }>> {
     this._isLoading.set(true);
@@ -340,41 +310,48 @@ export class CourseGroupsService {
 
   // Helper methods
   getGroupMemberCount(group: CourseGroup): number {
-    return group.members.length;
+    return group.users.length;
   }
 
-  isGroupFull(group: CourseGroup): boolean {
-    if (!group.maxMembers) return false;
-    return group.members.length >= group.maxMembers;
+  getGroupDisplay(group: CourseGroup): string {
+    const time = `${group.from}-${group.to}`;
+    const day = group.day.charAt(0).toUpperCase() + group.day.slice(1);
+    return `${group.name} (${day} ${time})`;
   }
 
-  getGroupCapacityDisplay(group: CourseGroup): string {
-    if (!group.maxMembers) {
-      return `${group.members.length} members`;
-    }
-    return `${group.members.length}/${group.maxMembers} members`;
+  getGroupTimeDisplay(group: CourseGroup): string {
+    return `${group.from} - ${group.to}`;
   }
 
-  getGroupCapacityPercentage(group: CourseGroup): number {
-    if (!group.maxMembers) return 0;
-    return Math.round((group.members.length / group.maxMembers) * 100);
+  getGroupKindDisplay(group: CourseGroup): string {
+    const kindMap = {
+      theoretical: 'Theoretical',
+      practical: 'Practical',
+      laboratory: 'Laboratory',
+      other: 'Other'
+    };
+    return kindMap[group.kind] || group.kind;
   }
 
-  canAddMembers(group: CourseGroup): boolean {
-    if (!group.maxMembers) return true;
-    return group.members.length < group.maxMembers;
+  getGroupDayDisplay(group: CourseGroup): string {
+    return group.day.charAt(0).toUpperCase() + group.day.slice(1);
   }
 
-  canEditGroup(group: CourseGroup, currentUserId: string): boolean {
-    return group.createdBy === currentUserId;
+  isUserInGroup(group: CourseGroup, userId: string): boolean {
+    return group.users.some(u => u.user === userId);
   }
 
-  canDeleteGroup(group: CourseGroup, currentUserId: string): boolean {
-    return group.createdBy === currentUserId;
+  getUserRoleInGroup(group: CourseGroup, userId: string): 'student' | 'teacher' | null {
+    const userInGroup = group.users.find(u => u.user === userId);
+    return userInGroup?.role || null;
   }
 
-  canManageMembers(group: CourseGroup, currentUserId: string): boolean {
-    return group.createdBy === currentUserId;
+  getGroupStudents(group: CourseGroup): CourseGroup['users'] {
+    return group.users.filter(u => u.role === 'student');
+  }
+
+  getGroupTeachers(group: CourseGroup): CourseGroup['users'] {
+    return group.users.filter(u => u.role === 'teacher');
   }
 
   validateGroupData(data: CreateCourseGroupRequest | UpdateCourseGroupRequest): string[] {
@@ -389,18 +366,29 @@ export class CourseGroupsService {
       }
     }
 
-    if ('description' in data && data.description) {
-      if (data.description.length > 500) {
-        errors.push('Description must be less than 500 characters');
+    if ('slug' in data && data.slug) {
+      if (!/^[a-z0-9-]+$/.test(data.slug)) {
+        errors.push('Slug must contain only lowercase letters, numbers, and hyphens');
       }
     }
 
-    if ('maxMembers' in data && data.maxMembers !== undefined) {
-      if (data.maxMembers < 1) {
-        errors.push('Maximum members must be at least 1');
+    if ('from' in data && data.from) {
+      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(data.from)) {
+        errors.push('Start time must be in HH:mm format');
       }
-      if (data.maxMembers > 1000) {
-        errors.push('Maximum members cannot exceed 1000');
+    }
+
+    if ('to' in data && data.to) {
+      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(data.to)) {
+        errors.push('End time must be in HH:mm format');
+      }
+    }
+
+    if ('from' in data && 'to' in data && data.from && data.to) {
+      const fromTime = new Date(`1970-01-01T${data.from}:00`);
+      const toTime = new Date(`1970-01-01T${data.to}:00`);
+      if (fromTime >= toTime) {
+        errors.push('End time must be after start time');
       }
     }
 
