@@ -122,12 +122,12 @@
           <div class="col-12">
             <label for="inputCapacity"
                    class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Capacité</label>
-            <input type="text" class="form-control" id="inputCapacity" name="capacity"
+            <input type="number" class="form-control" id="inputCapacity" name="capacity"
                    placeholder="Veuillez entrer un nombre" formControlName="capacity"
                    class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
             <ng-container *ngIf="myForm.get('capacity')?.dirty || myForm.get('capacity')?.touched">
-              <div *ngIf="myForm.get('capacity')?.errors?.['number']; else capacityValid">
-                ❌ Capacité requise
+              <div *ngIf="myForm.get('capacity')?.errors?.['invalidCapacity']; else capacityValid">
+                ❌ Capacité invalide (doit être un nombre entier positif)
               </div>
               <ng-template #capacityValid>
                 <div class="text-success small">✅ Capacité valide</div>
