@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, inject, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ForumService } from '@/core/services/forum.service';
@@ -15,6 +15,7 @@ export class DiscussionViewComponent implements OnInit, OnChanges {
   private readonly forumService = inject(ForumService);
 
   @Input() discussionId!: string;
+  @Output() discussionTitle = new EventEmitter<string>();
 
   discussion: Discussion | null = null;
   newMessageContent = '';
@@ -46,6 +47,7 @@ export class DiscussionViewComponent implements OnInit, OnChanges {
       next: (discussion) => {
         this.discussion = discussion;
         this.isLoading = false;
+        this.discussionTitle.emit(discussion.title);
       },
       error: (err) => {
         this.error = `Erreur lors du chargement de la discussion : ${err.message}`;
