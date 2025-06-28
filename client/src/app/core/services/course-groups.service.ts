@@ -10,7 +10,7 @@ import {
   CourseGroupMembersResponse,
   CreateCourseGroupRequest,
   UpdateCourseGroupRequest,
-  AddUserToCourseGroupRequest
+  AddUserToCourseGroupRequest, CourseGroupsByCourseUnitResponse
 } from '../models/course-group.models';
 import { ApiResponse } from '../models/_shared.models';
 
@@ -409,5 +409,21 @@ export class CourseGroupsService {
 
     this._error.set(errorMessage);
     return throwError(() => error);
+  }
+
+  getGroupsByCourseUnitSlug(slug: string): Observable<ApiResponse<CourseGroupsByCourseUnitResponse>> {
+    this._isLoading.set(true);
+
+    return this.http.get<ApiResponse<CourseGroupsByCourseUnitResponse>>(`${this.baseUrl}/by-course-unit-slug/${slug}`)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // You might want to merge these with existing groups or handle separately
+            // For now, we'll just trigger a refresh of the current groups
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
   }
 }

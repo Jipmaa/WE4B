@@ -12,6 +12,13 @@ export interface CourseGroupUser {
   year?: string;
 }
 
+export interface PopulatedGroupUser {
+  user: User;
+  role: 'student' | 'teacher';
+  semester: number;
+  year: string;
+}
+
 export interface CourseGroup {
   _id: string;
   slug: string;
@@ -91,4 +98,34 @@ export interface CourseGroupMembersResponse {
     maxMembers?: number;
     currentMemberCount: number;
   };
+}
+
+export interface PopulatedCourseGroup {
+  _id: string;
+  slug: string;
+  name: string;
+  kind: string;
+  day: string;
+  from: string;
+  to: string;
+  semester: number;
+  createdAt: string;
+  updatedAt: string;
+  courseUnit: {
+    name: string;
+    code: string;
+    slug: string;
+  };
+  users: PopulatedGroupUser[];
+}
+
+export interface CourseGroupsByCourseUnitResponse {
+  courseUnit: {
+    id: string;
+    name: string;
+    code: string;
+    slug: string;
+  };
+  groups: PopulatedCourseGroup[];
+  count: number;
 }

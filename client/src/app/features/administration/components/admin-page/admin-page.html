@@ -26,14 +26,6 @@
         (buttonClick)="navigateToCourse()">
         Ajouter une UE
       </app-button>
-
-      <app-button
-        leadingIcon = "graduation-cap"
-        variant="secondary"
-        [fullWidth]="false"
-        (buttonClick)="navigateToGroup()">
-        Ajouter un groupe
-      </app-button>
     </ng-container>
 
     <ng-container *ngIf="activeTab === 'users'">
@@ -101,3 +93,9 @@
   (closePopup)="showEditUserPopup = false"
   (userSaved)="onUserUpdated($event)">
 </app-user-register-popup>
+
+<app-create-group-popup
+  [courseUnit]="createdGroupPopUp()"
+  (closePopup)="handleClosePopUp()"
+  (groupSaved)="onCreateGroup($event)">
+</app-create-group-popup>
