@@ -578,6 +578,45 @@ router.get('/by-course-unit/:courseUnitId', [
 	});
 }));
 
+// @route   GET /api/course-groups/by-course-unit-slug/:slug
+// @desc    Get all groups for a specific course unit by slug
+// @access  Private (All authenticated users)
+router.get('/by-course-unit-slug/:slug', [
+	param('slug')
+		.notEmpty()
+		.withMessage('Course unit slug is required')
+		.isLength({ min: 2, max: 50 })
+		.withMessage('Slug must be between 2 and 50 characters')
+		.matches(/^[a-z0-9-]+$/)
+		.withMessage('Slug must contain only lowercase letters, numbers, and hyphens')
+], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	// First find the course unit by slug
+	const courseUnit = await CourseUnit.findOne({ slug: req.params.slug });
+	if (!courseUnit) {
+		throw new AppError('Course unit not found', 404);
+	}
+
+	const groups = await CourseGroup.find({ courseUnit: courseUnit._id })
+		.populate('courseUnit', 'name code slug')
+		.populate('users.user', 'firstName lastName email roles department')
+		.sort({ semester: 1, day: 1, from: 1 })
+		.select('-__v');
+
+	res.json({
+		success: true,
+		data: {
+			courseUnit: {
+				id: courseUnit._id,
+				name: courseUnit.name,
+				code: courseUnit.code,
+				slug: courseUnit.slug
+			},
+			groups,
+			count: groups.length
+		}
+	});
+}));
+
 // @route   GET /api/course-groups/my
 // @desc    Get current user's course groups
 // @access  Private (All authenticated users)

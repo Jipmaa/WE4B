@@ -1,0 +1,26 @@
+<div class="w-full bg-accent/40 border-primary/20 rounded-2xl flex gap-2 p-2 items-center">
+  <div class="size-12 bg-primary/15 rounded-xl flex items-center justify-center">
+    @if (!data.user.avatar) {
+      <span class="text-primary text-lg font-medium">
+        {{ initials }}
+      </span>
+    } @else {
+      <app-auth-image
+        [src]="data.user.avatar!"
+        [width]="48"
+        [height]="48"
+        alt="Photo de profil"
+        className="size-12 rounded-xl object-cover">
+      </app-auth-image>
+    }
+  </div>
+
+  <div>
+    <h3 class="font-semibold text-blue-950">
+      {{ data.user.firstName }} {{ data.user.lastName }}
+    </h3>
+    <p class="text-sm text-gray-500">
+      {{ semesterDescription }}
+    </p>
+  </div>
+</div>
