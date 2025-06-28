@@ -2,126 +2,119 @@
   title="Mes cours"
   [leftSidebarOpen]="false"
   [rightSidebarOpen]="true"
-  rightSidebarTitle="Activitées récentes"
+  rightSidebarTitle="Activités récentes"
 >
-
   <ng-template #rightSidebar>
-    <!-- Recent activities content -->
-    <p>Recent activity content goes here.</p>
+    @if (activities() && activities().length > 0) {
+      @for (activity of activities(); track activity._id) {
+        <div class="text-sm mb-2 p-2 bg-gray-50 rounded">
+          <strong>{{ activity.title }}</strong> — {{ activity.activityType }}
+        </div>
+      }
+    } @else {
+      <p class="text-sm text-gray-500">Aucune activité récente</p>
+    }
   </ng-template>
 
-  <!-- Main content of the dashboard -->
-    <div class="self-stretch inline-flex justify-start items-start gap-4">
-      <div class="flex-1 self-stretch inline-flex flex-col justify-start items-start gap-2">
-        <div class="self-stretch justify-start text-black text-sm font-medium font-['Inter'] leading-tight">En ce moment</div>
-        <app-course-box [course]="" [showImage]="true" />
-      </div>
-      <div class="flex-1 inline-flex flex-col justify-start items-start gap-2">
-        <div class="self-stretch justify-start text-black text-sm font-medium font-['Inter'] leading-tight">À venir</div>
-        <app-course-box [course]="" [showImage]="false" />
-        <app-course-box [course]="" [showImage]="false" />
-        <app-course-box [course]="" [showImage]="false" />
-      </div>
-    </div>
-    <div class="self-stretch flex flex-col justify-start items-start gap-2">
-      <div class="justify-start text-black text-sm font-medium font-['Inter'] leading-tight">Devoirs</div>
-      <div class="w-[876px] inline-flex justify-start items-start gap-4">
-        <div class="size- pr-6 flex justify-start items-center gap-4">
-          <div data-hover="false" class="w-80 p-4 bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)] shadow-[0px_5px_5px_0px_rgba(0,0,0,0.03)] shadow-[0px_11px_7px_0px_rgba(0,0,0,0.02)] shadow-[0px_20px_8px_0px_rgba(0,0,0,0.01)] shadow-[0px_31px_9px_0px_rgba(0,0,0,0.00)] outline outline-1 outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
-            <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">Name</div>
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">—</div>
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">UE</div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="w-1 h-1.5 left-[7.58px] top-[3.58px] absolute bg-black/70"></div>
-                <div class="size-3.5 left-[0.91px] top-[0.91px] absolute bg-black/70"></div>
-                <div class="w-[0.83px] h-[4.83px] left-[12.92px] top-[7.25px] absolute bg-black/70"></div>
-                <div class="w-[0.84px] h-[0.83px] left-[12.92px] top-[13.92px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Clôture dans 3 jours.</div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="w-[0.84px] h-[0.83px] left-[7.58px] top-[10.25px] absolute bg-black/70"></div>
-                <div class="w-[0.83px] h-1 left-[7.58px] top-[4.92px] absolute bg-black/70"></div>
-                <div class="size-3.5 left-[0.92px] top-[0.92px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">5 étudiants n’ont pas rendu le devoir </div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="size-3.5 left-[0.91px] top-[0.92px] absolute bg-black/70"></div>
-                <div class="w-[4.83px] h-1 left-[5.58px] top-[6.25px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Taux de correction : 60%</div>
-            </div>
-          </div>
-          <div data-hover="false" class="w-80 p-4 bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)] shadow-[0px_5px_5px_0px_rgba(0,0,0,0.03)] shadow-[0px_11px_7px_0px_rgba(0,0,0,0.02)] shadow-[0px_20px_8px_0px_rgba(0,0,0,0.01)] shadow-[0px_31px_9px_0px_rgba(0,0,0,0.00)] outline outline-1 outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
-            <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">Name</div>
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">—</div>
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">UE</div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="w-1 h-1.5 left-[7.58px] top-[3.58px] absolute bg-black/70"></div>
-                <div class="size-3.5 left-[0.91px] top-[0.91px] absolute bg-black/70"></div>
-                <div class="w-[0.83px] h-[4.83px] left-[12.92px] top-[7.25px] absolute bg-black/70"></div>
-                <div class="w-[0.84px] h-[0.83px] left-[12.92px] top-[13.92px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Clôture dans 8 jours.</div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="w-[0.84px] h-[0.83px] left-[7.58px] top-[10.25px] absolute bg-black/70"></div>
-                <div class="w-[0.83px] h-1 left-[7.58px] top-[4.92px] absolute bg-black/70"></div>
-                <div class="size-3.5 left-[0.92px] top-[0.92px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">16 étudiants n’ont pas rendu le devoir </div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="size-3.5 left-[0.91px] top-[0.92px] absolute bg-black/70"></div>
-                <div class="w-[4.83px] h-1 left-[5.58px] top-[6.25px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Taux de correction : 22%</div>
-            </div>
-          </div>
-          <div data-hover="false" class="w-80 p-4 bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)] shadow-[0px_5px_5px_0px_rgba(0,0,0,0.03)] shadow-[0px_11px_7px_0px_rgba(0,0,0,0.02)] shadow-[0px_20px_8px_0px_rgba(0,0,0,0.01)] shadow-[0px_31px_9px_0px_rgba(0,0,0,0.00)] outline outline-1 outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
-            <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">Name</div>
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">—</div>
-              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">UE</div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="w-1 h-1.5 left-[7.58px] top-[3.58px] absolute bg-black/70"></div>
-                <div class="size-3.5 left-[0.91px] top-[0.91px] absolute bg-black/70"></div>
-                <div class="w-[0.83px] h-[4.83px] left-[12.92px] top-[7.25px] absolute bg-black/70"></div>
-                <div class="w-[0.84px] h-[0.83px] left-[12.92px] top-[13.92px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Clôture dans 3 jours.</div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="w-[0.84px] h-[0.83px] left-[7.58px] top-[10.25px] absolute bg-black/70"></div>
-                <div class="w-[0.83px] h-1 left-[7.58px] top-[4.92px] absolute bg-black/70"></div>
-                <div class="size-3.5 left-[0.92px] top-[0.92px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">5 étudiants n’ont pas rendu le devoir </div>
-            </div>
-            <div class="size- inline-flex justify-start items-center gap-2">
-              <div class="size-4 relative overflow-hidden">
-                <div class="size-3.5 left-[0.91px] top-[0.92px] absolute bg-black/70"></div>
-                <div class="w-[4.83px] h-1 left-[5.58px] top-[6.25px] absolute bg-black/70"></div>
-              </div>
-              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Taux de correction : 60%</div>
-            </div>
-          </div>
+  <!-- Debug button (à supprimer en production) -->
+  <button
+    (click)="debugCurrentTime()"
+    class="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+  >
+    Debug cours
+  </button>
+
+  <!-- Informations de debug (à supprimer en production) -->
+  <div class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+    <h4 class="font-semibold text-yellow-800 mb-2">Debug Info:</h4>
+    <p class="text-sm text-yellow-700">Groupes de cours: {{ userCourseGroups().length }}</p>
+    <p class="text-sm text-yellow-700">Unités de cours: {{ userCourseUnits().length }}</p>
+    <p class="text-sm text-yellow-700">Groupes avec planning: {{ groupsWithScheduleCount() }}</p>
+  </div>
+
+  <!-- Section cours -->
+  <div class="flex gap-4 mb-6">
+    <div class="flex-1">
+      <h3 class="text-lg font-semibold mb-3">En ce moment</h3>
+      @if (currentCourse(); as course) {
+        <app-course-box [course]="course" [showImage]="true"></app-course-box>
+        <div class="mt-2 text-sm text-gray-600">
+          Groupe: {{ currentCourseGroup()?.name }}
+          @if (currentCourseGroup()?.day && currentCourseGroup()?.from && currentCourseGroup()?.to) {
+            <br>Horaire: {{ currentCourseGroup()?.day }} {{ currentCourseGroup()?.from }} - {{ currentCourseGroup()?.to }}
+          }
         </div>
-      </div>
+      } @else {
+        <div class="p-4 bg-gray-50 rounded-lg text-center text-gray-500">
+          <p>Aucun cours en ce moment.</p>
+          @if (!hasAnyGroups()) {
+            <p class="text-xs mt-2">Aucun groupe de cours trouvé.</p>
+          } @else if (!hasGroupsWithSchedule()) {
+            <p class="text-xs mt-2">Aucun groupe avec planning trouvé.</p>
+          }
+        </div>
+      }
     </div>
 
+    <div class="flex-1">
+      <h3 class="text-lg font-semibold mb-3">À venir</h3>
+      @if (upcomingCourses().length > 0) {
+        <div class="space-y-2">
+          @for (course of upcomingCourses(); track course._id; let i = $index) {
+            <app-course-box [course]="course" [showImage]="false"></app-course-box>
+            @if (upcomingCourseGroups()[i]) {
+              <div class="text-sm text-gray-600 mb-2">
+                Groupe: {{ upcomingCourseGroups()[i].name }}
+                @if (upcomingCourseGroups()[i].day && upcomingCourseGroups()[i].from && upcomingCourseGroups()[i].to) {
+                  <br>Horaire: {{ upcomingCourseGroups()[i].day }} {{ upcomingCourseGroups()[i].from }} - {{ upcomingCourseGroups()[i].to }}
+                }
+              </div>
+            }
+          }
+        </div>
+      } @else {
+        <div class="p-4 bg-gray-50 rounded-lg text-center text-gray-500">
+          <p>Aucun cours à venir cette semaine.</p>
+          @if (!hasAnyGroups()) {
+            <p class="text-xs mt-2">Aucun groupe de cours trouvé.</p>
+          } @else if (!hasGroupsWithSchedule()) {
+            <p class="text-xs mt-2">Aucun groupe avec planning trouvé.</p>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Section devoirs -->
+  <div class="flex flex-col gap-4">
+    <h3 class="text-lg font-semibold">Devoirs</h3>
+    @if (fileDepositoryActivities() && fileDepositoryActivities().length > 0) {
+      <div class="flex gap-4 flex-wrap">
+        @for (activity of fileDepositoryActivities(); track activity._id) {
+          <div
+            class="w-80 p-4 bg-white rounded-xl shadow outline outline-1 outline-black/5 flex flex-col gap-2.5"
+          >
+            <div class="flex gap-2">
+              <span class="font-semibold">{{ activity.title }}</span>
+              <span>—</span>
+              <span class="font-semibold">{{ getCourseUnitName(activity.courseUnit) }}</span>
+            </div>
+            <div class="text-xs text-black/70">
+              Clôture : {{ activity.dueAt | date:'shortDate' }}
+            </div>
+            <div class="text-xs text-black/70">
+              {{ activity.pendingCount || 0 }} étudiants n'ont pas rendu
+            </div>
+            <div class="text-xs text-black/70">
+              Taux de correction : {{ activity.correctionRate || 0 }}%
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="p-4 bg-gray-50 rounded-lg text-center text-gray-500">
+        <p>Aucun devoir en cours.</p>
+      </div>
+    }
+  </div>
 </app-sidebar-layout>

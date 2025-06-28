@@ -25,6 +25,9 @@ export interface CourseGroup {
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
+  day: string;
+  to: string;
+  from: string;
 }
 
 export interface CourseGroupWithMembers extends Omit<CourseGroup, 'members'> {
