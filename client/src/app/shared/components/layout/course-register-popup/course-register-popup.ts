@@ -1,4 +1,16 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  inject,
+  CUSTOM_ELEMENTS_SCHEMA,
+  OnChanges, SimpleChanges
+} from '@angular/core';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import {InputComponent} from '@/shared/components/ui/input/input';
@@ -24,12 +36,12 @@ import {UsersService} from '@/core/services/users.service';
     InputComponent,
     LucideAngularModule,
     NgIf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './course-register-popup.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CourseRegisterPopup implements OnInit, OnDestroy{
+export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
 
   @Input() isOpen = false;
   @Input() courseUnit: CourseUnit | null = null; // Pour le mode édition
@@ -65,6 +77,15 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
     // Pré-remplir le formulaire si en mode édition
     if (this.isEditMode && this.courseUnit) {
       this.prefillForm();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && changes['isOpen'].currentValue) {
+      this.resetForm();
+      if (this.isEditMode && this.courseUnit) {
+        this.prefillForm();
+      }
     }
   }
 
