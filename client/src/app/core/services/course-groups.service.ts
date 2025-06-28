@@ -125,6 +125,36 @@ export class CourseGroupsService {
       );
   }
 
+  //createGroup(groupData: CreateCourseGroupRequest): Observable<ApiResponse<CreateCourseGroupResponse>> {
+  /*createGroup(groupData: CreateCourseGroupRequest): Observable<ApiResponse<{ group: CourseGroup }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    // Create FormData to handle both course data and file upload
+    const formData = new FormData();
+
+    // Add course data to FormData
+    formData.append('name', groupData.name);
+    //formData.append('slug', "course");
+    //formData.append('slug', slugify(courseUnitData.name, { lower: true, strict: true }));
+    //formData.append('kind', groupData.kind);
+    //formData.append('day', groupData.day);
+    //formData.append('from', groupData.from.toString());
+
+    return this.http.post<ApiResponse<{ group: CourseGroup }>>(this.baseUrl, groupData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Add the new group to the current list
+            const currentGroups = this._groups();
+            this._groups.set([response.data.group, ...currentGroups]);
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }*/
+
   updateGroup(id: string, groupData: UpdateCourseGroupRequest): Observable<ApiResponse<{ group: CourseGroup }>> {
     this._isLoading.set(true);
     this._error.set(null);

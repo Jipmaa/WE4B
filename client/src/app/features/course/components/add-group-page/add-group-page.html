@@ -1,0 +1,66 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Créer un nouveau groupe</h1>
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Nom -->
+    <div class="mb-4">
+      <label for="name" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom du groupe</label>
+      <app-input type="text" id="name" name="name" placeholder="ex: TP1"
+                 formControlName="name"></app-input>
+    </div>
+
+    <!--<div class="mb-4">
+      <label for="slug" class="block text-sm font-medium text-gray-700">Slug/Description</label>
+      <input type="text" id="slug" name="slug" [(ngModel)]="group.slug" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+    </div>-->
+
+    <!-- Type -->
+    <div class="mb-4">
+      <label for="kind" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Type</label>
+      <select id="kind" name="kind" formControlName="kind" required class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+        <option value="theoretical">Cours Magistraux</option>
+        <option value="practical">Travaux Dirigés</option>
+        <option value="laboratory">Travaux Pratiques</option>
+      </select>
+    </div>
+
+    <!-- Jour -->
+    <div class="mb-4">
+      <label for="day" class="block text-sm font-medium text-gray-700">Jour</label>
+      <select id="day" name="day" formControlName="day" required class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+        <option value="monday">Lundi</option>
+        <option value="tuesday">Mardi</option>
+        <option value="wednesday">Mercredi</option>
+        <option value="thursday">Jeudi</option>
+        <option value="friday">Vendredi</option>
+        <option value="saturday">Samedi</option>
+        <option value="sunday">Dimanche</option>
+      </select>
+    </div>
+
+    <!-- Début -->
+    <div class="mb-4">
+      <label for="from" class="block text-sm font-medium text-gray-700">De</label>
+      <input type="time" id="from" name="from" formControlName="from" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+    </div>
+
+    <!-- Fin -->
+    <div class="mb-4">
+      <label for="to" class="block text-sm font-medium text-gray-700">À</label>
+      <input type="time" id="to" name="to" formControlName="to" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+    </div>
+
+    <!-- Semestre -->
+    <div class="mb-4">
+      <label for="semester" class="block text-sm font-medium text-gray-700">Semestre</label>
+      <select id="semester" name="semester" formControlName="semester" required class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </div>
+
+    <!-- Bouton -->
+    <div>
+      <app-button type="submit" [fullWidth]="true">Créer le groupe</app-button>
+    </div>
+  </form>
+</div>

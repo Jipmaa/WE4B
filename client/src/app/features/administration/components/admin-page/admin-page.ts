@@ -1,5 +1,5 @@
 import {SidebarLayout} from "@/shared/components/layout/sidebar-layout/sidebar-layout";
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ViewChild, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
 import { User } from '@/core/models/user.models';
@@ -11,21 +11,60 @@ import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { ArrayComponent, Columns, RowActions, Messages, LoadingState} from '@/shared/components/ui/array/array';
 import { UserRegisterPopup} from '@/shared/components/layout/user-register-popup/user-register-popup';
+import {InputComponent} from '@/shared/components/ui/input/input';
+import {ButtonComponent} from '@/shared/components/ui/button/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AdminPage implements OnInit {
+export class AdminPage implements OnInit, AfterViewChecked {
+  @ViewChild(TabsComponent) tabsComponent!: TabsComponent;
+  activeTab: string = 'ues';
 
   UsersArray !: User[]
   CoursesArray !: CourseUnit[]
 
   showEditUserPopup: boolean = false;
   selectedUser: User | null = null;
+
+  constructor(
+    public servUsers: UsersService,
+    private servCourse: CourseUnitsService,
+    private cdRef: ChangeDetectorRef,
+    private router: Router
+  ) {
+    this.servUsers.getUsers().subscribe(
+      response => {
+        console.log(response);
+        this.UsersArray = response.data.users;
+      }
+    );
+
+    this.servCourse.getCourseUnits().subscribe(
+      response => {
+        console.log(response);
+        this.CoursesArray = response.data.courseUnits;
+      }
+    )
+  }
+
+  ngOnInit(): void {
+  }
+
+  ngAfterViewChecked() {
+    if (this.tabsComponent) {
+      const currentTab = this.tabsComponent.getActiveTab();
+      if (this.activeTab !== currentTab) {
+        this.activeTab = currentTab;
+        this.cdRef.detectChanges();
+      }
+    }
+  }
 
   columnsUsers: Columns = [
     {
@@ -54,10 +93,12 @@ export class AdminPage implements OnInit {
     {
       label: 'Modifier',
       onTriggered: (user: User) => {
-        console.log('Modifier utilisateur:', user);
-        // Implémentez votre logique de modification ici
-        this.selectedUser = user;
-        this.showEditUserPopup = true;
+        this.servUsers.getUserById(user._id).subscribe(
+          response => {
+            this.selectedUser = response.data.user;
+            this.showEditUserPopup = true;
+          }
+        );
       }
     },
     {
@@ -125,7 +166,13 @@ export class AdminPage implements OnInit {
     onError: 'Erreur lors du chargement des cours'
   };
 
-  loadingState: LoadingState = {
+  loadingStateUsers: LoadingState = {
+    isLoading: false,
+    hasError: false,
+    allLoaded: true // Changez en false si vous voulez tester le chargement infini
+  };
+
+  loadingStateCourses: LoadingState = {
     isLoading: false,
     hasError: false,
     allLoaded: true // Changez en false si vous voulez tester le chargement infini
@@ -135,27 +182,19 @@ export class AdminPage implements OnInit {
   private pageSize = 10;
 
   loadMoreUsers() {
-    if (this.loadingState.isLoading || this.loadingState.allLoaded) {
+    if (this.loadingStateUsers.isLoading || this.loadingStateUsers.allLoaded) {
       return;
     }
 
-    this.loadingState.isLoading = true;
+    this.loadingStateUsers.isLoading = true;
   }
 
-  constructor(public servUsers: UsersService, private servCourse: CourseUnitsService) {
-    this.servUsers.getUsers().subscribe(
-      response => {
-        console.log(response);
-        this.UsersArray = response.data.users;
-      }
-    );
+  loadMoreCourses() {
+    if (this.loadingStateCourses.isLoading || this.loadingStateCourses.allLoaded) {
+      return;
+    }
 
-    this.servCourse.getCourseUnits().subscribe(
-      response => {
-        console.log(response);
-        this.CoursesArray = response.data.courseUnits;
-      }
-    )
+    this.loadingStateCourses.isLoading = true;
   }
 
   onUserUpdated(updatedUser: User): void {
@@ -174,8 +213,15 @@ export class AdminPage implements OnInit {
     console.log('Utilisateur mis à jour :', updatedUser);
   }
 
+  navigateToRegister() {
+    this.router.navigate(['/register']);
+  }
 
-  ngOnInit(): void {
+  navigateToCourse() {
+    this.router.navigate(['/register/courseunits']);
+  }
 
+  navigateToGroup() {
+    //this.router.navigate(['/register']);
   }
 }
