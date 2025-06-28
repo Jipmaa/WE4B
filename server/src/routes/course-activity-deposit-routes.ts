@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
-import { query, param } from 'express-validator';
+import { query, param, body } from 'express-validator';
 import { FileDepositoryActivityModel } from '../models/course-activity';
 import DepositedFiles from '../models/deposited-files';
+import CourseGroup from '../models/course-group';
 import { authMiddleware } from '../middleware/auth-middleware';
 import { teacherMiddleware } from '../middleware/roles-middleware';
 import { validateRequest } from '../middleware/validate-request';
@@ -9,6 +10,8 @@ import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
 import { uploadDepositedFiles, handleFileUploadError } from '../middleware/file-upload-middleware';
 import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS } from '../services/minio-service';
+import { ArchiveService } from '../services/archive-service';
+import { isFileAllowed } from '../utils/file-type-mappings';
 
 const router = Router();
 
@@ -163,6 +166,147 @@ router.get('/:activityId/deposits/my', activityIdValidation, validateRequest, as
 	});
 }));
 
+// @route   GET /api/course-activities/:activityId/deposits/teacher-view
+// @desc    Get deposits with teacher-specific information (Teachers only)
+// @access  Private (Teacher only)
+router.get('/:activityId/deposits/teacher-view', teacherMiddleware, activityIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	// Verify activity exists and is a file depository
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId);
+	if (!activity) {
+		throw new AppError('Activity not found or not a file depository activity', 404);
+	}
+
+	// Get all deposits for this activity
+	const deposits = await DepositedFiles.find({ activity: req.params.activityId })
+		.populate('user', 'firstName lastName email')
+		.populate('evaluation.gradedBy', 'firstName lastName email')
+		.sort({ createdAt: -1 });
+
+	// Get student groups for each deposit
+	const depositsWithDetails = await Promise.all(
+		deposits.map(async (deposit) => {
+			const depositData = deposit.toJSON();
+			const fileUrls = await deposit.getFileUrls();
+			
+			// Find user's groups for this course unit
+			const userGroups = await CourseGroup.find({
+				courseUnit: activity.courseUnit,
+				'users.user': deposit.user
+			}).select('name');
+
+			const isLate = activity.dueAt && deposit.createdAt > activity.dueAt;
+
+			return {
+				...depositData,
+				fileUrls,
+				isLate,
+				student: {
+					name: `${(deposit.user as any).firstName} ${(deposit.user as any).lastName}`,
+					groups: userGroups.map(group => group.name)
+				}
+			};
+		})
+	);
+
+	res.json({
+		success: true,
+		data: {
+			deposits: depositsWithDetails,
+			activity: {
+				id: activity._id,
+				title: activity.title,
+				dueAt: activity.dueAt,
+				maxFiles: activity.maxFiles,
+				restrictedFileTypes: activity.restrictedFileTypes
+			}
+		}
+	});
+}));
+
+// @route   GET /api/course-activities/:activityId/deposits/stats
+// @desc    Get submission statistics for an activity (Teachers only)
+// @access  Private (Teacher only)
+router.get('/:activityId/deposits/stats', teacherMiddleware, activityIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	// Verify activity exists and is a file depository
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId)
+		.populate('courseUnit', 'name capacity');
+	
+	if (!activity) {
+		throw new AppError('Activity not found or not a file depository activity', 404);
+	}
+
+	// Get submission statistics
+	const [totalSubmissions, uniqueSubmitters] = await Promise.all([
+		DepositedFiles.countDocuments({ activity: req.params.activityId }),
+		DepositedFiles.distinct('user', { activity: req.params.activityId })
+	]);
+
+	// Get recent submissions
+	const recentSubmissions = await DepositedFiles.find({ activity: req.params.activityId })
+		.populate('user', 'firstName lastName email')
+		.sort({ createdAt: -1 })
+		.limit(5)
+		.select('user createdAt files');
+
+	// Add file count to recent submissions
+	const recentSubmissionsWithCount = recentSubmissions.map(submission => ({
+		...submission.toJSON(),
+		fileCount: submission.files.length
+	}));
+
+	const submissionRate = activity.courseUnit && (activity.courseUnit as any).capacity 
+		? Math.round((uniqueSubmitters.length / (activity.courseUnit as any).capacity) * 100)
+		: 0;
+
+	res.json({
+		success: true,
+		data: {
+			activity: {
+				id: activity._id,
+				title: activity.title,
+				maxFiles: activity.maxFiles,
+				restrictedFileTypes: activity.restrictedFileTypes
+			},
+			stats: {
+				totalSubmissions,
+				uniqueSubmitters: uniqueSubmitters.length,
+				submissionRate,
+				courseCapacity: activity.courseUnit ? (activity.courseUnit as any).capacity : null
+			},
+			recentSubmissions: recentSubmissionsWithCount
+		}
+	});
+}));
+
+// @route   GET /api/course-activities/:activityId/deposits/download-all
+// @desc    Download all student deposits as bulk archive (Teachers only)
+// @access  Private (Teacher only)
+router.get('/:activityId/deposits/download-all', teacherMiddleware, activityIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	// Verify activity exists and is a file depository
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId);
+	if (!activity) {
+		throw new AppError('Activity not found or not a file depository activity', 404);
+	}
+
+	// Get all deposits for this activity
+	const deposits = await DepositedFiles.find({ activity: req.params.activityId })
+		.populate('user', 'firstName lastName email');
+
+	if (deposits.length === 0) {
+		throw new AppError('No submissions found for this activity', 404);
+	}
+
+	const submissions = deposits.map(deposit => ({
+		student: {
+			firstName: (deposit.user as any).firstName,
+			lastName: (deposit.user as any).lastName
+		},
+		files: deposit.files
+	}));
+
+	await ArchiveService.createBulkArchive(submissions, activity.title, res);
+}));
+
 // @route   POST /api/course-activities/:activityId/deposits
 // @desc    Submit files for an activity
 // @access  Private (All authenticated users)
@@ -172,7 +316,7 @@ router.post('/:activityId/deposits', activityIdValidation, uploadDepositedFiles,
 	}
 
 	// Verify activity exists and is a file depository
-	const activity = await FileDepositoryActivityModel.findById(req.params.activityId);
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId).populate('courseUnit');
 	if (!activity) {
 		throw new AppError('Activity not found or not a file depository activity', 404);
 	}
@@ -197,17 +341,10 @@ router.post('/:activityId/deposits', activityIdValidation, uploadDepositedFiles,
 
 	// Validate file types if restricted
 	if (activity.restrictedFileTypes && activity.restrictedFileTypes.length > 0) {
-		const allowedExtensions = activity.restrictedFileTypes.map(type => {
-			const config = FILE_CONFIGS.depositedFile;
-			const typeIndex = ['text-file', 'image', 'presentation', 'video', 'audio', 'spreadsheet', 'archive', 'other'].indexOf(type);
-			// This is a simplified mapping - in a real app, you'd have a more sophisticated type-to-extension mapping
-			return config.allowedExtensions;
-		}).flat();
-
 		for (const file of files) {
-			const ext = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
-			if (!allowedExtensions.includes(ext)) {
-				throw new AppError(`File type ${ext} is not allowed for this activity`, 400);
+			const validation = isFileAllowed(file.mimetype, file.originalname, activity.restrictedFileTypes);
+			if (!validation.isValid) {
+				throw new AppError(validation.error || 'File type not allowed for this activity', 400);
 			}
 		}
 	}
@@ -233,6 +370,8 @@ router.post('/:activityId/deposits', activityIdValidation, uploadDepositedFiles,
 		// Create deposit record
 		const deposit = new DepositedFiles({
 			activity: req.params.activityId,
+			courseActivity: req.params.activityId,
+			courseUnit: (activity.courseUnit as any)._id,
 			user: userId,
 			files: uploadedFileKeys
 		});
@@ -277,7 +416,7 @@ router.put('/:activityId/deposits', activityIdValidation, uploadDepositedFiles, 
 	}
 
 	// Verify activity exists and is a file depository
-	const activity = await FileDepositoryActivityModel.findById(req.params.activityId);
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId).populate('courseUnit');
 	if (!activity) {
 		throw new AppError('Activity not found or not a file depository activity', 404);
 	}
@@ -298,6 +437,16 @@ router.put('/:activityId/deposits', activityIdValidation, uploadDepositedFiles, 
 	// Validate file count
 	if (files.length > activity.maxFiles) {
 		throw new AppError(`Maximum ${activity.maxFiles} files allowed`, 400);
+	}
+
+	// Validate file types if restricted
+	if (activity.restrictedFileTypes && activity.restrictedFileTypes.length > 0) {
+		for (const file of files) {
+			const validation = isFileAllowed(file.mimetype, file.originalname, activity.restrictedFileTypes);
+			if (!validation.isValid) {
+				throw new AppError(validation.error || 'File type not allowed for this activity', 400);
+			}
+		}
 	}
 
 	// Upload new files to MinIO
@@ -437,59 +586,96 @@ router.get('/:activityId/deposits/:depositId', teacherMiddleware, [...activityId
 	});
 }));
 
-// @route   GET /api/course-activities/:activityId/deposits/stats
-// @desc    Get submission statistics for an activity (Teachers only)
+
+// @route   PUT /api/course-activities/:activityId/deposits/:depositId/grade
+// @desc    Grade a student's deposit (Teachers only)
 // @access  Private (Teacher only)
-router.get('/:activityId/deposits/stats', teacherMiddleware, activityIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
+router.put('/:activityId/deposits/:depositId/grade', teacherMiddleware, [...activityIdValidation, ...depositIdValidation], [
+	body('grade')
+		.optional()
+		.isFloat({ min: 0, max: 20 })
+		.withMessage('Grade must be between 0 and 20'),
+	body('comment')
+		.optional()
+		.isLength({ max: 1000 })
+		.withMessage('Comment must be less than 1000 characters')
+], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const { grade, comment } = req.body;
+
 	// Verify activity exists and is a file depository
-	const activity = await FileDepositoryActivityModel.findById(req.params.activityId)
-		.populate('courseUnit', 'name capacity');
-	
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId);
 	if (!activity) {
 		throw new AppError('Activity not found or not a file depository activity', 404);
 	}
 
-	// Get submission statistics
-	const [totalSubmissions, uniqueSubmitters] = await Promise.all([
-		DepositedFiles.countDocuments({ activity: req.params.activityId }),
-		DepositedFiles.distinct('user', { activity: req.params.activityId })
-	]);
+	const deposit = await DepositedFiles.findOne({
+		_id: req.params.depositId,
+		activity: req.params.activityId
+	});
 
-	// Get recent submissions
-	const recentSubmissions = await DepositedFiles.find({ activity: req.params.activityId })
+	if (!deposit) {
+		throw new AppError('Deposit not found', 404);
+	}
+
+	// Update evaluation
+	deposit.evaluation = {
+		grade: grade !== undefined ? grade : deposit.evaluation?.grade,
+		comment: comment !== undefined ? comment : deposit.evaluation?.comment,
+		gradedBy: new (require('mongoose')).Types.ObjectId(req.user!.userId),
+		gradedAt: new Date()
+	};
+
+	await deposit.save();
+
+	const populatedDeposit = await DepositedFiles.findById(deposit._id)
 		.populate('user', 'firstName lastName email')
-		.sort({ createdAt: -1 })
-		.limit(5)
-		.select('user createdAt files');
+		.populate('activity', 'title')
+		.populate('evaluation.gradedBy', 'firstName lastName email');
 
-	// Add file count to recent submissions
-	const recentSubmissionsWithCount = recentSubmissions.map(submission => ({
-		...submission.toJSON(),
-		fileCount: submission.files.length
-	}));
-
-	const submissionRate = activity.courseUnit && (activity.courseUnit as any).capacity 
-		? Math.round((uniqueSubmitters.length / (activity.courseUnit as any).capacity) * 100)
-		: 0;
+	// Add download URLs
+	const depositData = populatedDeposit!.toJSON();
+	const fileUrls = await populatedDeposit!.getFileUrls();
+	const depositWithUrls = { ...depositData, fileUrls };
 
 	res.json({
 		success: true,
+		message: 'Deposit graded successfully',
 		data: {
-			activity: {
-				id: activity._id,
-				title: activity.title,
-				maxFiles: activity.maxFiles,
-				restrictedFileTypes: activity.restrictedFileTypes
-			},
-			stats: {
-				totalSubmissions,
-				uniqueSubmitters: uniqueSubmitters.length,
-				submissionRate,
-				courseCapacity: activity.courseUnit ? (activity.courseUnit as any).capacity : null
-			},
-			recentSubmissions: recentSubmissionsWithCount
+			deposit: depositWithUrls
 		}
 	});
 }));
+
+
+// @route   GET /api/course-activities/:activityId/deposits/:depositId/download
+// @desc    Download individual student's deposit as archive (Teachers only)
+// @access  Private (Teacher only)
+router.get('/:activityId/deposits/:depositId/download', teacherMiddleware, [...activityIdValidation, ...depositIdValidation], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	// Verify activity exists and is a file depository
+	const activity = await FileDepositoryActivityModel.findById(req.params.activityId);
+	if (!activity) {
+		throw new AppError('Activity not found or not a file depository activity', 404);
+	}
+
+	const deposit = await DepositedFiles.findOne({
+		_id: req.params.depositId,
+		activity: req.params.activityId
+	}).populate('user', 'firstName lastName email');
+
+	if (!deposit) {
+		throw new AppError('Deposit not found', 404);
+	}
+
+	const studentSubmission = {
+		student: {
+			firstName: (deposit.user as any).firstName,
+			lastName: (deposit.user as any).lastName
+		},
+		files: deposit.files
+	};
+
+	await ArchiveService.createStudentArchive(studentSubmission, activity.title, res);
+}));
+
 
 export default router;

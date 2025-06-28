@@ -242,6 +242,16 @@ export const getPresignedUrl = async (
 	}
 };
 
+// Download file as stream
+export const downloadFile = async (bucket: string, objectName: string): Promise<NodeJS.ReadableStream> => {
+	try {
+		return await minioClient.getObject(bucket, objectName);
+	} catch (error) {
+		console.error('❌ Error downloading file from MinIO:', error);
+		throw new Error('Failed to download file');
+	}
+};
+
 // Get public URL for public buckets (now uses Express proxy)
 export const getPublicUrl = (bucket: string, objectName: string): string => {
 	const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';

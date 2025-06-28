@@ -42,6 +42,9 @@ export class InputComponent implements ControlValueAccessor {
   @Input() size: InputSize = 'md';
   @Input() variant: InputVariant = 'default';
   @Input() autocomplete: string = "off";
+  @Input() min?: number;
+  @Input() max?: number;
+  @Input() step?: number;
 
   @Output() valueChange = new EventEmitter<string>();
   @Output() inputFocus = new EventEmitter<FocusEvent>();

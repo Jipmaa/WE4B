@@ -11,6 +11,12 @@ export interface DepositedFiles extends Document {
 	files: string[]; // MinIO object keys
 	courseUnit: Types.ObjectId;
 	courseActivity: Types.ObjectId;
+	evaluation?: {
+		grade?: number;
+		comment?: string;
+		gradedBy?: Types.ObjectId;
+		gradedAt?: Date;
+	};
 	getFileUrls(): Promise<string[]>;
 }
 
@@ -43,6 +49,12 @@ const depositedFilesSchema = new Schema<DepositedFiles>({
 			validator: (v: string | any[]) => v.length > 0,
 			message: 'Files array cannot be empty.'
 		}
+	},
+	evaluation: {
+		grade: { type: Number, min: 0, max: 20 },
+		comment: { type: String, maxlength: 1000 },
+		gradedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+		gradedAt: { type: Date }
 	},
 }, {
 	timestamps: true, // Automatically adds createdAt and updatedAt

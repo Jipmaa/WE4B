@@ -1,5 +1,6 @@
 import {Component, inject, Input, Output, EventEmitter, signal} from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
+import { Router, ActivatedRoute } from '@angular/router';
 import {CourseActivity, FileActivity, MessageActivity, FileDepositoryActivity} from "@/core/models/course-activity.models";
 import {ButtonComponent} from "@/shared/components/ui/button/button";
 import {IconButtonComponent} from "@/shared/components/ui/icon-button/icon-button";
@@ -24,6 +25,8 @@ interface ActivityIcon {
 })
 export class Activity {
   private readonly activityService = inject(CourseActivitiesService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   readonly authService = inject(AuthService);
 
   private _pinLoading = signal<boolean>(false);
@@ -196,7 +199,31 @@ export class Activity {
     if (this.authService.isTeacher()) {
       return this.togglePin();
     }
-    // TODO: Implement quick action for students (see / deposit)
-    alert('Not implemented yet');
+    // Navigate to activity display page for students
+    this.navigateToActivity();
+  }
+
+  navigateToActivity(): void {
+    // Get the current course slug from the route
+    const courseSlug = this.route.snapshot.params['slug'] || this.getCourseSlugFromUrl();
+    if (courseSlug) {
+      this.router.navigate(['/courses', courseSlug, 'activity', this.activity._id]);
+    } else {
+      console.error('Could not determine course slug for navigation');
+    }
+  }
+
+  onCardClick(): void {
+      this.navigateToActivity();
+  }
+
+  private getCourseSlugFromUrl(): string | null {
+    // Fallback: extract course slug from current URL path
+    const urlSegments = this.router.url.split('/');
+    const courseIndex = urlSegments.indexOf('course');
+    if (courseIndex !== -1 && courseIndex + 1 < urlSegments.length) {
+      return urlSegments[courseIndex + 1];
+    }
+    return null;
   }
 }

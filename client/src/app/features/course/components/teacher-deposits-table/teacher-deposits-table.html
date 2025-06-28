@@ -1,0 +1,189 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-medium text-gray-900">Dépôts des étudiants</h3>
+    @if (deposits().length > 0) {
+      <app-button
+        variant="secondary"
+        size="sm"
+        leadingIcon="download"
+        [disabled]="isDownloadingAll()"
+        [loading]="isDownloadingAll()"
+        (click)="onDownloadAll()">
+        Télécharger tous les dépôts
+      </app-button>
+    }
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-8">
+      <lucide-icon name="loader-circle" class="size-8 animate-spin"/>
+    </div>
+  } @else if (error()) {
+    <!-- Error State -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex">
+        <lucide-icon name="triangle-alert" class="w-5 h-5 text-red-600"></lucide-icon>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Erreur</h3>
+          <p class="mt-1 text-sm text-red-700">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+  } @else if (deposits().length === 0) {
+    <!-- Empty State -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+      <lucide-icon name="upload" class="w-12 h-12 text-gray-400 mx-auto mb-4"></lucide-icon>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun dépôt</h3>
+      <p class="text-gray-500">Aucun étudiant n'a encore déposé de fichiers pour cette activité.</p>
+    </div>
+  } @else {
+    <!-- Deposits Table -->
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Étudiant
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Groupe(s)
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date de dépôt
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fichiers
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Statut
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (deposit of deposits(); track deposit._id) {
+              <tr class="hover:bg-gray-50">
+                <!-- Student Name -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ deposit.student.name }}
+                  </div>
+                </td>
+
+                <!-- Groups -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">
+                    {{ formatGroups(deposit.student.groups) }}
+                  </div>
+                </td>
+
+                <!-- Upload Date -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">
+                    {{ deposit.createdAt | date:'dd/MM/yyyy' }}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{ deposit.createdAt | date:'HH:mm' }}
+                  </div>
+                  @if (deposit.isLate) {
+                    <div class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full mt-1">
+                      En retard
+                    </div>
+                  }
+                </td>
+
+                <!-- Files -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center space-x-2">
+                    <lucide-icon name="file" class="w-4 h-4 text-gray-400"></lucide-icon>
+                    <span class="text-sm text-gray-900">{{ deposit.fileCount }} fichier(s)</span>
+                  </div>
+                </td>
+
+                <!-- Status -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center space-x-2">
+                    <lucide-icon
+                      [name]="getStatusIcon(deposit)"
+                      [class]="'w-4 h-4 ' + getStatusColor(deposit)">
+                    </lucide-icon>
+                    <span [class]="'text-sm font-medium ' + getStatusColor(deposit)">
+                      {{ getStatusText(deposit) }}
+                    </span>
+                  </div>
+                  @if (deposit.evaluation?.comment) {
+                    <div class="text-xs text-gray-500 mt-1">
+                      Commentaire ajouté
+                    </div>
+                  }
+                </td>
+
+                <!-- Actions -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div class="flex items-center space-x-2">
+                    <!-- Download Button -->
+                    <app-icon-button
+                      type="button"
+                      icon="download"
+                      variant="ghost"
+                      size="sm"
+                      (click)="onDownloadDeposit(deposit._id, deposit.student.name)"
+                      ariaLabel="Télécharger"
+                    />
+
+                    <!-- Grade Button -->
+                    <app-icon-button
+                      type="button"
+                      icon="book-open-check"
+                      variant="ghost"
+                      size="sm"
+                      (click)="onGradeDeposit(deposit)"
+                      ariaLabel="Noter"
+                    />
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <dl class="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-3">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Total des dépôts</dt>
+          <dd class="text-sm text-gray-900">{{ deposits().length }}</dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Dépôts évalués</dt>
+          <dd class="text-sm text-gray-900">
+            {{ getGradedCount() }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Dépôts en retard</dt>
+          <dd class="text-sm text-gray-900">
+            {{ getLateCount() }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  }
+
+  <!-- Grading Modal -->
+  @if (showGradingModal()) {
+    <app-grading-modal
+      [deposit]="selectedDepositForGrading()!"
+      [activityId]="activityId"
+      (close)="onGradingModalClose()"
+      (gradingSubmitted)="onGradingSubmitted()">
+    </app-grading-modal>
+  }
+</div>

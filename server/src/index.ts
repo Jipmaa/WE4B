@@ -21,6 +21,7 @@ import discussionRoutes from './routes/discussion-routes';
 import { errorHandler } from './middleware/error-handler';
 import { notFound } from './middleware/not-found';
 import {initializeBuckets} from "./services/minio-service";
+import courseActivityDepositRoutes from "./routes/course-activity-deposit-routes";
 
 // Load environment variables
 dotenv.config();
@@ -172,7 +173,7 @@ class Server {
 		// API routes
 		this.app.use('/api/accounts', authRoutes);
 		this.app.use('/api/course-units', courseUnitRoutes);
-		this.app.use('/api/course-activities', courseActivityRoutes);
+		this.app.use('/api/course-activities', [courseActivityRoutes, courseActivityDepositRoutes]);
 		this.app.use('/api/course-groups', courseGroupRoutes);
 		this.app.use('/api/users', userRoutes);
 		this.app.use('/api/files', fileRoutes);

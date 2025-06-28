@@ -1,6 +1,6 @@
 @if (variant === 'quick'){
 
-   <div class="p-2 w-full bg-primary/10 rounded-lg inline-flex justify-start items-center gap-6 overflow-hidden">
+   <div class="p-2 w-full bg-primary/10 rounded-lg inline-flex justify-start items-center gap-6 overflow-hidden cursor-pointer hover:bg-primary/20 transition-colors" (click)="onCardClick()">
      <div class="flex-1 inline-flex flex-col justify-start items-start">
        <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ activity.title }}</div>
        <div class="self-stretch opacity-80 justify-start text-black text-sm font-normal  leading-tight">{{ descriptionText }}</div>
@@ -11,11 +11,11 @@
            size="sm"
            icon="pin-off"
            variant="destructive"
-           (click)="togglePin()"
+           (click)="togglePin(); $event.stopPropagation()"
            [loading]="pinLoading"
          />
        } @else {
-         <app-button size="sm" (click)="handleQuickAction()" [loading]="false">
+         <app-button size="sm" (click)="handleQuickAction(); $event.stopPropagation()" [loading]="false">
            {{ activity.activityType === 'file-depository' ? 'Déposer' : 'Voir' }}
          </app-button>
        }
@@ -25,7 +25,7 @@
 } @else {
 
   <div class="w-full inline-flex justify-start items-center gap-2">
-    <div class="flex-1 p-2 bg-primary/10 rounded-2xl flex justify-start items-center gap-2">
+    <div class="flex-1 p-2 bg-primary/10 rounded-2xl flex justify-start items-center gap-2 cursor-pointer hover:bg-primary/20 transition-colors" (click)="onCardClick()">
 
       <!-- Icon -->
         <div [class]="`p-4 rounded-md inline-flex flex-col justify-center items-start gap-2.5 ${icon.bg}`">

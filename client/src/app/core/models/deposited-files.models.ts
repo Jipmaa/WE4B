@@ -7,6 +7,12 @@ export interface DepositedFiles {
   activity: string;
   user: string;
   files: string[];
+  evaluation?: {
+    grade?: number;
+    comment?: string;
+    gradedBy?: string;
+    gradedAt?: Date;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,5 +86,31 @@ export interface DeleteDepositResponse {
     id: string;
     activityId: string;
     fileCount: number;
+  };
+}
+
+export interface GradeDepositRequest {
+  grade?: number;
+  comment?: string;
+}
+
+export interface GradeDepositResponse {
+  deposit: DepositedFilesWithDetails;
+}
+
+export interface TeacherDepositsResponse {
+  deposits: Array<DepositedFilesWithDetails & {
+    isLate: boolean;
+    student: {
+      name: string;
+      groups: string[];
+    };
+  }>;
+  activity: {
+    id: string;
+    title: string;
+    dueAt?: Date;
+    maxFiles: number;
+    restrictedFileTypes?: string[];
   };
 }

@@ -26,6 +26,7 @@ export class SidebarLayout {
   @ContentChild('leftSidebar') leftSidebarContent?: TemplateRef<any>;
   @ContentChild('rightSidebar') rightSidebarContent?: TemplateRef<any>;
   @ContentChild('actionButtons') actionButtonsContent?: TemplateRef<any>;
+  @ContentChild('leadingContent') leadingContent?: TemplateRef<any>;
   @ContentChild('mainContent') mainContentTemplate?: TemplateRef<any>;
   @ContentChild('main2ActionButtons') main2ActionButtonsContent?: TemplateRef<any>;
   @ContentChild('main2Content') main2ContentTemplate?: TemplateRef<any>;
@@ -48,5 +49,9 @@ export class SidebarLayout {
 
   get hasMain2(): boolean {
     return !!this.main2ContentTemplate;
+  }
+
+  get hasLeadingContent(): boolean {
+    return !!this.leadingContent;
   }
 }

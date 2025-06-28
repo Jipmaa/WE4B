@@ -1,0 +1,221 @@
+<app-sidebar-layout
+  [title]="activityTitle()"
+  [leftSidebarOpen]="false"
+  [rightSidebarOpen]="true"
+  rightSidebarTitle="Activités récentes"
+>
+  <ng-template #leadingContent>
+    <app-icon-button
+      size="sm"
+      variant="secondary"
+      icon="chevron-left"
+      (buttonClick)="goBack()"
+      ariaLabel="Retour au cours"
+    />
+  </ng-template>
+
+  <ng-template #rightSidebar>
+    <div class="space-y-4">
+      <p class="text-sm text-gray-600">
+        Les activités récentes apparaîtront ici.
+      </p>
+      <div class="space-y-3">
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <div class="flex items-center space-x-2 mb-2">
+            <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+              <lucide-icon name="message-circle" class="w-3 h-3 text-blue-600"></lucide-icon>
+            </div>
+            <span class="text-sm font-medium">Message récent</span>
+          </div>
+          <p class="text-xs text-gray-600">Contenu du message...</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-lg">
+          <div class="flex items-center space-x-2 mb-2">
+            <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+              <lucide-icon name="file" class="w-3 h-3 text-green-600"></lucide-icon>
+            </div>
+            <span class="text-sm font-medium">Fichier ajouté</span>
+          </div>
+          <p class="text-xs text-gray-600">Nouveau fichier disponible...</p>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-12">
+      <lucide-icon name="loader-circle" class="w-6 h-6 animate-spin"/>
+    </div>
+  } @else if (error()) {
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+      <div class="flex  text-red-800">
+        <lucide-icon name="triangle-alert" class="w-5 h-5"></lucide-icon>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium">Erreur</h3>
+          <p class="mt-1 text-sm text-red-700">{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+  } @else if (activity()) {
+    <div class="space-y-6">
+      <!-- Activity Header Info -->
+      <div class="flex flex-col gap-3 p-4 bg-white rounded-lg border border-gray-200">
+        <div class="flex items-center gap-2">
+          <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100">
+            <lucide-icon [name]="getActivityTypeIcon()" class="w-5 h-5 text-blue-600"></lucide-icon>
+          </div>
+          <div>
+            <h3 class="font-medium text-gray-900">{{ getActivityTypeLabel() }}</h3>
+            <p class="text-sm text-gray-600">{{ getDescription() }}</p>
+          </div>
+        </div>
+        <dl class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Créé le</dt>
+            <dd class="text-sm text-gray-900">{{ activity()!.createdAt | date:'dd/MM/yyyy à HH:mm' }}</dd>
+          </div>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Modifié le</dt>
+            <dd class="text-sm text-gray-900">{{ activity()!.updatedAt | date:'dd/MM/yyyy à HH:mm' }}</dd>
+          </div>
+          @if (activity()!.isPinned) {
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Statut</dt>
+              <dd class="text-sm text-gray-900 flex items-center space-x-1">
+                <lucide-icon name="pin" class="w-4 h-4 text-blue-600"></lucide-icon>
+                <span>Épinglé</span>
+              </dd>
+            </div>
+          }
+          @if (activity() && hasCompletionRate(activity()!) && isTeacher()) {
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Taux de completion</dt>
+              <dd class="text-sm text-gray-900">{{ getCompletionRate(activity()!) }}%</dd>
+            </div>
+          }
+        </dl>
+      </div>
+
+      <!-- Activity Content -->
+      <!-- Message Activity -->
+      @if (activity()!.activityType === 'message') {
+        <div class="space-y-4">
+          @let messageActivity = asMessageActivity(activity()!);
+
+          @if (messageActivity.level === 'urgent') {
+            <div class="flex items-center space-x-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
+              <lucide-icon name="triangle-alert" class="w-4 h-4 text-red-600"></lucide-icon>
+              <span class="text-sm font-medium text-red-800">Message urgent</span>
+            </div>
+          } @else if (messageActivity.level === 'important') {
+            <div class="flex items-center space-x-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-lg">
+              <lucide-icon name="triangle-alert" class="w-4 h-4 text-orange-600"></lucide-icon>
+              <span class="text-sm font-medium text-orange-800">Message important</span>
+            </div>
+          }
+
+          <div class="prose max-w-none">
+            <p class="text-gray-700 whitespace-pre-wrap">{{ messageActivity.content }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- File Activity -->
+      @if (activity()!.activityType === 'file') {
+        <div class="space-y-4">
+          @let fileActivity = asFileActivity(activity()!);
+
+          @if (fileActivity.fileUrl) {
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+              <iframe
+                [src]="getSanitizedFileUrl(fileActivity.fileUrl)"
+                class="w-full h-96 border-0"
+                title="Fichier d'activité">
+              </iframe>
+            </div>
+
+            <div class="flex justify-center">
+              <a
+                [href]="fileActivity.fileUrl"
+                target="_blank"
+                class="contents">
+                <app-button
+                  leadingIcon="download"
+                >
+                  Télécharger le fichier
+                </app-button>
+              </a>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- File Depository Activity -->
+      @if (activity()!.activityType === 'file-depository') {
+        <div class="space-y-6">
+          @let depositActivity = asFileDepositoryActivity(activity()!);
+
+          <!-- Instructions -->
+          <app-collapsible label="Instructions" class="block">
+            @if (depositActivity.instructions.type === 'text') {
+              <div class="prose max-w-none">
+                <p class="text-gray-700 whitespace-pre-wrap">{{ depositActivity.instructions.text }}</p>
+              </div>
+            } @else if (depositActivity.instructions.type === 'file' && depositActivity.instructions.fileUrl) {
+              <div class="space-y-4">
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                  <iframe
+                    [src]="getSanitizedFileUrl(depositActivity.instructions.fileUrl)"
+                    class="w-full h-64 border-0"
+                    title="Instructions de l'activité">
+                  </iframe>
+                </div>
+                <div class="flex justify-center">
+                  <a
+                    [href]="getSanitizedFileUrl(depositActivity.instructions.fileUrl)"
+                    target="_blank"
+                    class="inline-flex items-center space-x-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    <lucide-icon name="download" class="w-4 h-4"></lucide-icon>
+                    <span>Télécharger les instructions</span>
+                  </a>
+                </div>
+              </div>
+            }
+          </app-collapsible>
+
+          <!-- Due Date Warning -->
+          @if (depositActivity.dueAt) {
+            @let dueDate = getDueDate(depositActivity.dueAt);
+            @let overdue = isOverdue(depositActivity.dueAt);
+
+            <div class="flex items-center space-x-2 px-3 py-2 rounded-lg"
+                 [class]="overdue ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'">
+              <lucide-icon [name]="overdue ? 'triangle-alert' : 'clock'"
+                           [class]="overdue ? 'w-4 h-4 text-red-600' : 'w-4 h-4 text-blue-600'"></lucide-icon>
+              <span [class]="overdue ? 'text-sm font-medium text-red-800' : 'text-sm font-medium text-blue-800'">
+                @if (overdue) {
+                  Date limite dépassée: {{ dueDate | date:'dd/MM/yyyy à HH:mm' }}
+                } @else {
+                  Date limite: {{ dueDate | date:'dd/MM/yyyy à HH:mm' }}
+                }
+              </span>
+            </div>
+          }
+
+          <!-- Student/Teacher Interface -->
+          @if (isTeacher()) {
+            <app-teacher-deposits-table
+              [activityId]="activity()!._id"
+              (depositsUpdated)="onActivityUpdated()">
+            </app-teacher-deposits-table>
+          } @else {
+            <app-student-deposit-interface
+              [activity]="depositActivity"
+              (depositUpdated)="onActivityUpdated()">
+            </app-student-deposit-interface>
+          }
+        </div>
+      }
+    </div>
+  }
+</app-sidebar-layout>

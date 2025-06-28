@@ -169,21 +169,21 @@
   <!-- Validation Messages -->
   @if (hasError && errorText) {
     <p [class]="validationTextClasses">
-      <lucide-icon name="alert-circle" size="12" />
+      <lucide-icon name="triangle-alert" size="12" />
       {{ errorText }}
     </p>
   }
 
   @if (hasWarning && warningText && !hasError) {
     <p [class]="validationTextClasses">
-      <lucide-icon name="alert-triangle" size="12" />
+      <lucide-icon name="triangle-alert" size="12" />
       {{ warningText }}
     </p>
   }
 
   @if (hasSuccess && successText && !hasError && !hasWarning) {
     <p [class]="validationTextClasses">
-      <lucide-icon name="check-circle" size="12" />
+      <lucide-icon name="check-triangle" size="12" />
       {{ successText }}
     </p>
   }

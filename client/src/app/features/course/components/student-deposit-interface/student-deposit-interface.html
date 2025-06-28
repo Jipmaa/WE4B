@@ -1,0 +1,181 @@
+<div class="space-y-6">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex items-center justify-center py-8">
+      <lucide-icon name="loader-circle" class="size-6 animate-spin"/>
+    </div>
+  } @else {
+    <!-- Current Deposit Status -->
+    @if (currentDeposit()) {
+      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="flex items-start gap-3">
+          <lucide-icon name="circle-check" class="w-5 h-5 text-green-600 mt-0.5"></lucide-icon>
+          <div class="flex-1">
+            <h3 class="text-sm font-medium text-green-900">Dépôt effectué</h3>
+            <div class="mt-2 space-y-2">
+              <p class="text-sm text-green-700">
+                Déposé le {{ currentDeposit()!.createdAt | date:'dd/MM/yyyy à HH:mm' }}
+                @if (isLateSubmission()) {
+                  <span class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                    En retard
+                  </span>
+                }
+              </p>
+
+              <!-- Files List -->
+              <div class="space-y-2">
+                <p class="text-sm font-medium text-green-900">Fichiers déposés:</p>
+                <div class="grid grid-cols-1 gap-2">
+                  @for (fileUrl of currentDeposit()!.fileUrls || []; track fileUrl; let i = $index) {
+                    @let fileName = getFileNameFromUrl(fileUrl);
+                    <div class="flex items-center justify-between p-2 bg-white border border-secondary rounded">
+                      <div class="flex items-center gap-2">
+                        <lucide-icon [name]="getFileIcon(fileName)" class="w-4 h-4 text-gray-500"></lucide-icon>
+                        <span class="text-sm text-gray-700">{{ fileName }}</span>
+                      </div>
+                      <button
+                        type="button"
+                        (click)="downloadFile(fileUrl, fileName)"
+                        class="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                        <lucide-icon name="download" class="w-4 h-4"></lucide-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Grade/Feedback Display -->
+              @if (hasGrade()) {
+                <div class="bg-white border border-secondary text-foreground rounded p-3 mt-3">
+                  <h4 class="text-sm font-medium mb-2">Évaluation du professeur</h4>
+
+                  @if (currentDeposit()!.evaluation?.grade !== undefined) {
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-sm">Note:</span>
+                      <span class="px-2 py-1 text-sm font-medium rounded">
+                        {{ currentDeposit()!.evaluation!.grade }}/20
+                      </span>
+                    </div>
+                  }
+
+                  @if (currentDeposit()!.evaluation?.comment) {
+                    <div>
+                      <span class="text-sm font-medium ">Commentaire:</span>
+                      <p class="text-sm mt-1 px-2 py-1 bg-primary/10 rounded whitespace-pre-wrap">{{ currentDeposit()!.evaluation!.comment }}</p>
+                    </div>
+                  }
+
+                  @if (currentDeposit()!.evaluation?.gradedAt) {
+                    <p class="text-xs text-foreground/80 mt-2">
+                      Évalué le {{ currentDeposit()!.evaluation!.gradedAt | date:'dd/MM/yyyy à HH:mm' }}
+                    </p>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- No Deposit Yet -->
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div class="flex items-center gap-3">
+          <lucide-icon name="upload" class="w-5 h-5 text-yellow-600"></lucide-icon>
+          <div>
+            <h3 class="text-sm font-medium text-yellow-800">Aucun dépôt effectué</h3>
+            <p class="text-sm text-yellow-700 mt-1">Vous n'avez pas encore déposé de fichiers pour cette activité.</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Upload Form -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        @if (currentDeposit()) {
+          Remplacer le dépôt
+        } @else {
+          Déposer des fichiers
+        }
+      </h3>
+
+      <dl class="grid grid-cols-1 gap-2 sm:grid-cols-2 mb-4">
+        <div>
+          <dt class="text-xs font-medium text-gray-500">Nombre maximum de fichiers</dt>
+          <dd class="text-sm text-gray-900">{{ activity.maxFiles }}</dd>
+        </div>
+        @if (activity.restrictedFileTypes && activity.restrictedFileTypes.length > 0) {
+          <div class="sm:col-span-2">
+            <dt class="text-xs font-medium text-gray-500">Types de fichiers autorisés</dt>
+            <dd class="text-sm text-gray-900">{{ getFileTypeDescriptionsText() }}</dd>
+          </div>
+        }
+      </dl>
+
+      <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- File Input -->
+        <app-file-input
+          [multiple]="activity.maxFiles > 1"
+          [maxFiles]="activity.maxFiles"
+          [accept]="getAcceptAttribute()"
+          [acceptDescription]="getFileTypeDescriptionsText()"
+          (fileSelected)="onFilesSelected($event)"
+          (validationError)="onFileValidationError($event)"
+          class="mb-2 block"
+          placeholder="Sélectionnez vos fichiers à déposer"/>
+
+        <!-- Error Message -->
+        @if (error()) {
+          <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-2">
+            <div class="flex">
+              <lucide-icon name="triangle-alert" class="w-5 h-5 text-red-600"></lucide-icon>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">{{ error() }}</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Success Message -->
+        @if (success()) {
+          <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+            <div class="flex">
+              <lucide-icon name="circle-check" class="w-5 h-5 text-green-600"></lucide-icon>
+              <div class="ml-3">
+                <p class="text-sm text-green-700">{{ success() }}</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="flex justify-between items-center">
+          <div>
+            @if (currentDeposit()) {
+              <app-button
+                type="button"
+                variant="ghost-destructive"
+                leadingIcon="trash-2"
+                [disabled]="isSubmitting()"
+                (click)="onDeleteDeposit()">
+                Supprimer le dépôt
+              </app-button>
+            }
+          </div>
+
+          <app-button
+            type="submit"
+            leadingIcon="upload"
+            [disabled]="uploadForm.invalid || isSubmitting()"
+            [loading]="isSubmitting()">
+            @if (currentDeposit()) {
+              Remplacer les fichiers
+            } @else {
+              Déposer les fichiers
+            }
+          </app-button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

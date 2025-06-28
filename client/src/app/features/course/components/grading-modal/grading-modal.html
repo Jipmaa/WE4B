@@ -1,0 +1,182 @@
+<!-- Modal Overlay -->
+<div
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+  (click)="onOverlayClick($event)">
+
+  <!-- Modal Content -->
+  <div
+    #modal
+    class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100">
+          <lucide-icon name="book-open-check" class="w-4 h-4 text-blue-600"></lucide-icon>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">Évaluer le dépôt</h2>
+          <p class="text-sm text-gray-500">{{ deposit.student.name }}</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="onClose()"
+        class="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100">
+        <lucide-icon name="x" class="w-5 h-5"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6 space-y-6">
+      <!-- Student Info -->
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h3 class="text-sm font-medium text-gray-900 mb-3">Informations sur le dépôt</h3>
+        <dl class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div>
+            <dt class="text-xs font-medium text-gray-500">Étudiant</dt>
+            <dd class="text-sm text-gray-900">{{ deposit.student.name }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium text-gray-500">Groupe(s)</dt>
+            <dd class="text-sm text-gray-900">{{ deposit.student.groups.join(', ') }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium text-gray-500">Date de dépôt</dt>
+            <dd class="text-sm text-gray-900">
+              {{ deposit.createdAt | date:'dd/MM/yyyy à HH:mm' }}
+              @if (deposit.isLate) {
+                <span class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                  En retard
+                </span>
+              }
+            </dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium text-gray-500">Nombre de fichiers</dt>
+            <dd class="text-sm text-gray-900">{{ deposit.fileCount }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Files List -->
+      @if (deposit.fileUrls && deposit.fileUrls.length > 0) {
+        <div>
+          <h3 class="text-sm font-medium text-gray-900 mb-3">Fichiers déposés</h3>
+          <div class="space-y-2">
+            @for (fileUrl of deposit.fileUrls; track fileUrl; let i = $index) {
+              @let fileName = getFileNameFromUrl(fileUrl);
+              <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded">
+                <div class="flex items-center space-x-2">
+                  <lucide-icon [name]="getFileIcon(fileName)" class="w-4 h-4 text-gray-500"></lucide-icon>
+                  <span class="text-sm text-gray-700">{{ fileName }}</span>
+                </div>
+                <button
+                  type="button"
+                  (click)="downloadFile(fileUrl, fileName)"
+                  class="p-1 text-gray-400 hover:text-blue-600 transition-colors">
+                  <lucide-icon name="download" class="w-4 h-4"></lucide-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Grading Form -->
+      <form [formGroup]="gradingForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <!-- Grade Input -->
+          <div>
+            <app-input
+              #firstFocusable
+              label="Note (sur 20)"
+              type="number"
+              placeholder="0-20"
+              formControlName="grade"
+              [min]="0"
+              [max]="20"
+              [step]="0.5"
+              [errorText]="getFieldError('grade')"
+              [hasError]="hasFieldError('grade')">
+            </app-input>
+          </div>
+        </div>
+
+        <!-- Comment Input -->
+        <div>
+          <app-textarea
+            label="Commentaire (optionnel)"
+            placeholder="Commentaires sur le travail de l'étudiant..."
+            formControlName="comment"
+            [rows]="4"
+            [errorText]="getFieldError('comment')"
+            [hasError]="hasFieldError('comment')">
+          </app-textarea>
+        </div>
+
+        <!-- Current Evaluation Display -->
+        @if (deposit.evaluation && (deposit.evaluation.grade !== undefined || deposit.evaluation.comment)) {
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="text-sm font-medium text-blue-800 mb-2">Évaluation actuelle</h4>
+
+            @if (deposit.evaluation.grade !== undefined) {
+              <div class="mb-2">
+                <span class="text-sm text-blue-700">Note actuelle:</span>
+                <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded">
+                  {{ deposit.evaluation.grade }}/20
+                </span>
+              </div>
+            }
+
+            @if (deposit.evaluation.comment) {
+              <div class="mb-2">
+                <span class="text-sm text-blue-700">Commentaire actuel:</span>
+                <p class="text-sm text-blue-800 mt-1 whitespace-pre-wrap">{{ deposit.evaluation.comment }}</p>
+              </div>
+            }
+
+            @if (deposit.evaluation.gradedAt) {
+              <p class="text-xs text-blue-600">
+                Dernière évaluation: {{ deposit.evaluation.gradedAt | date:'dd/MM/yyyy à HH:mm' }}
+              </p>
+            }
+          </div>
+        }
+
+        <!-- Error Message -->
+        @if (error()) {
+          <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+            <div class="flex">
+              <lucide-icon name="triangle-alert" class="w-5 h-5 text-red-600"></lucide-icon>
+              <div class="ml-3">
+                <p class="text-sm text-red-700">{{ error() }}</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <app-button
+            type="button"
+            variant="secondary"
+            (click)="onClose()"
+            [disabled]="isSubmitting()">
+            Annuler
+          </app-button>
+
+          <app-button
+            type="submit"
+            leadingIcon="save"
+            [disabled]="gradingForm.invalid || isSubmitting()"
+            [loading]="isSubmitting()">
+            Enregistrer l'évaluation
+          </app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
