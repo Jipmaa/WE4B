@@ -10,7 +10,7 @@
     </app-sidebar>
   }
 
-  <div class="grow h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8 overflow-y-auto">
+  <div class="grow h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8 flex flex-col">
 
     <div class="flex items-center justify-between mb-6">
       <h2 class="grow text-2xl font-bold text-black">
@@ -23,7 +23,7 @@
       }
     </div>
 
-    <div class="flex-1">
+    <div class="flex-1 min-h-0">
       @if (mainContentTemplate) {
         <ng-container *ngTemplateOutlet="mainContentTemplate"></ng-container>
       } @else {
@@ -34,7 +34,7 @@
   </div>
 
   @if (hasMain2) {
-    <div class="grow h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8">
+    <div class="w-3/5 h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8 flex flex-col">
 
       <div class="flex items-center justify-between mb-6">
         <h2 class="grow text-2xl font-bold text-black">
@@ -47,7 +47,7 @@
         }
       </div>
 
-      <div class="flex-1">
+      <div class="flex-1 min-h-0">
         <ng-container *ngTemplateOutlet="main2ContentTemplate"></ng-container>
       </div>
 

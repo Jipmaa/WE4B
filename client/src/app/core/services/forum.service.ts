@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, Subject } from 'rxjs';
+import { Observable, map, Subject, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Discussion } from '../models/discussion.models';
 import { ApiResponse } from '../models/_shared.models';
@@ -42,6 +42,12 @@ export class ForumService {
         this.discussionUpdatedSource.next(); // Notify that discussions have been updated
         return response;
       })
+    );
+  }
+
+  deleteDiscussion(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
+      tap(() => this.discussionUpdatedSource.next()) // Notify that discussions have been updated
     );
   }
 }
