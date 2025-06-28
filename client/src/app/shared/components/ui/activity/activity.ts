@@ -1,4 +1,4 @@
-import {Component, inject, Input, signal} from '@angular/core';
+import {Component, inject, Input, Output, EventEmitter, signal} from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import {CourseActivity, FileActivity, MessageActivity, FileDepositoryActivity} from "@/core/models/course-activity.models";
 import {ButtonComponent} from "@/shared/components/ui/button/button";
@@ -32,6 +32,8 @@ export class Activity {
   @Input({required: true}) activity!: CourseActivity;
   @Input() variant: 'display' | 'quick' = 'quick';
   @Input() showActions: boolean = true;
+
+  @Output() editActivity = new EventEmitter<CourseActivity>();
 
   togglePin() {
     if (this._pinLoading()) {
@@ -184,6 +186,10 @@ export class Activity {
       case 'archive': return 'file-archive'
       default: return 'file'
     }
+  }
+
+  handleEdit(): void {
+    this.editActivity.emit(this.activity);
   }
 
   handleQuickAction(): void {

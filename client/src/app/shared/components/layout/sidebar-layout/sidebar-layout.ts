@@ -14,7 +14,7 @@ export type SidebarPosition = 'left' | 'right' | null;
   templateUrl: './sidebar-layout.html'
 })
 export class SidebarLayout {
-  @HostBinding('class') class = 'block h-[calc(100vh-3rem)] w-full';
+  @HostBinding('class') class = 'block h-full w-full';
 
   @Input() title: string = '';
   @Input() leftSidebarOpen: boolean = false;
@@ -22,6 +22,7 @@ export class SidebarLayout {
   @Input() leftSidebarTitle: string = 'Menu';
   @Input() rightSidebarTitle: string = 'Options';
   @Input() main2Title: string = '';
+  @Input() showMain2: boolean = false;
 
   @ContentChild('leftSidebar') leftSidebarContent?: TemplateRef<any>;
   @ContentChild('rightSidebar') rightSidebarContent?: TemplateRef<any>;
@@ -47,6 +48,6 @@ export class SidebarLayout {
   }
 
   get hasMain2(): boolean {
-    return !!this.main2ContentTemplate;
+    return this.showMain2 && !!this.main2ContentTemplate;
   }
 }

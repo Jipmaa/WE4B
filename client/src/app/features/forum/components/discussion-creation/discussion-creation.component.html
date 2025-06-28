@@ -6,10 +6,10 @@
   </div>
 
   <div>
-    <label for="course" class="block text-sm font-medium text-foreground">Cours (Optionel)</label>
+    <label for="course" class="block text-sm font-medium text-foreground">Cours</label>
     <select id="course" formControlName="course"
             class="mt-1 block w-full rounded-md bg-background border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-ring sm:text-sm">
-      <option [ngValue]="null">-- Pas de cours --</option>
+      <option value="" disabled selected>--Choisir un cours--</option>
       <option *ngFor="let course of courses" [ngValue]="course._id">{{ course.name }}</option>
     </select>
   </div>

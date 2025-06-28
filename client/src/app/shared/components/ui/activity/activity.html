@@ -40,7 +40,10 @@
       </div>
     </div>
     @if (showActions && authService.isTeacher()) {
-      <app-icon-button class="group w-10 h-[4.5rem] rounded-2xl bg-primary/10 hover:bg-primary/20">
+      <app-icon-button
+        class="group w-10 h-[4.5rem] rounded-2xl bg-primary/10 hover:bg-primary/20"
+        (click)="handleEdit()"
+      >
         <lucide-icon
           name="pen"
           class="text-black"

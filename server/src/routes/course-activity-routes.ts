@@ -195,6 +195,20 @@ router.get('/:id', activityIdValidation, validateRequest, asyncHandler(async (re
 		responseData = { ...responseData, fileUrl };
 	}
 
+	// Add instructions file URL if it's a file-depository activity with file instructions
+	if (activity.activityType === 'file-depository' && responseData.instructions.type === 'file' && responseData.instructions.file) {
+		const fileDepositoryActivity = activity as any;
+		const instructionsFileUrl = await fileDepositoryActivity.getInstructionsFileUrl();
+		const instructionsWithUrl = {
+			...responseData.instructions,
+			fileUrl: instructionsFileUrl
+		};
+		responseData = {
+			...responseData,
+			instructions: instructionsWithUrl
+		};
+	}
+
 	// Add completion rate
 	responseData.completionRate = await activity.getCompletionRate();
 
@@ -272,6 +286,97 @@ router.post('/message', teacherMiddleware, messageActivityValidation, validateRe
 	res.status(201).json({
 		success: true,
 		message: 'Message activity created successfully',
+		data: {
+			activity: populatedActivity
+		}
+	});
+}));
+
+// @route   PUT /api/course-activities/message/:id
+// @desc    Update message activity
+// @access  Private (Teacher only)
+router.put('/message/:id', teacherMiddleware, activityIdValidation, [
+	body('title')
+		.optional()
+		.isLength({ max: 100 })
+		.withMessage('Title must be less than 100 characters')
+		.trim(),
+	body('content')
+		.optional()
+		.isLength({ max: 5000 })
+		.withMessage('Content must be less than 5000 characters'),
+	body('level')
+		.optional()
+		.isIn(['normal', 'important', 'urgent'])
+		.withMessage('Level must be normal, important, or urgent'),
+	body('category')
+		.optional()
+		.isLength({ max: 50 })
+		.withMessage('Category must be less than 50 characters')
+], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const activity = await MessageActivityModel.findById(req.params.id);
+
+	if (!activity) {
+		throw new AppError('Message activity not found', 404);
+	}
+
+	const { title, content, level, category } = req.body;
+
+	// Update fields that are provided
+	if (title !== undefined) activity.title = title;
+	if (content !== undefined) activity.content = content;
+	if (level !== undefined) activity.level = level;
+
+	await activity.save();
+
+	// Handle category update if provided
+	if (category !== undefined) {
+		// First, remove the activity from its current category
+		await CourseUnit.updateMany(
+			{ 'activities.activities': activity._id },
+			{ $pull: { 'activities.$.activities': activity._id } }
+		);
+
+		// Remove empty categories
+		await CourseUnit.updateMany(
+			{},
+			{ $pull: { activities: { activities: { $size: 0 } } } }
+		);
+
+		// Add to new category if specified
+		if (category && category.trim()) {
+			// Try to add to existing category
+			const updateResult = await CourseUnit.updateOne(
+				{ _id: activity.courseUnit, 'activities.name': category },
+				{ $push: { 'activities.$.activities': activity._id } }
+			);
+
+			// If category doesn't exist, create it
+			if (updateResult.modifiedCount === 0) {
+				await CourseUnit.updateOne(
+					{ _id: activity.courseUnit, 'activities.name': { $ne: category } },
+					{
+						$push: {
+							activities: {
+								_id: new (require('mongoose')).Types.ObjectId(),
+								name: category,
+								description: `Catégorie ${category}`,
+								activities: [activity._id]
+							}
+						}
+					}
+				);
+			}
+		}
+	}
+
+	const populatedActivity = await MessageActivityModel.findById(activity._id)
+		.populate('courseUnit', 'name code slug')
+		.populate('restrictedGroups', 'name slug');
+
+	res.json({
+		success: true,
+		message: 'Message activity updated successfully',
 		data: {
 			activity: populatedActivity
 		}
@@ -366,6 +471,128 @@ router.post('/file', teacherMiddleware, uploadActivityFile, handleFileUploadErro
 	res.status(201).json({
 		success: true,
 		message: 'File activity created successfully',
+		data: {
+			activity: activityWithUrl
+		}
+	});
+}));
+
+// @route   PUT /api/course-activities/file/:id
+// @desc    Update file activity
+// @access  Private (Teacher only)
+router.put('/file/:id', teacherMiddleware, uploadActivityFile, handleFileUploadError, activityIdValidation, [
+	body('title')
+		.optional()
+		.isLength({ max: 100 })
+		.withMessage('Title must be less than 100 characters')
+		.trim(),
+	body('content')
+		.optional()
+		.isLength({ max: 5000 })
+		.withMessage('Content must be less than 5000 characters'),
+	body('fileType')
+		.optional()
+		.isIn(['text-file', 'image', 'presentation', 'video', 'audio', 'spreadsheet', 'archive', 'other'])
+		.withMessage('Invalid file type'),
+	body('category')
+		.optional()
+		.isLength({ max: 50 })
+		.withMessage('Category must be less than 50 characters')
+], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const activity = await FileActivityModel.findById(req.params.id);
+
+	if (!activity) {
+		throw new AppError('File activity not found', 404);
+	}
+
+	const { title, content, fileType, category } = req.body;
+	let fileKey = activity.file;
+
+	// Update fields that are provided
+	if (title !== undefined) activity.title = title;
+	if (content !== undefined) activity.content = content;
+	if (fileType !== undefined) activity.fileType = fileType;
+
+	// Handle file upload if provided
+	if (req.file) {
+		// Delete old file if it exists
+		if (activity.file) {
+			try {
+				await deleteFile(FILE_CONFIGS.activityFile.bucket, activity.file);
+			} catch (error) {
+				console.warn('Failed to delete old activity file:', error);
+			}
+		}
+
+		// Upload new file
+		const fileName = generateFileName(req.file.originalname, `activity-file`);
+		fileKey = await uploadFile(
+			req.file,
+			FILE_CONFIGS.activityFile.bucket,
+			fileName,
+			{
+				'X-Amz-Meta-Course-Unit': activity.courseUnit.toString(),
+				'X-Amz-Meta-Activity-Type': 'file',
+				'X-Amz-Meta-File-Type': fileType || activity.fileType
+			}
+		);
+		activity.file = fileKey;
+	}
+
+	await activity.save();
+
+	// Handle category update if provided
+	if (category !== undefined) {
+		// First, remove the activity from its current category
+		await CourseUnit.updateMany(
+			{ 'activities.activities': activity._id },
+			{ $pull: { 'activities.$.activities': activity._id } }
+		);
+
+		// Remove empty categories
+		await CourseUnit.updateMany(
+			{},
+			{ $pull: { activities: { activities: { $size: 0 } } } }
+		);
+
+		// Add to new category if specified
+		if (category && category.trim()) {
+			// Try to add to existing category
+			const updateResult = await CourseUnit.updateOne(
+				{ _id: activity.courseUnit, 'activities.name': category },
+				{ $push: { 'activities.$.activities': activity._id } }
+			);
+
+			// If category doesn't exist, create it
+			if (updateResult.modifiedCount === 0) {
+				await CourseUnit.updateOne(
+					{ _id: activity.courseUnit, 'activities.name': { $ne: category } },
+					{
+						$push: {
+							activities: {
+								_id: new (require('mongoose')).Types.ObjectId(),
+								name: category,
+								description: `Catégorie ${category}`,
+								activities: [activity._id]
+							}
+						}
+					}
+				);
+			}
+		}
+	}
+
+	const populatedActivity = await FileActivityModel.findById(activity._id)
+		.populate('courseUnit', 'name code slug')
+		.populate('restrictedGroups', 'name slug');
+
+	const responseData = populatedActivity!.toJSON();
+	const fileUrl = await populatedActivity!.getFileUrl();
+	const activityWithUrl = { ...responseData, fileUrl };
+
+	res.json({
+		success: true,
+		message: 'File activity updated successfully',
 		data: {
 			activity: activityWithUrl
 		}
@@ -507,6 +734,181 @@ router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFil
 	res.status(201).json({
 		success: true,
 		message: 'File depository activity created successfully',
+		data: {
+			activity: responseData
+		}
+	});
+}));
+
+// @route   PUT /api/course-activities/file-depository/:id
+// @desc    Update file depository activity
+// @access  Private (Teacher only)
+router.put('/file-depository/:id', teacherMiddleware, uploadActivityFile, handleFileUploadError, activityIdValidation, [
+	body('title')
+		.optional()
+		.isLength({ max: 100 })
+		.withMessage('Title must be less than 100 characters')
+		.trim(),
+	body('content')
+		.optional()
+		.isLength({ max: 5000 })
+		.withMessage('Content must be less than 5000 characters'),
+	body('maxFiles')
+		.optional()
+		.isInt({ min: 1, max: 20 })
+		.withMessage('Max files must be between 1 and 20'),
+	body('category')
+		.optional()
+		.isLength({ max: 50 })
+		.withMessage('Category must be less than 50 characters')
+], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const activity = await FileDepositoryActivityModel.findById(req.params.id);
+
+	if (!activity) {
+		throw new AppError('File depository activity not found', 404);
+	}
+
+	const { title, content, maxFiles, category } = req.body;
+
+	// Parse JSON strings from FormData
+	let instructions, restrictedFileTypes;
+	
+	try {
+		instructions = req.body.instructions ? 
+			(typeof req.body.instructions === 'string' ? JSON.parse(req.body.instructions) : req.body.instructions) : 
+			undefined;
+	} catch (error) {
+		throw new AppError('Invalid instructions format', 400);
+	}
+	
+	try {
+		restrictedFileTypes = req.body.restrictedFileTypes ? 
+			(typeof req.body.restrictedFileTypes === 'string' ? JSON.parse(req.body.restrictedFileTypes) : req.body.restrictedFileTypes) : 
+			undefined;
+	} catch (error) {
+		throw new AppError('Invalid restrictedFileTypes format', 400);
+	}
+
+	// Update fields that are provided
+	if (title !== undefined) activity.title = title;
+	if (content !== undefined) activity.content = content;
+	if (maxFiles !== undefined) activity.maxFiles = maxFiles;
+	if (restrictedFileTypes !== undefined) activity.restrictedFileTypes = restrictedFileTypes;
+
+	// Handle instructions update
+	if (instructions !== undefined) {
+		// Validate instructions
+		if (instructions && typeof instructions === 'object') {
+			if (!['file', 'text'].includes(instructions.type)) {
+				throw new AppError('Instructions type must be file or text', 400);
+			}
+			
+			if (instructions.type === 'text' && (!instructions.text || typeof instructions.text !== 'string')) {
+				throw new AppError('Text instructions must have a valid text field', 400);
+			}
+
+			// If changing to file instructions and file was uploaded
+			if (instructions.type === 'file' && req.file) {
+				// Delete old instructions file if it exists
+				if (activity.instructions.type === 'file' && activity.instructions.file) {
+					try {
+						await deleteFile(FILE_CONFIGS.activityFile.bucket, activity.instructions.file);
+					} catch (error) {
+						console.warn('Failed to delete old instructions file:', error);
+					}
+				}
+
+				// Upload new instructions file
+				const fileName = generateFileName(req.file.originalname, `instructions-file`);
+				const fileKey = await uploadFile(
+					req.file,
+					FILE_CONFIGS.activityFile.bucket,
+					fileName,
+					{
+						'X-Amz-Meta-Course-Unit': activity.courseUnit.toString(),
+						'X-Amz-Meta-Activity-Type': 'file-depository-instructions'
+					}
+				);
+				activity.instructions = { type: 'file', file: fileKey };
+			} else if (instructions.type === 'text') {
+				// Delete old instructions file if changing from file to text
+				if (activity.instructions.type === 'file' && activity.instructions.file) {
+					try {
+						await deleteFile(FILE_CONFIGS.activityFile.bucket, activity.instructions.file);
+					} catch (error) {
+						console.warn('Failed to delete old instructions file:', error);
+					}
+				}
+				activity.instructions = { type: 'text', text: instructions.text };
+			}
+		}
+	}
+
+	await activity.save();
+
+	// Handle category update if provided
+	if (category !== undefined) {
+		// First, remove the activity from its current category
+		await CourseUnit.updateMany(
+			{ 'activities.activities': activity._id },
+			{ $pull: { 'activities.$.activities': activity._id } }
+		);
+
+		// Remove empty categories
+		await CourseUnit.updateMany(
+			{},
+			{ $pull: { activities: { activities: { $size: 0 } } } }
+		);
+
+		// Add to new category if specified
+		if (category && category.trim()) {
+			// Try to add to existing category
+			const updateResult = await CourseUnit.updateOne(
+				{ _id: activity.courseUnit, 'activities.name': category },
+				{ $push: { 'activities.$.activities': activity._id } }
+			);
+
+			// If category doesn't exist, create it
+			if (updateResult.modifiedCount === 0) {
+				await CourseUnit.updateOne(
+					{ _id: activity.courseUnit, 'activities.name': { $ne: category } },
+					{
+						$push: {
+							activities: {
+								_id: new (require('mongoose')).Types.ObjectId(),
+								name: category,
+								description: `Catégorie ${category}`,
+								activities: [activity._id]
+							}
+						}
+					}
+				);
+			}
+		}
+	}
+
+	const populatedActivity = await FileDepositoryActivityModel.findById(activity._id)
+		.populate('courseUnit', 'name code slug')
+		.populate('restrictedGroups', 'name slug');
+
+	let responseData = populatedActivity!.toJSON();
+
+	// Add file URL if instructions contain a file
+	if (responseData.instructions.type === 'file' && responseData.instructions.file) {
+		const instructionsFileUrl = await populatedActivity!.getInstructionsFileUrl();
+		const instructionsWithUrl = {
+			...responseData.instructions,
+			fileUrl: instructionsFileUrl
+		};
+		responseData = {
+			...responseData,
+			instructions: instructionsWithUrl
+		};
+	}
+
+	res.json({
+		success: true,
+		message: 'File depository activity updated successfully',
 		data: {
 			activity: responseData
 		}

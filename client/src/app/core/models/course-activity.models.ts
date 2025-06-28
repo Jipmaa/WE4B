@@ -18,7 +18,7 @@ interface BaseCourseActivity {
   updatedAt: Date;
 }
 
-export type CourseActivity = 
+export type CourseActivity =
   | {
       activityType: 'message';
       title: string;
@@ -36,7 +36,7 @@ export type CourseActivity =
       activityType: 'file-depository';
       title: string;
       content: string;
-      instructions: { type: 'file'; file: string } | { type: 'text'; text: string };
+      instructions: { type: 'file'; file: string; fileUrl?: string } | { type: 'text'; text: string };
       restrictedFileTypes?: FileType[];
       maxFiles: number;
       dueAt?: Date;
@@ -72,10 +72,35 @@ export interface CreateFileDepositoryActivityRequest {
   title: string;
   content: string;
   courseUnit: string;
-  instructions: { type: 'file'; file: string } | { type: 'text'; text: string };
+  instructions: { type: 'file'; file: string; fileUrl?: string } | { type: 'text'; text: string };
   maxFiles: number;
   restrictedFileTypes?: FileType[];
   dueAt?: Date;
+}
+
+export interface UpdateMessageActivityRequest {
+  title?: string;
+  content?: string;
+  level?: MessageLevel;
+  category?: string;
+}
+
+export interface UpdateFileActivityRequest {
+  title?: string;
+  content?: string;
+  file?: File;
+  fileType?: FileType;
+  category?: string;
+}
+
+export interface UpdateFileDepositoryActivityRequest {
+  title?: string;
+  content?: string;
+  instructions?: { type: 'file'; file: string; fileUrl?: string } | { type: 'text'; text: string };
+  maxFiles?: number;
+  restrictedFileTypes?: FileType[];
+  dueAt?: Date;
+  category?: string;
 }
 
 export interface CourseActivitiesResponse {
