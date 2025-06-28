@@ -11,6 +11,117 @@
   </ng-template>
 
   <!-- Main content of the dashboard -->
-  <p>Main dashboard content goes here.</p>
+    <div class="self-stretch inline-flex justify-start items-start gap-4">
+      <div class="flex-1 self-stretch inline-flex flex-col justify-start items-start gap-2">
+        <div class="self-stretch justify-start text-black text-sm font-medium font-['Inter'] leading-tight">En ce moment</div>
+        <app-course-box [course]="" [showImage]="true" />
+      </div>
+      <div class="flex-1 inline-flex flex-col justify-start items-start gap-2">
+        <div class="self-stretch justify-start text-black text-sm font-medium font-['Inter'] leading-tight">À venir</div>
+        <app-course-box [course]="" [showImage]="false" />
+        <app-course-box [course]="" [showImage]="false" />
+        <app-course-box [course]="" [showImage]="false" />
+      </div>
+    </div>
+    <div class="self-stretch flex flex-col justify-start items-start gap-2">
+      <div class="justify-start text-black text-sm font-medium font-['Inter'] leading-tight">Devoirs</div>
+      <div class="w-[876px] inline-flex justify-start items-start gap-4">
+        <div class="size- pr-6 flex justify-start items-center gap-4">
+          <div data-hover="false" class="w-80 p-4 bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)] shadow-[0px_5px_5px_0px_rgba(0,0,0,0.03)] shadow-[0px_11px_7px_0px_rgba(0,0,0,0.02)] shadow-[0px_20px_8px_0px_rgba(0,0,0,0.01)] shadow-[0px_31px_9px_0px_rgba(0,0,0,0.00)] outline outline-1 outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
+            <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">Name</div>
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">—</div>
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">UE</div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="w-1 h-1.5 left-[7.58px] top-[3.58px] absolute bg-black/70"></div>
+                <div class="size-3.5 left-[0.91px] top-[0.91px] absolute bg-black/70"></div>
+                <div class="w-[0.83px] h-[4.83px] left-[12.92px] top-[7.25px] absolute bg-black/70"></div>
+                <div class="w-[0.84px] h-[0.83px] left-[12.92px] top-[13.92px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Clôture dans 3 jours.</div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="w-[0.84px] h-[0.83px] left-[7.58px] top-[10.25px] absolute bg-black/70"></div>
+                <div class="w-[0.83px] h-1 left-[7.58px] top-[4.92px] absolute bg-black/70"></div>
+                <div class="size-3.5 left-[0.92px] top-[0.92px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">5 étudiants n’ont pas rendu le devoir </div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="size-3.5 left-[0.91px] top-[0.92px] absolute bg-black/70"></div>
+                <div class="w-[4.83px] h-1 left-[5.58px] top-[6.25px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Taux de correction : 60%</div>
+            </div>
+          </div>
+          <div data-hover="false" class="w-80 p-4 bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)] shadow-[0px_5px_5px_0px_rgba(0,0,0,0.03)] shadow-[0px_11px_7px_0px_rgba(0,0,0,0.02)] shadow-[0px_20px_8px_0px_rgba(0,0,0,0.01)] shadow-[0px_31px_9px_0px_rgba(0,0,0,0.00)] outline outline-1 outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
+            <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">Name</div>
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">—</div>
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">UE</div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="w-1 h-1.5 left-[7.58px] top-[3.58px] absolute bg-black/70"></div>
+                <div class="size-3.5 left-[0.91px] top-[0.91px] absolute bg-black/70"></div>
+                <div class="w-[0.83px] h-[4.83px] left-[12.92px] top-[7.25px] absolute bg-black/70"></div>
+                <div class="w-[0.84px] h-[0.83px] left-[12.92px] top-[13.92px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Clôture dans 8 jours.</div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="w-[0.84px] h-[0.83px] left-[7.58px] top-[10.25px] absolute bg-black/70"></div>
+                <div class="w-[0.83px] h-1 left-[7.58px] top-[4.92px] absolute bg-black/70"></div>
+                <div class="size-3.5 left-[0.92px] top-[0.92px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">16 étudiants n’ont pas rendu le devoir </div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="size-3.5 left-[0.91px] top-[0.92px] absolute bg-black/70"></div>
+                <div class="w-[4.83px] h-1 left-[5.58px] top-[6.25px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Taux de correction : 22%</div>
+            </div>
+          </div>
+          <div data-hover="false" class="w-80 p-4 bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)] shadow-[0px_5px_5px_0px_rgba(0,0,0,0.03)] shadow-[0px_11px_7px_0px_rgba(0,0,0,0.02)] shadow-[0px_20px_8px_0px_rgba(0,0,0,0.01)] shadow-[0px_31px_9px_0px_rgba(0,0,0,0.00)] outline outline-1 outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
+            <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">Name</div>
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">—</div>
+              <div class="justify-start text-black text-sm font-semibold font-['Inter'] leading-tight">UE</div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="w-1 h-1.5 left-[7.58px] top-[3.58px] absolute bg-black/70"></div>
+                <div class="size-3.5 left-[0.91px] top-[0.91px] absolute bg-black/70"></div>
+                <div class="w-[0.83px] h-[4.83px] left-[12.92px] top-[7.25px] absolute bg-black/70"></div>
+                <div class="w-[0.84px] h-[0.83px] left-[12.92px] top-[13.92px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Clôture dans 3 jours.</div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="w-[0.84px] h-[0.83px] left-[7.58px] top-[10.25px] absolute bg-black/70"></div>
+                <div class="w-[0.83px] h-1 left-[7.58px] top-[4.92px] absolute bg-black/70"></div>
+                <div class="size-3.5 left-[0.92px] top-[0.92px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">5 étudiants n’ont pas rendu le devoir </div>
+            </div>
+            <div class="size- inline-flex justify-start items-center gap-2">
+              <div class="size-4 relative overflow-hidden">
+                <div class="size-3.5 left-[0.91px] top-[0.92px] absolute bg-black/70"></div>
+                <div class="w-[4.83px] h-1 left-[5.58px] top-[6.25px] absolute bg-black/70"></div>
+              </div>
+              <div class="justify-start text-black/70 text-xs font-normal font-['Inter']">Taux de correction : 60%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 </app-sidebar-layout>
