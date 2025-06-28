@@ -9,8 +9,9 @@ import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-but
 import { AuthService } from '@/core/services/auth.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
-import { AddActivityPopup } from '../add-activity-popup/add-activity-popup';
+import { ActivityPopup } from '../activity-popup/activity-popup';
 import {Activity} from '@/shared/components/ui/activity/activity';
+import { CourseActivity } from '@/core/models/course-activity.models';
 
 @Component({
   selector: 'app-course-page',
@@ -20,7 +21,7 @@ import {Activity} from '@/shared/components/ui/activity/activity';
     ButtonComponent,
     IconButtonComponent,
     Collapsible,
-    AddActivityPopup,
+    ActivityPopup,
     Activity
   ],
   templateUrl: './course-page.html',
@@ -76,6 +77,8 @@ export class CoursePage {
 
   // Popup state
   readonly showAddActivityPopup = signal(false);
+  readonly showEditActivityPopup = signal(false);
+  readonly editingActivity = signal<CourseActivity | null>(null);
 
   get courseUnit() {
     return this.currentCourseUnit();
@@ -111,6 +114,21 @@ export class CoursePage {
 
   onActivityCreated() {
     this.showAddActivityPopup.set(false);
+  }
+
+  onActivityUpdated() {
+    this.showEditActivityPopup.set(false);
+    this.editingActivity.set(null);
+  }
+
+  onEditActivity(activity: CourseActivity) {
+    this.editingActivity.set(activity);
+    this.showEditActivityPopup.set(true);
+  }
+
+  onCloseEditActivityPopup() {
+    this.showEditActivityPopup.set(false);
+    this.editingActivity.set(null);
   }
 
   onCategoryCreated(newCategory: any) {

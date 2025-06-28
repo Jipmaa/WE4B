@@ -9,7 +9,7 @@
   }
 
   @if (!selectedFile) {
-    <div 
+    <div
       class="relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
       [ngClass]="{
         'border-gray-300 hover:border-gray-400': !isDragOver && !hasError && !disabled,
@@ -27,9 +27,9 @@
       [attr.aria-label]="'Sélectionner un fichier. ' + placeholder"
       [attr.aria-disabled]="disabled"
     >
-      <lucide-icon 
-        name="upload" 
-        size="32" 
+      <lucide-icon
+        name="upload"
+        size="32"
         class="mx-auto mb-2"
         [ngClass]="{
           'text-gray-400': !isDragOver && !hasError && !disabled,
@@ -38,8 +38,8 @@
           'text-gray-300': disabled
         }"
       />
-      
-      <p 
+
+      <p
         class="mb-2"
         [ngClass]="{
           'text-gray-600': !isDragOver && !hasError && !disabled,
@@ -50,9 +50,9 @@
       >
         {{ placeholder }}
       </p>
-      
+
       @if (helpText) {
-        <p 
+        <p
           class="text-sm"
           [ngClass]="{
             'text-gray-500': !hasError && !disabled,
@@ -63,7 +63,7 @@
           {{ helpText }}
         </p>
       } @else {
-        <p 
+        <p
           class="text-sm"
           [ngClass]="{
             'text-gray-500': !hasError && !disabled,
@@ -81,30 +81,30 @@
         [accept]="acceptedTypes"
         [disabled]="disabled"
         (change)="onFileSelected($event)"
-        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+        class="sr-only"
       />
     </div>
   }
 
   @if (selectedFile) {
-    <div 
+    <div
       class="flex items-center gap-3 p-3 border rounded-lg"
       [ngClass]="{
         'border-gray-300 bg-gray-50': !hasError,
         'border-red-300 bg-red-50': hasError
       }"
     >
-      <lucide-icon 
-        name="file" 
-        size="20" 
+      <lucide-icon
+        name="file"
+        size="20"
         [ngClass]="{
           'text-gray-600': !hasError,
           'text-red-600': hasError
         }"
       />
-      
+
       <div class="flex-1 min-w-0">
-        <p 
+        <p
           class="text-sm font-medium truncate"
           [ngClass]="{
             'text-gray-900': !hasError,
@@ -113,7 +113,7 @@
         >
           {{ selectedFile.name }}
         </p>
-        <p 
+        <p
           class="text-xs"
           [ngClass]="{
             'text-gray-500': !hasError,
@@ -123,7 +123,7 @@
           {{ getFileSizeDisplay() }}
         </p>
       </div>
-      
+
       <button
         type="button"
         (click)="onRemoveFile()"

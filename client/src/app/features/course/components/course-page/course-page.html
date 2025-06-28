@@ -46,12 +46,12 @@
       @if (pinnedActivities().length > 0) {
         <app-collapsible label="Prochainement et épinglés" [defaultOpen]="true">
           @for (activity of pinnedActivities(); track activity._id) {
-            <app-activity [activity]="activity" />
+            <app-activity [activity]="activity" (editActivity)="onEditActivity($event)" />
           }
         </app-collapsible>
       }
 
-      @for (category of courseUnit?.activities; track category._id) {
+      @for (category of courseUnit.activities; track category._id) {
         <div class="self-stretch flex flex-col gap-2">
           <div>
             <h2 class="font-medium leading-tight">{{ category.name }}</h2>
@@ -59,7 +59,7 @@
           </div>
 
           @for (activity of category.activities || []; track activity._id) {
-            <app-activity [activity]="activity" variant="display" />
+            <app-activity [activity]="activity" variant="display" (editActivity)="onEditActivity($event)" />
           }
 
           @if ((category.activities || []).length === 0) {
@@ -74,11 +74,24 @@
 </app-sidebar-layout>
 
 <!-- Add Activity Popup -->
-<app-add-activity-popup
+<app-activity-popup
   [isOpen]="showAddActivityPopup()"
   [courseUnitId]="courseUnit?._id || ''"
   [existingCategories]="courseUnit?.activities || []"
+  [mode]="'create'"
   (closePopup)="onCloseAddActivityPopup()"
   (activityCreated)="onActivityCreated()"
+  (categoryCreated)="onCategoryCreated($event)"
+/>
+
+<!-- Edit Activity Popup -->
+<app-activity-popup
+  [isOpen]="showEditActivityPopup()"
+  [courseUnitId]="courseUnit?._id || ''"
+  [existingCategories]="courseUnit?.activities || []"
+  [mode]="'edit'"
+  [editActivity]="editingActivity()"
+  (closePopup)="onCloseEditActivityPopup()"
+  (activityUpdated)="onActivityUpdated()"
   (categoryCreated)="onCategoryCreated($event)"
 />

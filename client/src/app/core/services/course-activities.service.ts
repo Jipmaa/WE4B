@@ -9,7 +9,10 @@ import {
   CourseActivitySearchResult,
   CreateMessageActivityRequest,
   CreateFileActivityRequest,
-  CreateFileDepositoryActivityRequest
+  CreateFileDepositoryActivityRequest,
+  UpdateMessageActivityRequest,
+  UpdateFileActivityRequest,
+  UpdateFileDepositoryActivityRequest
 } from '../models/course-activity.models';
 import { ApiResponse } from '../models/_shared.models';
 
@@ -214,6 +217,137 @@ export class CourseActivitiesService {
       );
   }
 
+  updateMessageActivity(id: string, activityData: UpdateMessageActivityRequest): Observable<ApiResponse<{ activity: CourseActivity }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.put<ApiResponse<{ activity: CourseActivity }>>(`${this.baseUrl}/message/${id}`, activityData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the activity in the current list
+            const currentActivities = this._activities();
+            const updatedActivities = currentActivities.map(activity =>
+              activity._id === id ? response.data.activity : activity
+            );
+            this._activities.set(updatedActivities);
+
+            // Update selected activity if it's the same activity
+            if (this._selectedActivity()?._id === id) {
+              this._selectedActivity.set(response.data.activity);
+            }
+            this.courseUnitsService.triggerCourseDataRefresh();
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+  updateFileActivity(id: string, activityData: UpdateFileActivityRequest): Observable<ApiResponse<{ activity: CourseActivity }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const formData = new FormData();
+    if (activityData.title) formData.append('title', activityData.title);
+    if (activityData.content) formData.append('content', activityData.content);
+    if (activityData.category) formData.append('category', activityData.category);
+
+    if (activityData.file) {
+      // Determine file type based on file extension or MIME type
+      let fileType = 'other';
+      const mimeType = activityData.file.type;
+      const fileName = activityData.file.name.toLowerCase();
+
+      if (mimeType.startsWith('image/')) {
+        fileType = 'image';
+      } else if (mimeType.startsWith('video/')) {
+        fileType = 'video';
+      } else if (mimeType.startsWith('audio/')) {
+        fileType = 'audio';
+      } else if (mimeType.includes('presentation') || mimeType.includes('powerpoint') || fileName.includes('.ppt')) {
+        fileType = 'presentation';
+      } else if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || fileName.includes('.xls')) {
+        fileType = 'spreadsheet';
+      } else if (mimeType.startsWith('text/') || mimeType.includes('document') || fileName.includes('.doc') || fileName.includes('.txt')) {
+        fileType = 'text-file';
+      } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive') || fileName.includes('.zip') || fileName.includes('.rar')) {
+        fileType = 'archive';
+      }
+
+      formData.append('fileType', fileType);
+      formData.append('file', activityData.file);
+    } else if (activityData.fileType) {
+      formData.append('fileType', activityData.fileType);
+    }
+
+    return this.http.put<ApiResponse<{ activity: CourseActivity }>>(`${this.baseUrl}/file/${id}`, formData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the activity in the current list
+            const currentActivities = this._activities();
+            const updatedActivities = currentActivities.map(activity =>
+              activity._id === id ? response.data.activity : activity
+            );
+            this._activities.set(updatedActivities);
+
+            // Update selected activity if it's the same activity
+            if (this._selectedActivity()?._id === id) {
+              this._selectedActivity.set(response.data.activity);
+            }
+            this.courseUnitsService.triggerCourseDataRefresh();
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
+  updateFileDepositoryActivity(id: string, activityData: UpdateFileDepositoryActivityRequest, instructionsFile?: File): Observable<ApiResponse<{ activity: CourseActivity }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const formData = new FormData();
+    if (activityData.title) formData.append('title', activityData.title);
+    if (activityData.content) formData.append('content', activityData.content);
+    if (activityData.maxFiles !== undefined) formData.append('maxFiles', activityData.maxFiles.toString());
+    if (activityData.category) formData.append('category', activityData.category);
+
+    if (activityData.restrictedFileTypes && activityData.restrictedFileTypes.length > 0) {
+      formData.append('restrictedFileTypes', JSON.stringify(activityData.restrictedFileTypes));
+    }
+
+    if (instructionsFile) {
+      formData.append('instructions', JSON.stringify({ type: 'file' }));
+      formData.append('file', instructionsFile);
+    } else if (activityData.instructions) {
+      formData.append('instructions', JSON.stringify(activityData.instructions));
+    }
+
+    return this.http.put<ApiResponse<{ activity: CourseActivity }>>(`${this.baseUrl}/file-depository/${id}`, formData)
+      .pipe(
+        tap(response => {
+          if (response.success) {
+            // Update the activity in the current list
+            const currentActivities = this._activities();
+            const updatedActivities = currentActivities.map(activity =>
+              activity._id === id ? response.data.activity : activity
+            );
+            this._activities.set(updatedActivities);
+
+            // Update selected activity if it's the same activity
+            if (this._selectedActivity()?._id === id) {
+              this._selectedActivity.set(response.data.activity);
+            }
+            this.courseUnitsService.triggerCourseDataRefresh();
+          }
+        }),
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
   completeActivity(id: string): Observable<ApiResponse<{ activity: CourseActivity }>> {
     this._isLoading.set(true);
     this._error.set(null);
@@ -347,6 +481,10 @@ export class CourseActivitiesService {
 
     this._error.set(errorMessage);
     return throwError(() => error);
+  }
+
+  undoDeleteFile(fileUrl: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/undo-delete-file`, { fileUrl });
   }
 
   togglePin(id: string, newValue: boolean): Observable<ApiResponse<CourseActivity>> {

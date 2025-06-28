@@ -1,6 +1,6 @@
 <!-- Overlay -->
 <div
-  class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
   [class.hidden]="!isOpen"
   (click)="onOverlayClick()"
   (keydown)="onGlobalKeydown($event)"
@@ -24,16 +24,18 @@
         </h2>
       } @else {
         <div class="flex items-center gap-3">
-          <button
-            type="button"
-            (click)="goBackToSelection()"
-            class="p-1 hover:bg-gray-100 rounded transition-colors"
-            aria-label="Retour"
-          >
-            <lucide-icon name="arrow-left" size="20" class="text-gray-600"/>
-          </button>
+          @if (mode === 'create') {
+            <button
+              type="button"
+              (click)="goBackToSelection()"
+              class="p-1 hover:bg-gray-100 rounded transition-colors"
+              aria-label="Retour"
+            >
+              <lucide-icon name="arrow-left" size="20" class="text-gray-600"/>
+            </button>
+          }
           <h2 id="form-title" class="text-xl font-semibold text-gray-900">
-            {{ getSelectedActivityTypeInfo()?.label }}
+            {{ mode === 'edit' ? popupTitle : getSelectedActivityTypeInfo()?.label }}
           </h2>
         </div>
       }
@@ -312,11 +314,39 @@
                 />
               </div>
 
+              <!-- Existing File Display (Edit Mode) -->
+              @if (mode === 'edit' && existingFileUrl) {
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    Fichier actuel
+                  </label>
+                  <div class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg bg-gray-50">
+                    <lucide-icon name="file" size="20" class="text-gray-600"/>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">
+                        {{ existingFileName }}
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Fichier existant
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="downloadExistingFile()"
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      aria-label="Télécharger le fichier actuel"
+                    >
+                      Télécharger
+                    </button>
+                  </div>
+                </div>
+              }
+
               <!-- File Upload -->
               <app-file-input
-                label="Fichier"
-                [required]="true"
-                placeholder="Cliquez pour sélectionner un fichier"
+                [label]="mode === 'edit' && existingFileUrl ? 'Remplacer le fichier (optionnel)' : 'Fichier'"
+                [required]="mode === 'create'"
+                [placeholder]="mode === 'edit' && existingFileUrl ? 'Cliquez pour remplacer le fichier actuel' : 'Cliquez pour sélectionner un fichier'"
                 [hasError]="!!fileInputError"
                 [errorText]="fileInputError || ''"
                 (fileSelected)="onFileSelected($event)"
@@ -467,11 +497,39 @@
                 />
               </div>
 
-              <!-- Optional Instructions File -->
+              <!-- Existing Instructions File Display (Edit Mode) -->
+              @if (mode === 'edit' && existingInstructionsFileUrl && !hasTextInstructions()) {
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    Fichier d'instructions actuel
+                  </label>
+                  <div class="flex items-center gap-3 p-3 border border-gray-300 rounded-lg bg-gray-50">
+                    <lucide-icon name="file-text" size="20" class="text-gray-600"/>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">
+                        {{ existingInstructionsFileName }}
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        Fichier d'instructions existant
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="downloadExistingInstructionsFile()"
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      aria-label="Télécharger le fichier d'instructions actuel"
+                    >
+                      Télécharger
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- Instructions File Upload -->
               <app-file-input
-                label="Fichier d'instructions"
+                [label]="mode === 'edit' && existingInstructionsFileUrl ? 'Remplacer le fichier d\'instructions (optionnel)' : 'Fichier d\'instructions'"
                 [required]="false"
-                placeholder="Ajouter un fichier d'instructions"
+                [placeholder]="mode === 'edit' && existingInstructionsFileUrl ? 'Cliquez pour remplacer le fichier d\'instructions actuel' : 'Cliquez pour sélectionner un fichier d\'instructions'"
                 helpText="Optionnel - Maximum 50MB"
                 [hasError]="!!fileInputError"
                 [errorText]="fileInputError || ''"
@@ -495,7 +553,7 @@
           [disabled]="isSubmitting()"
           [loading]="isSubmitting()"
         >
-          Créer l'activité
+          {{ actionButtonText }} l'activité
         </app-button>
       </div>
     }
