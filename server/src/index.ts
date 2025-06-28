@@ -14,6 +14,7 @@ import courseActivityRoutes from './routes/course-activity-routes';
 import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
 import fileRoutes from './routes/file-routes';
+import discussionRoutes from './routes/discussion-routes';
 
 // Import middleware
 import { errorHandler } from './middleware/error-handler';
@@ -173,6 +174,7 @@ class Server {
 		this.app.use('/api/course-activities', courseActivityRoutes);
 		this.app.use('/api/users', userRoutes);
 		this.app.use('/api/files', fileRoutes);
+		this.app.use('/api/discussions', discussionRoutes);
 
 		// Root endpoint
 		this.app.get('/', (req, res) => {

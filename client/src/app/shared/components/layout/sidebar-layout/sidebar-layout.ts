@@ -21,11 +21,14 @@ export class SidebarLayout {
   @Input() rightSidebarOpen: boolean = false;
   @Input() leftSidebarTitle: string = 'Menu';
   @Input() rightSidebarTitle: string = 'Options';
+  @Input() main2Title: string = '';
 
   @ContentChild('leftSidebar') leftSidebarContent?: TemplateRef<any>;
   @ContentChild('rightSidebar') rightSidebarContent?: TemplateRef<any>;
   @ContentChild('actionButtons') actionButtonsContent?: TemplateRef<any>;
   @ContentChild('mainContent') mainContentTemplate?: TemplateRef<any>;
+  @ContentChild('main2ActionButtons') main2ActionButtonsContent?: TemplateRef<any>;
+  @ContentChild('main2Content') main2ContentTemplate?: TemplateRef<any>;
 
   get hasLeftSidebar(): boolean {
     return !!this.leftSidebarContent;
@@ -37,5 +40,13 @@ export class SidebarLayout {
 
   get hasActionButtons(): boolean {
     return !!this.actionButtonsContent;
+  }
+
+  get hasMain2ActionButtons(): boolean {
+    return !!this.main2ActionButtonsContent;
+  }
+
+  get hasMain2(): boolean {
+    return !!this.main2ContentTemplate;
   }
 }

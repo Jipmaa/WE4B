@@ -1,0 +1,67 @@
+<!--<div class="bg-muted/40 min-h-screen p-4 sm:p-6 lg:p-8">-->
+<!--  <div class="max-w-7xl mx-auto">-->
+
+    <!-- État de chargement -->
+    <div *ngIf="isLoading" class="text-center py-12">
+      <p class="text-lg text-muted-foreground">Chargement des discussions...</p>
+    </div>
+
+    <!-- État d'erreur -->
+    <div *ngIf="error" class="bg-destructive text-destructive-foreground px-4 py-3 rounded-lg relative mb-6" role="alert">
+      <strong class="font-bold">Erreur :</strong>
+      <span class="block sm:inline">{{ error }}</span>
+    </div>
+
+    <!-- Liste des discussions -->
+    <div *ngIf="!isLoading && !error" class="bg-card shadow-md rounded-lg overflow-y-auto max-h-[calc(100vh-200px)]">
+      <ul role="list" class="divide-y divide-border">
+        <!-- Ligne d'en-tête pour les grands écrans -->
+        <li class="hidden sm:grid grid-cols-12 gap-4 px-6 py-4 font-semibold text-left text-sm text-muted-foreground bg-muted rounded-t-lg">
+          <div class="col-span-6">Sujet</div>
+          <div class="col-span-2 text-center">Auteur</div>
+          <div class="col-span-2 text-center">Réponses</div>
+          <div class="col-span-2 text-right">Dernière activité</div>
+        </li>
+
+        <!-- Élément de la liste -->
+        <li *ngFor="let discussion of discussions; else noDiscussions"
+            (click)="viewDiscussion(discussion._id)"
+            [ngClass]="{'bg-primary/10': discussion._id === selectedDiscussionId}"
+            class="grid grid-cols-12 gap-4 px-6 py-5 hover:bg-muted/50 focus-within:bg-muted/50 cursor-pointer transition duration-150 ease-in-out">
+
+          <!-- Sujet et cours -->
+          <div class="col-span-12 sm:col-span-6 flex flex-col justify-center">
+            <p class="font-semibold text-primary truncate">{{ discussion.title }}</p>
+            <p class="text-xs text-muted-foreground mt-1">{{ discussion.course ? discussion.course.name : '---' }}</p>
+          </div>
+
+          <!-- Auteur -->
+          <div class="col-span-6 sm:col-span-2 flex items-center justify-start sm:justify-center">
+            <span class="sm:hidden font-semibold text-xs mr-2">Auteur:</span>
+            <p class="text-sm text-foreground">{{ discussion.author.firstName }} {{ discussion.author.lastName }}</p>
+          </div>
+
+          <!-- Nombre de réponses -->
+          <div class="col-span-6 sm:col-span-2 flex items-center justify-start sm:justify-center">
+            <span class="sm:hidden font-semibold text-xs mr-2">Réponses:</span>
+            <p class="text-sm text-foreground">{{ discussion.messages.length > 0 ? discussion.messages.length - 1 : 0 }}</p>
+          </div>
+
+          <!-- Dernière activité -->
+          <div class="col-span-12 sm:col-span-2 flex flex-col items-start sm:items-end justify-center">
+            <p class="text-sm text-foreground">{{ discussion.updatedAt | date:'dd/MM/yyyy' }}</p>
+            <p class="text-xs text-muted-foreground">{{ discussion.updatedAt | date:'HH:mm' }}</p>
+          </div>
+        </li>
+
+        <!-- Cas où il n'y a aucune discussion -->
+        <ng-template #noDiscussions>
+          <li class="text-center py-12 px-6">
+            <p class="text-muted-foreground">Aucune discussion pour le moment.</p>
+          </li>
+        </ng-template>
+      </ul>
+    </div>
+
+<!--  </div>-->
+<!--</div>-->

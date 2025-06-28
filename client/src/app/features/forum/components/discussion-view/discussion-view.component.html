@@ -1,0 +1,69 @@
+<!-- État de chargement -->
+<div *ngIf="isLoading" class="text-center py-12">
+    <p class="text-lg text-muted-foreground">Chargement de la discussion...</p>
+</div>
+
+<!-- État d'erreur -->
+<div *ngIf="error" class="bg-destructive text-destructive-foreground px-4 py-3 rounded-lg relative mb-6" role="alert">
+    <strong class="font-bold">Erreur :</strong>
+    <span class="block sm:inline">{{ error }}</span>
+</div>
+
+<!-- Contenu de la discussion -->
+<div *ngIf="!isLoading && discussion" class="bg-white flex flex-col">
+    <!-- En-tête de la discussion -->
+    <div class="p-6 border-b border-border">
+        <h1 class="text-2xl sm:text-3xl font-bold text-foreground">{{ discussion.title }}</h1>
+        <p class="text-sm text-muted-foreground mt-2">
+            Initié par <span
+                class="font-semibold">{{ discussion.author.firstName }} {{ discussion.author.lastName }}</span>
+            le {{ discussion.createdAt | date:'dd/MM/yyyy' }}
+        </p>
+        <p class="text-sm text-muted-foreground mt-2">
+            Cours: {{ discussion.course ? discussion.course.name : '---' }}
+        </p>
+    </div>
+
+    <!-- Liste des messages -->
+    <div class="p-6 space-y-6 overflow-y-auto grow">
+        <div *ngFor="let message of discussion.messages" class="flex items-start gap-4">
+            <!-- Idéalement, un avatar irait ici -->
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">
+                {{ message.author.firstName.charAt(0) }}{{ message.author.lastName.charAt(0) }}
+            </div>
+            <div class="flex-grow bg-muted p-4 rounded-lg">
+                <div class="flex justify-between items-center">
+                    <p class="font-semibold text-primary">{{ message.author.firstName }} {{ message.author.lastName }}</p>
+                    <p class="text-xs text-muted-foreground">{{ message.createdAt | date:'HH:mm' }}</p>
+                </div>
+                <p class="text-foreground mt-2">{{ message.content }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire pour un nouveau message -->
+    <div class="p-6 bg-white  border-t border-border">
+        <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-muted-foreground/20"></div>
+            <!-- Placeholder pour l'avatar de l'utilisateur actuel -->
+            <div class="flex-grow">
+            <textarea
+                    [(ngModel)]="newMessageContent"
+                    (keyup.enter)="sendMessage()"
+                    placeholder="Participez à la discussion..."
+                    class="w-full p-3 border border-border bg-white rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition duration-150 ease-in-out"
+                    rows="3"
+            ></textarea>
+                <div class="flex justify-end mt-2">
+                    <button
+                            (click)="sendMessage()"
+                            [disabled]="!newMessageContent.trim()"
+                            class="px-6 py-2 bg-primary text-primary-foreground font-semibold rounded-lg shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:bg-muted-foreground/50 disabled:cursor-not-allowed transition duration-150 ease-in-out">
+                        Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -5,7 +5,8 @@ import {LucideAngularModule} from 'lucide-angular';
 import {CourseUnitsService} from '@/core/services/course-units.service';
 import {CourseUnit, CourseUnitsResponse} from '@/core/models/course-unit.models';
 import {AuthService} from '@/core/services/auth.service';
-import {CourseCard} from '@/shared/components/ui/course-card/course-card';
+// import {CourseCard} from '@/shared/components/ui/course-card/course-card';
+import { CourseBox } from '@/shared/components/ui/course-box/course-box';
 
 @Component({
   selector: 'app-courses-page',
@@ -13,7 +14,7 @@ import {CourseCard} from '@/shared/components/ui/course-card/course-card';
     SidebarLayout,
     InputComponent,
     LucideAngularModule,
-    CourseCard
+    CourseBox
   ],
   templateUrl: './courses-page.html',
 })
