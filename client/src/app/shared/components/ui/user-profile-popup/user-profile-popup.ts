@@ -323,7 +323,6 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     return null;
   }
 
-  // Enhanced error getters for specific fields
   getFieldError(fieldName: string): string | null {
     const field = this.profileForm.get(fieldName);
 
@@ -429,7 +428,6 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     return null;
   }
 
-  // Enhanced error getters for password fields
   getPasswordFieldError(fieldName: string): string | null {
     const field = this.passwordForm.get(fieldName);
 

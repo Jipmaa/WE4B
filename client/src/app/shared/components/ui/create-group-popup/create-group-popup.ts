@@ -54,7 +54,7 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
 
   myForm = new FormGroup({
     name: new FormControl<string>('', Validators.required),
-    description: new FormControl<string | null>(null), // Added description field
+    description: new FormControl<string | null>(null),
     //slug: new FormControl<string>('', Validators.required),
     kind: new FormControl<GroupKind | null>(null, Validators.required),
     day: new FormControl<Day | null>(null, Validators.required),
@@ -149,7 +149,7 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
 
     const data = {
       name: this.myForm.value.name || '',
-      description: this.myForm.value.description || undefined, // Added description
+      description: this.myForm.value.description || undefined,
       kind: this.myForm.value.kind! as GroupKind,
       day: this.myForm.value.day! as Day,
       from: this.myForm.value.from || '',
