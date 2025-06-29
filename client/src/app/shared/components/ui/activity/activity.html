@@ -2,8 +2,14 @@
 
    <div class="p-2 w-full bg-primary/10 rounded-lg inline-flex justify-start items-center gap-6 overflow-hidden cursor-pointer hover:bg-primary/20 transition-colors" (click)="onCardClick()">
      <div class="flex-1 inline-flex flex-col justify-start items-start">
-       <div class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ activity.title }}</div>
-       <div class="self-stretch opacity-80 justify-start text-black text-sm font-normal  leading-tight">{{ descriptionText }}</div>
+       <p class="self-stretch justify-start text-black text-sm font-semibold  leading-tight">{{ activity.title }}</p>
+       <p class="self-stretch opacity-80 justify-start text-black text-sm font-normal  leading-tight">
+         @if (activity.activityType === 'file-depository') {
+           {{ descriptionText }}
+         } @else {
+           {{ activity.updatedAt | timeAgo }}
+         }
+       </p>
      </div>
      @if (showActions) {
        @if (authService.isTeacher()) {

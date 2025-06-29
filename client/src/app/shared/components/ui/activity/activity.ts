@@ -6,6 +6,7 @@ import {ButtonComponent} from "@/shared/components/ui/button/button";
 import {IconButtonComponent} from "@/shared/components/ui/icon-button/icon-button";
 import {CourseActivitiesService} from "@/core/services/course-activities.service";
 import {AuthService} from '@/core/services/auth.service';
+import {TimeAgoPipe} from '@/shared/pipes/time-ago/time-ago.pipe';
 
 
 interface ActivityIcon {
@@ -19,7 +20,8 @@ interface ActivityIcon {
   imports: [
     LucideAngularModule,
     ButtonComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    TimeAgoPipe
   ],
   templateUrl: './activity.html',
 })
@@ -84,49 +86,20 @@ export class Activity {
   }
 
   get descriptionText(): string {
-    if (this.activity.activityType === 'file-depository') {
-      const fileDepositoryActivity = this.activity as FileDepositoryActivity;
-      if (fileDepositoryActivity.dueAt) {
-        const now = new Date();
-        const dueDate = new Date(fileDepositoryActivity.dueAt);
-        const diffTime = dueDate.getTime() - now.getTime();
-        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-        const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto', style: "short" });
-        return `À rendre ${rtf.format(diffDays, 'day')}`;
-      }
-      return 'Pas de date limite';
+    if (this.activity.activityType !== 'file-depository') {
+      throw new Error("Description text is only available for file-depository activities");
     }
-    const createdAt = new Date(this.activity.createdAt);
-    const updatedAt = new Date(this.activity.updatedAt);
-    const now = new Date();
-
-    const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto', style: 'short' });
-
-    if (createdAt.getTime() === updatedAt.getTime()) {
-      const diffTime = createdAt.getTime() - now.getTime();
+    const fileDepositoryActivity = this.activity as FileDepositoryActivity;
+    if (fileDepositoryActivity.dueAt) {
+      const now = new Date();
+      const dueDate = new Date(fileDepositoryActivity.dueAt);
+      const diffTime = dueDate.getTime() - now.getTime();
       const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-      if (diffDays < 1) {
-        const diffHours = Math.round(diffTime / (1000 * 60 * 60));
-        if (diffHours < 1) {
-          const diffMinutes = Math.round(diffTime / (1000 * 60));
-          return `Créé ${rtf.format(diffMinutes, 'minutes')}`;
-        }
-        return `Créé ${rtf.format(diffHours, 'hour')}`;
-      }
-      return `Créé ${rtf.format(diffDays, 'day')}`;
+
+      const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto', style: "short" });
+      return `À rendre ${rtf.format(diffDays, 'day')}`;
     }
-    const diffTime = updatedAt.getTime() - now.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays < 1) {
-      const diffHours = Math.round(diffTime / (1000 * 60 * 60));
-      if (diffHours < 1) {
-        const diffMinutes = Math.round(diffTime / (1000 * 60));
-        return `Mis à jour ${rtf.format(diffMinutes, 'minutes')}`;
-      }
-      return `Mis à jour ${rtf.format(diffHours, 'hour')}`;
-    }
-    return `Mis à jour ${rtf.format(diffDays, 'day')}`;
+    return 'Pas de date limite';
   }
 
   get icon(): ActivityIcon {
@@ -191,6 +164,10 @@ export class Activity {
       case 'archive': return 'file-archive'
       default: return 'file'
     }
+  }
+
+  asFileDepositoryActivity(): FileDepositoryActivity {
+    return this.activity as FileDepositoryActivity
   }
 
   handleEdit(): void {
