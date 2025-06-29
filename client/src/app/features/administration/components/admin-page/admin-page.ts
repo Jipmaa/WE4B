@@ -56,6 +56,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
 
   private readonly courses=signal<CourseUnit[]>([]);
   private readonly groups=signal<CourseGroup[]>([]);
+  private readonly searchTerm = signal('');
+
 
   showEditUserPopup: boolean = false;
   showCreateUserPopup: boolean = false;
@@ -90,7 +92,15 @@ export class AdminPage implements OnInit, AfterViewChecked {
         courseUnit.groups.forEach(g=> unifiedArray.push({ type: 'group', name: `--> ${g.name}`, description: g.description??`Groupe ${g.name}`, data: g, parent: courseUnit }));
       }
     });
-    return unifiedArray;
+    const term = this.searchTerm().toLowerCase();
+    if (!term) {
+      return unifiedArray;
+    }
+
+    return unifiedArray.filter(item =>
+      item.name.toLowerCase().includes(term) ||
+      item.description.toLowerCase().includes(term)
+    );
   })
 
   ngOnInit(): void {
@@ -433,5 +443,10 @@ export class AdminPage implements OnInit, AfterViewChecked {
   onUserAssigned() {
     this.showAssignUserPopup = false;
     // Optionally, you can refresh the group data here
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
   }
 }
