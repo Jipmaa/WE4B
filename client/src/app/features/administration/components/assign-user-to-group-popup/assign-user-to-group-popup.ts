@@ -159,6 +159,7 @@ export class AssignUserToGroupPopupComponent {
       if (!user.roles.includes('teacher')) {
         // If user is not a teacher, force role to student
         this.selectedRole = 'student';
+        return;
       }
       // If the user can be teacher, preselect teacher role
       this.selectedRole = 'teacher';

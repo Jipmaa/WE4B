@@ -26,9 +26,7 @@ import { DeleteConfirmationPopupComponent } from '@/shared/components/ui/delete-
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
 import {CourseRegisterPopup} from '@/features/administration/components/course-register-popup/course-register-popup';
-import {
-  AssignUserToGroupPopupComponent
-} from '@/features/course/components/assign-user-to-group-popup/assign-user-to-group-popup';
+import {AssignUserToGroupPopupComponent} from '@/features/administration/components/assign-user-to-group-popup/assign-user-to-group-popup';
 
 type UnifiedData =
   | { type: 'courseUnit', name: string, description: string, data: CourseUnit }
