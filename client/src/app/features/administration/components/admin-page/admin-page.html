@@ -34,6 +34,7 @@
         type="text"
         placeholder="Chercher un utilisateur..."
         class="w-64"
+        (input)="onUserSearch($event)"
       >
         <lucide-icon
           name="search"
@@ -74,7 +75,7 @@
     <app-tab-content value="users">
 
       <app-array
-        [data]="UsersArray"
+        [data]="filteredUsers"
         [columns]="columnsUsers"
         [rowActions]="rowActionsUsers"
         [messages]="messagesUsers"

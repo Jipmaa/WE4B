@@ -57,6 +57,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
   private readonly courses=signal<CourseUnit[]>([]);
   private readonly groups=signal<CourseGroup[]>([]);
   private readonly searchTerm = signal('');
+  private readonly userSearchTerm = signal('');
 
 
   showEditUserPopup: boolean = false;
@@ -448,5 +449,23 @@ export class AdminPage implements OnInit, AfterViewChecked {
   onSearch(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     this.searchTerm.set(value);
+  }
+
+  onUserSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.userSearchTerm.set(value);
+  }
+
+  get filteredUsers(): User[] {
+    const term = this.userSearchTerm().toLowerCase();
+    if (!term) {
+      return this.UsersArray;
+    }
+
+    return this.UsersArray.filter(user =>
+      user.fullName.toLowerCase().includes(term) ||
+      user.email.toLowerCase().includes(term) ||
+      user.roles.some(role => role.toLowerCase().includes(term))
+    );
   }
 }
