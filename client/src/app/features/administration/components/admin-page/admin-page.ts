@@ -30,7 +30,7 @@ import {CourseRegisterPopup} from '@/shared/components/layout/course-register-po
 
 type UnifiedData =
   | { type: 'courseUnit', name: string, description: string, data: CourseUnit }
-  | { type: 'group', name: string, description: string, data: CourseGroup };
+  | { type: 'group', name: string, description: string, data: CourseGroup, parent: CourseUnit };
 @Component({
   selector: 'app-admin-page',
   standalone: true,
@@ -62,26 +62,26 @@ export class AdminPage implements OnInit, AfterViewChecked {
   showCreateCourseUnitPopup: boolean = false; // New signal for create popup
   selectedUser: User | null = null;
   selectedCourseUnit: CourseUnit | null = null;
-  selectedGroup: CourseGroup | null = null;
 
-  showCreateGroupPopup: boolean = false;
+  groupPopupState = signal<{ mode: 'create' | 'edit', courseUnit: CourseUnit, group?: CourseGroup } | null>(null);
 
-  readonly createdGroupPopUp = signal<CourseUnit | null>(null);
   showDeleteUserPopup: boolean = false;
   userToDelete: User | null = null;
 
   showDeleteCoursePopup: boolean = false;
   courseToDelete: CourseUnit | null = null;
 
+  readonly modifiedGroupPopUp = signal<CourseGroup | null>(null);
+  showDeleteGroupPopup: boolean = false;
+  groupToDelete: CourseGroup | null = null;
+
   readonly unifiedCoursesAndGroupsArray =computed(() => {
-    // Combine courses and groups into a unified array where all groups are course units is next to their parent course unit
     const unifiedArray: UnifiedData [] = [];
     this.courses().forEach(courseUnit => {
       unifiedArray.push({ type: 'courseUnit', name: courseUnit.code, description: courseUnit.name, data: courseUnit });
       if (courseUnit.groups?.length) {
-
-        //@ts-ignore -unexpected behavior of client typing against server typing
-        courseUnit.groups.forEach(g=> unifiedArray.push({ type: 'group', name: `--> ${g.name}`, description: g.description??`Groupe ${g.name}`, data: g }));
+        //@ts-ignore
+        courseUnit.groups.forEach(g=> unifiedArray.push({ type: 'group', name: `--> ${g.name}`, description: g.description??`Groupe ${g.name}`, data: g, parent: courseUnit }));
       }
     });
     return unifiedArray;
@@ -201,8 +201,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
         {
           label: 'Ajouter un groupe',
           onTriggered: () => {
-            console.log('Ajouter un groupe au cours:', item.data as CourseUnit);
-            this.createdGroupPopUp.set(item.data as CourseUnit);
+            this.groupPopupState.set({ mode: 'create', courseUnit: item.data as CourseUnit });
           }
         }
       ];
@@ -211,9 +210,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
         {
           label: 'Modifier un groupe',
           onTriggered: () => {
-            console.log('Modifier un groupe:', item.data as CourseGroup);
-            this.selectedGroup = item.data as CourseGroup;
-            // Implement your logic to modify a group
+            this.groupPopupState.set({ mode: 'edit', courseUnit: item.parent, group: item.data as CourseGroup });
           }
         },
         {
@@ -226,8 +223,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
         {
           label: 'Supprimer un groupe',
           onTriggered: () => {
-            console.log('Supprimer un groupe:', item.data as CourseGroup);
-            // Implement your logic to delete a group
+            this.groupToDelete = item.data as CourseGroup;
+            this.showDeleteGroupPopup = true;
           }
         }
       ];
@@ -343,6 +340,34 @@ export class AdminPage implements OnInit, AfterViewChecked {
     this.courseToDelete = null;
   }
 
+  confirmDeleteGroup(): void {
+    if (this.groupToDelete) {
+      this.servCourseGroup.deleteGroup(this.groupToDelete._id).subscribe(
+        () => {
+          this.courses.update(courses => {
+            for (const course of courses) {
+              if (course.groups) {
+                //@ts-ignore
+                course.groups = course.groups.filter(g => g._id !== this.groupToDelete!._id);
+              }
+            }
+            return [...courses];
+          });
+          this.cancelDeleteGroup();
+        },
+        error => {
+          console.error('Error deleting group:', error);
+          this.cancelDeleteGroup();
+        }
+      );
+    }
+  }
+
+  cancelDeleteGroup(): void {
+    this.showDeleteGroupPopup = false;
+    this.groupToDelete = null;
+  }
+
   navigateToRegister() {
     this.showCreateUserPopup = true;
   }
@@ -373,20 +398,28 @@ export class AdminPage implements OnInit, AfterViewChecked {
     this.showCreateCourseUnitPopup = false;
   }
 
-  navigateToGroup() {
-    this.showCreateGroupPopup = true;
-  }
+  onGroupSaved(group: CourseGroup) {
+    this.courses.update(courses => {
+      const courseIndex = courses.findIndex(c => c._id === group.courseUnit);
+      if (courseIndex === -1) return courses;
 
-  onCreateGroup(groupData: CourseGroup) {
-    console.log('Nouveau groupe créé:', groupData);
-    // Optionally, refresh the course units or groups list after creation
-    // For example, if you want to see the new group immediately:
-    // this.servCourse.getCourseUnits().subscribe(response => {
-    //   this.CoursesArray = response.data.courseUnits;
-    // });
-  }
+      const course = courses[courseIndex];
+      //@ts-ignore
+      const groupIndex = course.groups.findIndex(g => g._id === group._id);
 
-  handleClosePopUp(){
-    this.createdGroupPopUp.set(null);
+      if (groupIndex === -1) {
+        // New group
+        //@ts-ignore
+        course.groups.push(group);
+      } else {
+        // Existing group
+        //@ts-ignore
+        course.groups[groupIndex] = group;
+      }
+
+      return [...courses];
+    });
+
+    this.groupPopupState.set(null);
   }
 }

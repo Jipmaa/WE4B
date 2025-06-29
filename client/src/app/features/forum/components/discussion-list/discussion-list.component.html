@@ -56,7 +56,7 @@
 
           <!-- Action -->
           <div class="col-span-12 sm:col-span-2 flex items-center justify-center" *ngIf="isAdmin()">
-            <app-icon-button icon="trash-2" (click)="$event.stopPropagation(); onDeleteDiscussion(discussion._id)" variant="ghost" size="sm"></app-icon-button>
+            <app-icon-button icon="trash-2" (click)="$event.stopPropagation(); onDeleteDiscussion(discussion)" variant="ghost" size="sm"></app-icon-button>
           </div>
         </li>
 
@@ -68,6 +68,13 @@
         </ng-template>
       </ul>
     </div>
+
+<app-delete-confirmation-popup
+  [isOpen]="showDeleteDiscussionPopup"
+  message="Êtes vous sûr de vouloir supprimer cette discussion? Cette action ne peut pas être annulée."
+  (confirm)="confirmDeleteDiscussion()"
+  (cancel)="cancelDeleteDiscussion()">
+</app-delete-confirmation-popup>
 
 <!--  </div>-->
 <!--</div>-->
