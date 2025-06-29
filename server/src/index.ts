@@ -16,6 +16,7 @@ import setupRoutes from "./routes/setup-routes";
 import authRoutes from './routes/auth-routes';
 import fileRoutes from './routes/file-routes';
 import discussionRoutes from './routes/discussion-routes';
+import logRoutes from './routes/log-routes';
 
 // Import middleware
 import { errorHandler } from './middleware/error-handler';
@@ -178,6 +179,7 @@ class Server {
 		this.app.use('/api/users', userRoutes);
 		this.app.use('/api/files', fileRoutes);
 		this.app.use('/api/discussions', discussionRoutes);
+		this.app.use('/api/logs', logRoutes);
 
 		// Root endpoint
 		this.app.get('/', (req, res) => {
@@ -200,7 +202,7 @@ class Server {
 		this.app.use(notFound);
 
 		// Global error handler
-		this.app.use(errorHandler.bind(null, this.app));
+		this.app.use(errorHandler);
 	}
 
 	public start(): void {

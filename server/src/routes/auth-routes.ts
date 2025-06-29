@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import BlacklistedToken from '../models/blacklisted-token';
+import LoginHistory from '../models/login-history';
 import { validateRequest } from '../middleware/validate-request';
 import { authMiddleware } from '../middleware/auth-middleware';
 import { AppError } from '../utils/app-error';
@@ -156,58 +157,77 @@ router.post('/register', registerValidation, validateRequest, asyncHandler(async
 // @access  Public
 router.post('/login', loginValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	const { email, password } = req.body;
+	const ipAddress = req.ip;
+	const userAgent = req.headers['user-agent'];
 
-	// Find user by email (include password for comparison)
-	const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+	let loginSuccess = false;
+	let user = null;
 
-	if (!user) {
-		console.log(`❌ User not found for email: ${email}`);
-		throw new AppError('Invalid credentials', 401);
-	}
+	try {
+		// Find user by email (include password for comparison)
+		user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
-	// Check if user is active
-	if (!user.isActive) {
-		console.log(`❌ User account is deactivated: ${email}`);
-		throw new AppError('Account is deactivated. Please contact support.', 401);
-	}
-
-	// Compare password
-	const isPasswordValid = await user.comparePassword(password);
-	if (!isPasswordValid) {
-		console.log(`❌ Invalid password for user: ${email}`);
-		throw new AppError('Invalid credentials', 401);
-	}
-
-	// Generate token
-	const token = generateToken(user._id.toString());
-
-	// Update last login
-	user.lastLogin = new Date();
-	await user.save();
-
-	res.json({
-		success: true,
-		message: 'Login successful',
-		data: {
-			user: {
-				id: user._id,
-				email: user.email,
-				avatar: user.avatar ? getPublicUrl(FILE_CONFIGS.avatar.bucket, user.avatar) : undefined,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				fullName: user.getFullName(),
-				roles: user.roles,
-				department: user.department,
-				birthdate: user.birthdate,
-				phone: user.phone,
-				isActive: user.isActive,
-				isEmailVerified: user.isEmailVerified,
-				isPhoneVerified: user.isPhoneVerified,
-				lastLogin: user.lastLogin
-			},
-			token
+		if (!user) {
+			console.log(`❌ User not found for email: ${email}`);
+			throw new AppError('Invalid credentials', 401);
 		}
-	});
+
+		// Check if user is active
+		if (!user.isActive) {
+			console.log(`❌ User account is deactivated: ${email}`);
+			throw new AppError('Account is deactivated. Please contact support.', 401);
+		}
+
+		// Compare password
+		const isPasswordValid = await user.comparePassword(password);
+		if (!isPasswordValid) {
+			console.log(`❌ Invalid password for user: ${email}`);
+			throw new AppError('Invalid credentials', 401);
+		}
+
+		// Generate token
+		const token = generateToken(user._id.toString());
+
+		// Update last login
+		user.lastLogin = new Date();
+		await user.save();
+
+		loginSuccess = true;
+
+		res.json({
+			success: true,
+			message: 'Login successful',
+			data: {
+				user: {
+					id: user._id,
+					email: user.email,
+					avatar: user.avatar ? getPublicUrl(FILE_CONFIGS.avatar.bucket, user.avatar) : undefined,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					fullName: user.getFullName(),
+					roles: user.roles,
+					department: user.department,
+					birthdate: user.birthdate,
+					phone: user.phone,
+					isActive: user.isActive,
+					isEmailVerified: user.isEmailVerified,
+					isPhoneVerified: user.isPhoneVerified,
+					lastLogin: user.lastLogin
+				},
+				token
+			}
+		});
+	} finally {
+		// Record login attempt
+		const loginHistoryEntry = new LoginHistory({
+			userId: user ? user._id : null, // Use null if user not found
+			loginTime: new Date(),
+			ipAddress,
+			userAgent,
+			success: loginSuccess,
+		});
+		await loginHistoryEntry.save();
+	}
 }));
 
 // @route   GET /api/accounts/me
@@ -376,6 +396,13 @@ router.post('/logout', authMiddleware, asyncHandler(async (req: Request, res: Re
 
 		// Add token to blacklist
 		await BlacklistedToken.blacklistToken(token, req.user!.userId, expiresAt);
+
+		// Update the last login history entry for the user
+		await LoginHistory.findOneAndUpdate(
+			{ userId: req.user!.userId, logoutTime: { $exists: false } },
+			{ $set: { logoutTime: new Date() } },
+			{ sort: { loginTime: -1 } } // Find the most recent login
+		);
 
 		res.json({
 			success: true,

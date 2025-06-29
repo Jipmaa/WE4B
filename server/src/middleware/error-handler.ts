@@ -88,12 +88,23 @@ const sendErrorProd = (err: AppError, res: Response): void => {
 };
 
 // Global error handling middleware
-const _errorHandler = (
+export const errorHandler = (
 	 err: any,
 	 req: Request,
 	 res: Response,
 	 next: NextFunction
 ): void => {
+	// Ensure CORS headers are set even for errors
+	const origin = req.get('Origin');
+	const allowedOrigins = ['http://localhost:4200', 'http://localhost:3000', 'http://127.0.0.1:4200', 'http://127.0.0.1:3000'];
+
+	if (origin && allowedOrigins.includes(origin)) {
+		res.header('Access-Control-Allow-Origin', origin);
+		res.header('Access-Control-Allow-Credentials', 'true');
+	}
+
+	console.error(`🚫 Error occurred: ${err.message}`, err);
+
 	// Set default values
 	err.statusCode = err.statusCode || 500;
 	err.status = err.status || 'error';
@@ -128,25 +139,3 @@ const _errorHandler = (
 		sendErrorProd(error, res);
 	}
 };
-
-// Wraps the error handler with CORS headers tests and logging
-export const errorHandler = (
-	 app: Application,
-	 req: Request,
-	 res: Response,
-	 next: NextFunction
-) => {
-	app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-		// Ensure CORS headers are set even for errors
-		const origin = req.get('Origin');
-		const allowedOrigins = ['http://localhost:4200', 'http://localhost:3000', 'http://127.0.0.1:4200', 'http://127.0.0.1:3000'];
-
-		if (origin && allowedOrigins.includes(origin)) {
-			res.header('Access-Control-Allow-Origin', origin);
-			res.header('Access-Control-Allow-Credentials', 'true');
-		}
-
-		console.log(`🚫 Error occurred: ${error.message}`, error.stack);
-		_errorHandler(error, req, res, next);
-	});
-}

@@ -10,6 +10,7 @@ import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
 import { uploadCourseImage, handleFileUploadError } from '../middleware/file-upload-middleware';
 import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS, getPublicUrl } from '../services/minio-service';
+import { logActivity } from '../utils/logger';
 
 const router = Router();
 
@@ -344,6 +345,21 @@ router.get('/:id', courseUnitIdValidation, validateRequest, asyncHandler(async (
 
 	if (!courseUnit) {
 		throw new AppError('Course unit not found', 404);
+	}
+
+	// Log course consultation
+	if (req.user?.userId) {
+		await logActivity({
+			level: 'info',
+			message: `User viewed course unit: ${courseUnit.name} (${courseUnit.code})`,
+			userId: req.user.userId,
+			metadata: {
+				courseUnitId: courseUnit._id.toString(),
+				courseUnitName: courseUnit.name,
+				courseUnitCode: courseUnit.code,
+				consultationType: 'view'
+			}
+		});
 	}
 
 	res.json({
