@@ -50,14 +50,6 @@ async function filterActivitiesByUserRole(
 	const isAdmin = userRoles.includes('admin');
 	const isTeacher = userRoles.includes('teacher');
 	const isStudent = userRoles.includes('student');
-
-	console.log({
-		isAdmin,
-		isTeacher,
-		isStudent,
-		userId,
-		userGroups: userGroups.map(g => g.courseUnit._id.toString())
-	})
 	
 	// Batch check submissions for due_soon/overdue activities (for student role)
 	const dueSoonOrOverdueActivities = activities.filter(

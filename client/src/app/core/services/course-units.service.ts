@@ -183,7 +183,6 @@ export class CourseUnitsService {
     return this.http.post<ApiResponse<CreateCourseUnitsResponse>>(this.baseUrl, formData)
       .pipe(
         tap(response => {
-          console.log('API Response:', response); // Ajoutez ceci pour voir la structure de la réponse
           if (response.success) {
             // Add the new course unit to the current list
             const currentUnits = this._courseUnits();

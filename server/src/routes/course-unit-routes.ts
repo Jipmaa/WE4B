@@ -622,8 +622,6 @@ router.get('/by-slug/:slug', [
 		throw new AppError('Course unit not found', 404);
 	}
 
-	console.log(courseUnit.activities[0]!.activities);
-
 	res.json({
 		success: true,
 		data: {

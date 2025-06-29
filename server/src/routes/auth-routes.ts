@@ -168,20 +168,20 @@ router.post('/login', loginValidation, validateRequest, asyncHandler(async (req:
 		user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
 		if (!user) {
-			console.log(`❌ User not found for email: ${email}`);
+			console.debug(`❌ User not found for email: ${email}`);
 			throw new AppError('Invalid credentials', 401);
 		}
 
 		// Check if user is active
 		if (!user.isActive) {
-			console.log(`❌ User account is deactivated: ${email}`);
+			console.debug(`❌ User account is deactivated: ${email}`);
 			throw new AppError('Account is deactivated. Please contact support.', 401);
 		}
 
 		// Compare password
 		const isPasswordValid = await user.comparePassword(password);
 		if (!isPasswordValid) {
-			console.log(`❌ Invalid password for user: ${email}`);
+			console.debug(`❌ Invalid password for user: ${email}`);
 			throw new AppError('Invalid credentials', 401);
 		}
 

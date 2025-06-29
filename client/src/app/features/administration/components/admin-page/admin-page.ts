@@ -106,21 +106,18 @@ export class AdminPage implements OnInit, AfterViewChecked {
   ngOnInit(): void {
     this.servUsers.getUsers().subscribe(
       response => {
-        console.log(response);
         this.UsersArray = response.data.users;
       }
     );
 
     this.servCourse.getCourseUnits().subscribe(
       response => {
-        console.log(response);
         this.courses.set(response.data.courseUnits);
       }
     );
 
     this.servCourseGroup.getGroups().subscribe(
       response => {
-        console.log(response);
         this.groups.set(response.data.groups);
       }
     )
@@ -303,9 +300,6 @@ export class AdminPage implements OnInit, AfterViewChecked {
         this.UsersArray = response.data.users;
       }
     );
-
-    // Tu peux afficher une notif ou console.log
-    console.log('Utilisateur mis à jour :', updatedUser);
   }
 
   onCourseUnitUpdated(updatedCourseUnit: CourseUnit): void {
@@ -316,7 +310,6 @@ export class AdminPage implements OnInit, AfterViewChecked {
       }
       return [...courses];
     });
-    console.log('UE mise à jour :', updatedCourseUnit);
   }
 
   confirmDeleteUser(): void {

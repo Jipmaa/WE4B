@@ -1,5 +1,5 @@
-import { CourseGroup } from '@/core/models/course-group.models';
-import { getCurrentAcademicPeriod } from './academic-period';
+import {CourseGroup} from '@/core/models/course-group.models';
+import {getCurrentAcademicPeriod} from './academic-period';
 
 /**
  * Determines if a course group is currently active based on day and time
@@ -10,35 +10,18 @@ export function isCourseGroupCurrentlyActive(group: CourseGroup): boolean {
   const currentTime = formatTime(now);
   const currentAcademicPeriod = getCurrentAcademicPeriod();
 
-  // Debug logging - can be removed in production
-  if (typeof console !== 'undefined' && console.log) {
-    console.log('🔍 Checking if group is currently active:', {
-      groupDay: group.day,
-      groupTime: `${group.from}-${group.to}`,
-      currentDay,
-      currentTime,
-      semester: group.semester,
-      currentSemester: currentAcademicPeriod.semester
-    });
-  }
-
   // Check if the group is in the current semester
   if (group.semester !== currentAcademicPeriod.semester) {
-    console.log('❌ Group not in current semester');
     return false;
   }
 
   // Check if today is the group's scheduled day
   if (group.day !== currentDay) {
-    console.log('❌ Not the correct day');
     return false;
   }
 
   // Check if current time is within the group's time range
-  const isActive = isTimeInRange(currentTime, group.from, group.to);
-  console.log(`${isActive ? '✅' : '❌'} Time check: ${currentTime} in range ${group.from}-${group.to}? ${isActive}`);
-
-  return isActive;
+  return isTimeInRange(currentTime, group.from, group.to);
 }
 
 /**

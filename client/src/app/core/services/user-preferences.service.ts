@@ -13,7 +13,7 @@ export type PreferenceKey = keyof UserPreferences;
 })
 export class UserPreferencesService {
   private readonly STORAGE_PREFIX = 'mooodle-user-pref-';
-  
+
   private readonly defaultPreferences: UserPreferences = {
     'recent-activities-sidebar': true,
     'table-of-contents-sidebar': true,
@@ -42,15 +42,13 @@ export class UserPreferencesService {
 
     const storageKey = this.getStorageKey(key);
     const storedValue = localStorage.getItem(storageKey);
-    
+
     if (storedValue === null) {
-      console.log(`📥 Using default preference: ${key} = ${this.defaultPreferences[key]}`);
       return this.defaultPreferences[key];
     }
 
     try {
       const value = JSON.parse(storedValue);
-      console.log(`📥 Loaded preference: ${key} = ${value}`);
       return value;
     } catch {
       return this.defaultPreferences[key];
@@ -65,7 +63,6 @@ export class UserPreferencesService {
     const storageKey = this.getStorageKey(key);
     try {
       localStorage.setItem(storageKey, JSON.stringify(value));
-      console.log(`🔧 Preference saved: ${key} = ${value}`);
     } catch (error) {
       console.warn('Failed to save preference to localStorage:', error);
     }
@@ -73,7 +70,7 @@ export class UserPreferencesService {
 
   createPreferenceSignal<K extends PreferenceKey>(key: K) {
     const preferenceSignal = signal<UserPreferences[K]>(this.getPreference(key));
-    
+
     return {
       signal: preferenceSignal.asReadonly(),
       set: (value: UserPreferences[K]) => {

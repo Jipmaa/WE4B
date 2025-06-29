@@ -55,11 +55,8 @@ export class AddGroupPageComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log(this.myForm.value, this.myForm.errors, this.myForm.status);
-
     if (this.myForm.invalid) {
       this.myForm.markAllAsTouched();
-      console.log(this.myForm.value, this.myForm.errors, this.myForm.status);
       alert('Formulaire invalide');
       return;
     }
@@ -75,8 +72,6 @@ export class AddGroupPageComponent implements OnInit {
       semester: formValues.semester as 1 | 2,
       courseUnit: this.courseUnitId
     };
-
-    console.log('Data to be sent:', data);
 
     // Validate data using service validation
     const validationErrors = this.courseGroupService.validateGroupData(data);
