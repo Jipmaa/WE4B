@@ -13,6 +13,9 @@ import { ActivityPopup } from '../activity-popup/activity-popup';
 import {Activity} from '@/shared/components/ui/activity/activity';
 import { CourseActivity } from '@/core/models/course-activity.models';
 import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-sidebar/recent-activity-sidebar';
+import {CreateGroupPopupComponent} from '@/shared/components/ui/create-group-popup/create-group-popup';
+import {CourseUnit} from '@/core/models/course-unit.models';
+import {CourseGroup} from '@/core/models/course-group.models';
 
 @Component({
   selector: 'app-course-page',
@@ -24,7 +27,8 @@ import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-si
     Collapsible,
     ActivityPopup,
     Activity,
-    RecentActivitySidebar
+    RecentActivitySidebar,
+    CreateGroupPopupComponent
   ],
   templateUrl: './course-page.html',
 })
@@ -82,6 +86,9 @@ export class CoursePage {
   readonly showEditActivityPopup = signal(false);
   readonly editingActivity = signal<CourseActivity | null>(null);
 
+  groupPopupState = signal<{ mode: 'create' | 'edit', courseUnit: CourseUnit, group?: CourseGroup } | null>(null);
+
+
   get courseUnit() {
     return this.currentCourseUnit();
   }
@@ -107,7 +114,14 @@ export class CoursePage {
   }
 
   async onAddGroup() {
-    await this.router.navigate(['/courses', this.courseSlug(), 'add-group']);
+    if (this.courseUnit) {
+      this.groupPopupState.set({ mode: 'create', courseUnit: this.courseUnit });
+    }
+  }
+
+  onGroupSaved(group: CourseGroup) {
+    this.groupPopupState.set(null);
+    window.location.reload();
   }
 
   onAddActivity() {
@@ -142,7 +156,8 @@ export class CoursePage {
     const currentCourseUnit = this.currentCourseUnit();
     if (currentCourseUnit) {
       const updatedCourseUnit = {
-        ...currentCourseUnit,
+        ...
+currentCourseUnit,
         activities: [...(currentCourseUnit.activities || []), newCategory]
       };
       // Update the signal with the new course unit data

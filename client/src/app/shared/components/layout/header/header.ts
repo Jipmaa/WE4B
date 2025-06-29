@@ -13,7 +13,7 @@ import {
 import { Router } from '@angular/router';
 import { HeaderItem } from '@/shared/components/layout/header-item/header-item';
 import { LucideAngularModule } from 'lucide-angular';
-import { UserProfilePopup } from '@/shared/components/layout/user-profile-popup/user-profile-popup';
+import { UserProfilePopup } from '@/shared/components/ui/user-profile-popup/user-profile-popup';
 import { AuthImageComponent } from '../../ui/auth-image/auth-image.component';
 
 @Component({

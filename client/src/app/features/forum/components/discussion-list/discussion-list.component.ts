@@ -5,7 +5,7 @@ import { Discussion } from '../../../../core/models/discussion.models';
 import { Subscription } from 'rxjs';
 import { AuthService } from '@/core/services/auth.service';
 import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
-import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
+import { DeleteConfirmationPopupComponent } from '@/shared/components/ui/delete-confirmation-popup/delete-confirmation-popup';
 
 @Component({
   selector: 'app-discussion-list',

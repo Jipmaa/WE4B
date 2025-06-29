@@ -1,5 +1,5 @@
 import {SidebarLayout} from "@/shared/components/layout/sidebar-layout/sidebar-layout";
-import { CreateGroupPopupComponent } from '@/shared/components/layout/create-group-popup/create-group-popup';
+import { CreateGroupPopupComponent } from '@/shared/components/ui/create-group-popup/create-group-popup';
 import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -19,13 +19,13 @@ import { TabContentComponent } from "@/shared/components/ui/tab-content/tab-cont
 import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { ArrayComponent, Columns, RowActions, Messages, LoadingState} from '@/shared/components/ui/array/array';
-import { UserRegisterPopup} from '@/shared/components/layout/user-register-popup/user-register-popup';
+import { UserRegisterPopup} from '@/features/administration/components/user-register-popup/user-register-popup';
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
-import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
+import { DeleteConfirmationPopupComponent } from '@/shared/components/ui/delete-confirmation-popup/delete-confirmation-popup';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
-import {CourseRegisterPopup} from '@/shared/components/layout/course-register-popup/course-register-popup';
+import {CourseRegisterPopup} from '@/features/administration/components/course-register-popup/course-register-popup';
 import {
   AssignUserToGroupPopupComponent
 } from '@/features/course/components/assign-user-to-group-popup/assign-user-to-group-popup';
@@ -57,6 +57,9 @@ export class AdminPage implements OnInit, AfterViewChecked {
 
   private readonly courses=signal<CourseUnit[]>([]);
   private readonly groups=signal<CourseGroup[]>([]);
+  private readonly searchTerm = signal('');
+  private readonly userSearchTerm = signal('');
+
 
   showEditUserPopup: boolean = false;
   showCreateUserPopup: boolean = false;
@@ -91,7 +94,15 @@ export class AdminPage implements OnInit, AfterViewChecked {
         courseUnit.groups.forEach(g=> unifiedArray.push({ type: 'group', name: `--> ${g.name}`, description: g.description??`Groupe ${g.name}`, data: g, parent: courseUnit }));
       }
     });
-    return unifiedArray;
+    const term = this.searchTerm().toLowerCase();
+    if (!term) {
+      return unifiedArray;
+    }
+
+    return unifiedArray.filter(item =>
+      item.name.toLowerCase().includes(term) ||
+      item.description.toLowerCase().includes(term)
+    );
   })
 
   ngOnInit(): void {
@@ -434,5 +445,28 @@ export class AdminPage implements OnInit, AfterViewChecked {
   onUserAssigned() {
     this.showAssignUserPopup = false;
     // Optionally, you can refresh the group data here
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.searchTerm.set(value);
+  }
+
+  onUserSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
+    this.userSearchTerm.set(value);
+  }
+
+  get filteredUsers(): User[] {
+    const term = this.userSearchTerm().toLowerCase();
+    if (!term) {
+      return this.UsersArray;
+    }
+
+    return this.UsersArray.filter(user =>
+      user.fullName.toLowerCase().includes(term) ||
+      user.email.toLowerCase().includes(term) ||
+      user.roles.some(role => role.toLowerCase().includes(term))
+    );
   }
 }
