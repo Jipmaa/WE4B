@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 
 export interface Messages {
   onLoading: string;
@@ -31,7 +32,7 @@ export interface LoadingState {
 @Component({
   selector: 'app-array',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconButtonComponent],
   templateUrl: './array.html'
 })
 export class ArrayComponent<T = any> implements OnInit, OnDestroy {
@@ -146,6 +147,46 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
 
     // Si moins de 200px d'espace en bas, afficher vers le haut
     return spaceBelow < 200;
+  }
+
+  getMenuPosition(index: number): { left: number; top: number } {
+    // Find the action button for this row
+    const table = document.querySelector('table');
+    if (!table) return { left: 0, top: 0 };
+
+    const rows = table.querySelectorAll('tbody tr');
+    const targetRow = rows[index];
+    if (!targetRow) return { left: 0, top: 0 };
+
+    const actionButton = targetRow.querySelector('td:last-child button');
+    if (!actionButton) return { left: 0, top: 0 };
+
+    const buttonRect = actionButton.getBoundingClientRect();
+    const menuWidth = 192; // w-48 = 12rem = 192px
+    const menuHeight = 120; // approximate height for menu items
+
+    let left = buttonRect.right - menuWidth;
+    let top = buttonRect.bottom + 4;
+
+    // Adjust if menu would go off-screen
+    if (left < 8) {
+      left = 8;
+    }
+    if (left + menuWidth > window.innerWidth - 8) {
+      left = window.innerWidth - menuWidth - 8;
+    }
+
+    // Check if menu should show above the button
+    if (this.shouldShowMenuUp(index)) {
+      top = buttonRect.top - menuHeight - 8;
+    }
+
+    // Ensure menu doesn't go above viewport
+    if (top < 8) {
+      top = buttonRect.bottom + 4;
+    }
+
+    return { left, top };
   }
 
   getItemValue(item: T, key: string): string {
