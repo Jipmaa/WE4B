@@ -219,7 +219,7 @@ export class ActivityDisplayPage implements OnInit, OnDestroy {
   }
 
   hasCompletionRate(activity: CourseActivity): boolean {
-    return (activity as any).completionRate !== undefined;
+    return (activity as any).completionRate !== undefined && activity.activityType === "file-depository";
   }
 
   getCompletionRate(activity: CourseActivity): number {
