@@ -14,20 +14,21 @@ import { CommonModule } from '@angular/common';
 import { User } from '@/core/models/user.models';
 import { UsersService } from '@/core/services/users.service';
 import { TabsComponent } from '@/shared/components/ui/tabs';
-import { TabItemComponent } from "../../../../shared/components/ui/tab-item/tab-item";
-import { TabContentComponent } from "../../../../shared/components/ui/tab-content/tab-content";
+import { TabItemComponent } from "@/shared/components/ui/tab-item/tab-item";
+import { TabContentComponent } from "@/shared/components/ui/tab-content/tab-content";
 import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { ArrayComponent, Columns, RowActions, Messages, LoadingState} from '@/shared/components/ui/array/array';
 import { UserRegisterPopup} from '@/shared/components/layout/user-register-popup/user-register-popup';
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
-import { Router } from '@angular/router';
 import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
 import {CourseRegisterPopup} from '@/shared/components/layout/course-register-popup/course-register-popup';
-import { AssignUserToGroupPopupComponent } from '@/shared/components/layout/assign-user-to-group-popup/assign-user-to-group-popup';
+import {
+  AssignUserToGroupPopupComponent
+} from '@/features/course/components/assign-user-to-group-popup/assign-user-to-group-popup';
 
 type UnifiedData =
   | { type: 'courseUnit', name: string, description: string, data: CourseUnit }

@@ -5,9 +5,9 @@ import { UsersService } from '@/core/services/users.service';
 import { CourseGroupsService } from '@/core/services/course-groups.service';
 import { AuthService } from '@/core/services/auth.service';
 import { CommonModule } from '@angular/common';
-import { ButtonComponent } from '../../ui/button/button';
-import { IconButtonComponent } from '../../ui/icon-button/icon-button';
-import { SelectComponent, SelectOption } from '../../ui/select';
+import { ButtonComponent } from '@/shared/components/ui/button/button';
+import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
+import { SelectComponent, SelectOption } from '@/shared/components/ui/select';
 import { getCurrentAcademicPeriod } from '@/shared/utils/academic-period';
 import { FormsModule } from '@angular/forms';
 
