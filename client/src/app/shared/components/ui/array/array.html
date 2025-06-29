@@ -41,23 +41,21 @@
       <!-- Actions Menu -->
       <td *ngIf="rowActions?.length || rowActionsFn" class="w-12 p-4 text-center border-b border-gray-200 relative">
         <ng-container *ngIf="rowActionsFn; else staticActions">
-          <button
+          <app-icon-button
+            icon="ellipsis-vertical"
+            size="sm"
+            variant="ghost"
             (click)="toggleActionMenu(i)"
             class="text-gray-600 hover:text-gray-900 focus:outline-none"
             [attr.aria-expanded]="activeMenuIndex === i"
-          >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-            </svg>
-          </button>
+          />
 
           <!-- Dropdown Menu -->
           <div
             *ngIf="activeMenuIndex === i"
-            class="dropdown-menu absolute right-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-            [style.top]="'100%'"
-            [style.transform]="'translateY(' + (shouldShowMenuUp(i) ? '-100%' : '0') + ')'"
-            [style.margin-top]="shouldShowMenuUp(i) ? '-8px' : '4px'"
+            class="dropdown-menu fixed w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+            [style.left.px]="getMenuPosition(i).left"
+            [style.top.px]="getMenuPosition(i).top"
           >
             <div class="py-1">
               <button
@@ -71,23 +69,21 @@
           </div>
         </ng-container>
         <ng-template #staticActions>
-          <button
+          <app-icon-button
+            name="ellipsis-vertical"
+            size="sm"
+            variant="ghost"
             (click)="toggleActionMenu(i)"
             class="text-gray-600 hover:text-gray-900 focus:outline-none"
             [attr.aria-expanded]="activeMenuIndex === i"
-          >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-            </svg>
-          </button>
+          />
 
           <!-- Dropdown Menu -->
           <div
             *ngIf="activeMenuIndex === i"
-            class="dropdown-menu absolute right-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-            [style.top]="'100%'"
-            [style.transform]="'translateY(' + (shouldShowMenuUp(i) ? '-100%' : '0') + ')'"
-            [style.margin-top]="shouldShowMenuUp(i) ? '-8px' : '4px'"
+            class="dropdown-menu fixed w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+            [style.left.px]="getMenuPosition(i).left"
+            [style.top.px]="getMenuPosition(i).top"
           >
             <div class="py-1">
               <button
