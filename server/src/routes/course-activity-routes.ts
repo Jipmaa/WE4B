@@ -11,6 +11,7 @@ import { asyncHandler } from '../utils/async-handler';
 import { uploadActivityFile, handleFileUploadError } from '../middleware/file-upload-middleware';
 import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS } from '../services/minio-service';
 import { logActivity } from '../utils/logger';
+import RecentActivity from '../models/recent-activity';
 
 const router = Router();
 
@@ -289,6 +290,22 @@ router.post('/message', teacherMiddleware, messageActivityValidation, validateRe
 		.populate('courseUnit', 'name code slug')
 		.populate('restrictedGroups', 'name slug');
 
+	// Log activity creation
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: courseUnit,
+			activity: activity._id,
+			action: 'create'
+		});
+	} catch (logError) {
+		console.error('Failed to log activity creation:', logError);
+	}
+
 	res.status(201).json({
 		success: true,
 		message: 'Message activity created successfully',
@@ -379,6 +396,22 @@ router.put('/message/:id', teacherMiddleware, activityIdValidation, [
 	const populatedActivity = await MessageActivityModel.findById(activity._id)
 		.populate('courseUnit', 'name code slug')
 		.populate('restrictedGroups', 'name slug');
+
+	// Log activity update
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: activity.courseUnit,
+			activity: activity._id,
+			action: 'update'
+		});
+	} catch (logError) {
+		console.error('Failed to log activity update:', logError);
+	}
 
 	res.json({
 		success: true,
@@ -473,6 +506,22 @@ router.post('/file', teacherMiddleware, uploadActivityFile, handleFileUploadErro
 	const responseData = populatedActivity!.toJSON();
 	const fileUrl = await populatedActivity!.getFileUrl();
 	const activityWithUrl = { ...responseData, fileUrl };
+
+	// Log activity creation
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: courseUnit,
+			activity: activity._id,
+			action: 'create'
+		});
+	} catch (logError) {
+		console.error('Failed to log activity creation:', logError);
+	}
 
 	res.status(201).json({
 		success: true,
@@ -595,6 +644,22 @@ router.put('/file/:id', teacherMiddleware, uploadActivityFile, handleFileUploadE
 	const responseData = populatedActivity!.toJSON();
 	const fileUrl = await populatedActivity!.getFileUrl();
 	const activityWithUrl = { ...responseData, fileUrl };
+
+	// Log activity update
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: activity.courseUnit,
+			activity: activity._id,
+			action: 'update'
+		});
+	} catch (logError) {
+		console.error('Failed to log activity update:', logError);
+	}
 
 	res.json({
 		success: true,
@@ -752,6 +817,22 @@ router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFil
 			...responseData,
 			instructions: instructionsWithUrl
 		};
+	}
+
+	// Log activity creation
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: courseUnit,
+			activity: activity._id,
+			action: 'create'
+		});
+	} catch (logError) {
+		console.error('Failed to log activity creation:', logError);
 	}
 
 	res.status(201).json({
@@ -935,6 +1016,22 @@ router.put('/file-depository/:id', teacherMiddleware, uploadActivityFile, handle
 		};
 	}
 
+	// Log activity update
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: activity.courseUnit,
+			activity: activity._id,
+			action: 'update'
+		});
+	} catch (logError) {
+		console.error('Failed to log activity update:', logError);
+	}
+
 	res.json({
 		success: true,
 		message: 'File depository activity updated successfully',
@@ -970,20 +1067,8 @@ router.put('/:id/complete', activityIdValidation, validateRequest, asyncHandler(
 
 	await activity.save();
 
-	// Log activity completion
-	if (req.user?.userId) {
-		await logActivity({
-			level: 'info',
-			message: `User completed activity: ${activity.title} (Type: ${activity.activityType})`,
-			userId: req.user.userId,
-			metadata: {
-				activityId: activity._id.toString(),
-				activityType: activity.activityType,
-				activityTitle: activity.title,
-				courseUnitId: activity.courseUnit.toString()
-			}
-		});
-	}
+	// Note: Activity completion is logged when files are submitted in file depository activities
+	// For other activity types, completion tracking is handled differently
 
 	const completionRate = await activity.getCompletionRate();
 

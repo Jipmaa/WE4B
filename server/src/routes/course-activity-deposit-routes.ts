@@ -12,6 +12,7 @@ import { uploadDepositedFiles, handleFileUploadError } from '../middleware/file-
 import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS } from '../services/minio-service';
 import { ArchiveService } from '../services/archive-service';
 import { isFileAllowed } from '../utils/file-type-mappings';
+import RecentActivity from '../models/recent-activity';
 
 const router = Router();
 
@@ -387,6 +388,25 @@ router.post('/:activityId/deposits', activityIdValidation, uploadDepositedFiles,
 		const fileUrls = await populatedDeposit!.getFileUrls();
 		const depositWithUrls = { ...depositData, fileUrls };
 
+		// Log file submission activity
+		try {
+			await RecentActivity.create({
+				actor: {
+					kind: 'user',
+					data: req.user!.userId
+				},
+				date: new Date(),
+				course: activity.courseUnit,
+				activity: activity._id,
+				action: 'submit',
+				metadata: {
+					filesCount: uploadedFileKeys.length
+				}
+			});
+		} catch (logError) {
+			console.error('Failed to log file submission:', logError);
+		}
+
 		res.status(201).json({
 			success: true,
 			message: 'Files submitted successfully',
@@ -636,6 +656,26 @@ router.put('/:activityId/deposits/:depositId/grade', teacherMiddleware, [...acti
 	const depositData = populatedDeposit!.toJSON();
 	const fileUrls = await populatedDeposit!.getFileUrls();
 	const depositWithUrls = { ...depositData, fileUrls };
+
+	// Log grading activity
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: activity.courseUnit,
+			activity: activity._id,
+			action: 'grade',
+			targetUser: deposit.user,
+			metadata: {
+				grade: deposit.evaluation?.grade
+			}
+		});
+	} catch (logError) {
+		console.error('Failed to log grading activity:', logError);
+	}
 
 	res.json({
 		success: true,

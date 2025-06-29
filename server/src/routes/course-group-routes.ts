@@ -9,6 +9,7 @@ import { validateRequest } from '../middleware/validate-request';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
 import { getCurrentAcademicPeriod } from '../utils/academic-period';
+import RecentActivity from '../models/recent-activity';
 
 const router = Router();
 
@@ -451,6 +452,22 @@ router.post('/:id/users', teacherMiddleware, [...groupIdValidation, ...addUserVa
 
 	// Find the newly added user data
 	const addedUser = populatedGroup!.users.find(u => u.user._id.toString() === userId);
+
+	// Log student addition to course activity
+	try {
+		await RecentActivity.create({
+			actor: {
+				kind: 'user',
+				data: req.user!.userId
+			},
+			date: new Date(),
+			course: group.courseUnit,
+			action: 'add_to_course',
+			targetUser: userId
+		});
+	} catch (logError) {
+		console.error('Failed to log student addition to course:', logError);
+	}
 
 	res.json({
 		success: true,

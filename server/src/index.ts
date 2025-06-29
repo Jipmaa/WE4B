@@ -18,6 +18,7 @@ import fileRoutes from './routes/file-routes';
 import discussionRoutes from './routes/discussion-routes';
 import logRoutes from './routes/log-routes';
 import dashboardRoutes from './routes/dashboard-routes';
+import recentActivityRoutes from './routes/recent-activity-routes';
 
 // Import middleware
 import { errorHandler } from './middleware/error-handler';
@@ -182,6 +183,7 @@ class Server {
 		this.app.use('/api/discussions', discussionRoutes);
 		this.app.use('/api/dashboard', dashboardRoutes);
 		this.app.use('/api/logs', logRoutes);
+		this.app.use('/api/recent-activities', recentActivityRoutes);
 
 		// Root endpoint
 		this.app.get('/', (req, res) => {
