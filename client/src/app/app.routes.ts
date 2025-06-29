@@ -33,19 +33,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/forum/forum.routes').then(m => m.FORUM_ROUTES)
   },
-
-  {
-    path: 'register',
-    canActivate: [adminGuard],
-    loadChildren: () => import('./features/registers/components/register.routes').then(m => m.registersRoutes)
-  },
-
-  {
-    path: 'courseunits',
-    canActivate: [adminGuard],
-    loadChildren: () => import('./features/registers/components/register.routes').then(m => m.registersRoutes)
-  },
-
   {
     path: '',
     redirectTo: '/dashboard',
