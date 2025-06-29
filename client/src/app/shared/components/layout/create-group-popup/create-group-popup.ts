@@ -59,8 +59,8 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy {
   myForm = new FormGroup({
     name: new FormControl<string>('', Validators.required),
     //slug: new FormControl<string>('', Validators.required),
-    kind: new FormControl<GroupKind>('theoretical', Validators.required),
-    day: new FormControl<Day>('monday', Validators.required),
+    kind: new FormControl<GroupKind | null>(null, Validators.required),
+    day: new FormControl<Day | null>(null, Validators.required),
     from: new FormControl<string>('', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]),
     to: new FormControl<string>('', [Validators.required, Validators.pattern(/^([01]\d|2[0-3]):([0-5]\d)$/)]),
     semester: new FormControl<1 | 2>(1, Validators.required)
