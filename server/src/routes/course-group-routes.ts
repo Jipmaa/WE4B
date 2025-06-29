@@ -573,6 +573,98 @@ router.get('/:id/users', groupIdValidation, validateRequest, asyncHandler(async 
 	});
 }));
 
+// @route   GET /api/course-groups/:id/available-users
+// @desc    Get users who are NOT in a course group (available to be added)
+// @access  Private (Teachers only)
+router.get('/:id/available-users', teacherMiddleware, [
+	...groupIdValidation,
+	query('page')
+		.optional()
+		.isInt({ min: 1 })
+		.withMessage('Page must be a positive integer'),
+	query('limit')
+		.optional()
+		.isInt({ min: 1, max: 100 })
+		.withMessage('Limit must be between 1 and 100'),
+	query('search')
+		.optional()
+		.isLength({ min: 1, max: 50 })
+		.withMessage('Search term must be between 1 and 50 characters'),
+	query('role')
+		.optional()
+		.isIn(['student', 'teacher'])
+		.withMessage('Role must be student or teacher')
+], validateRequest, asyncHandler(async (req: Request, res: Response) => {
+	const page = parseInt(req.query.page as string) || 1;
+	const limit = parseInt(req.query.limit as string) || 50;
+	const search = req.query.search as string;
+	const role = req.query.role as string;
+	const skip = (page - 1) * limit;
+
+	const group = await CourseGroup.findById(req.params.id);
+	if (!group) {
+		throw new AppError('Course group not found', 404);
+	}
+
+	// Get IDs of users already in the group
+	const existingUserIds = group.users.map(u => u.user);
+
+	// Build filter object
+	const filter: any = {
+		_id: { $nin: existingUserIds }, // Exclude users already in group
+		isActive: true
+	};
+
+	// Add search filter if provided
+	if (search) {
+		filter.$or = [
+			{ email: { $regex: search, $options: 'i' } },
+			{ firstName: { $regex: search, $options: 'i' } },
+			{ lastName: { $regex: search, $options: 'i' } }
+		];
+	}
+
+	// Add role filter if provided
+	if (role) {
+		filter.roles = { $in: [role] };
+	}
+
+	// Execute queries
+	const [users, totalUsers] = await Promise.all([
+		User.find(filter)
+			.sort({ firstName: 1, lastName: 1 })
+			.skip(skip)
+			.limit(limit)
+			.select('firstName lastName email roles department avatar'),
+		User.countDocuments(filter)
+	]);
+
+	// Calculate pagination info
+	const totalPages = Math.ceil(totalUsers / limit);
+	const hasNextPage = page < totalPages;
+	const hasPrevPage = page > 1;
+
+	res.json({
+		success: true,
+		data: {
+			group: {
+				id: group._id,
+				name: group.name,
+				slug: group.slug
+			},
+			users,
+			pagination: {
+				currentPage: page,
+				totalPages,
+				totalUsers,
+				limit,
+				hasNextPage,
+				hasPrevPage
+			}
+		}
+	});
+}));
+
 // @route   GET /api/course-groups/by-course-unit/:courseUnitId
 // @desc    Get all groups for a specific course unit
 // @access  Private (All authenticated users)

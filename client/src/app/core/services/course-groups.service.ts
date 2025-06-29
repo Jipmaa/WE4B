@@ -415,6 +415,22 @@ export class CourseGroupsService {
     return this.addUserToGroup(groupId, { userId, role: 'student' });
   }
 
+  getAvailableUsersForGroup(groupId: string, search?: string, page: number = 1, limit: number = 50): Observable<ApiResponse<{ group: { id: string; name: string; slug: string }; users: any[]; pagination: any }>> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    let params = new HttpParams();
+    if (search) params = params.set('search', search);
+    if (page) params = params.set('page', page.toString());
+    if (limit) params = params.set('limit', limit.toString());
+
+    return this.http.get<ApiResponse<{ group: { id: string; name: string; slug: string }; users: any[]; pagination: any }>>(`${this.baseUrl}/${groupId}/available-users`, { params })
+      .pipe(
+        catchError(error => this.handleError(error)),
+        tap(() => this._isLoading.set(false))
+      );
+  }
+
   getGroupsByCourseUnitSlug(slug: string): Observable<ApiResponse<CourseGroupsByCourseUnitResponse>> {
     this._isLoading.set(true);
 
