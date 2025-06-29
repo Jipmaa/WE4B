@@ -411,6 +411,10 @@ export class CourseGroupsService {
     return throwError(() => error);
   }
 
+  assignUserToGroup(groupId: string, userId: string): Observable<ApiResponse<{ group: CourseGroup }>> {
+    return this.addUserToGroup(groupId, { userId, role: 'student' });
+  }
+
   getGroupsByCourseUnitSlug(slug: string): Observable<ApiResponse<CourseGroupsByCourseUnitResponse>> {
     this._isLoading.set(true);
 

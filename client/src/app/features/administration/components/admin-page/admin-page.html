@@ -145,3 +145,10 @@
   (closePopup)="groupPopupState.set(null)"
   (groupSaved)="onGroupSaved($event)">
 </app-create-group-popup>
+
+<app-assign-user-to-group-popup
+  [isOpen]="showAssignUserPopup"
+  [group]="selectedGroup"
+  (closePopup)="showAssignUserPopup = false"
+  (userAssigned)="onUserAssigned()">
+</app-assign-user-to-group-popup>

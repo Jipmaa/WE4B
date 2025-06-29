@@ -1,0 +1,49 @@
+<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Assign User to {{ group?.name }}</h1>
+        <app-icon-button
+          icon="x"
+          [iconSize]="20"
+          variant="ghost"
+          size="sm"
+          ariaLabel="Fermer le popup"
+          (buttonClick)="onClose()">
+        </app-icon-button>
+      </div>
+
+      <div class="space-y-4">
+        <app-input
+          type="text"
+          placeholder="Search for a user..."
+          [(ngModel)]="searchTerm"
+        ></app-input>
+
+        <div *ngIf="isLoading" class="text-center">
+          <p>Loading users...</p>
+        </div>
+
+        <div *ngIf="error" class="text-red-500 text-sm">
+          {{ error }}
+        </div>
+
+        <div class="max-h-60 overflow-y-auto border rounded-md">
+          <select [(ngModel)]="selectedUserId" class="w-full p-2">
+            <option value="" disabled>Select a user</option>
+            <option *ngFor="let user of filteredUsers" [value]="user._id">
+              {{ user.fullName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <app-button variant="ghost" (buttonClick)="onClose()">Cancel</app-button>
+          <app-button (buttonClick)="assignUser()" [disabled]="!selectedUserId || isLoading">
+            Assign User
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

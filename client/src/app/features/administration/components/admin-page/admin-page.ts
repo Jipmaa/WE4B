@@ -27,6 +27,7 @@ import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/del
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
 import {CourseRegisterPopup} from '@/shared/components/layout/course-register-popup/course-register-popup';
+import { AssignUserToGroupPopupComponent } from '@/shared/components/layout/assign-user-to-group-popup/assign-user-to-group-popup';
 
 type UnifiedData =
   | { type: 'courseUnit', name: string, description: string, data: CourseUnit }
@@ -34,7 +35,7 @@ type UnifiedData =
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent, CourseRegisterPopup,DeleteConfirmationPopupComponent],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent, CourseRegisterPopup,DeleteConfirmationPopupComponent, AssignUserToGroupPopupComponent],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -74,6 +75,11 @@ export class AdminPage implements OnInit, AfterViewChecked {
   readonly modifiedGroupPopUp = signal<CourseGroup | null>(null);
   showDeleteGroupPopup: boolean = false;
   groupToDelete: CourseGroup | null = null;
+
+  showAssignUserPopup: boolean = false;
+  selectedGroup: CourseGroup | null = null;
+
+
 
   readonly unifiedCoursesAndGroupsArray =computed(() => {
     const unifiedArray: UnifiedData [] = [];
@@ -216,8 +222,9 @@ export class AdminPage implements OnInit, AfterViewChecked {
         {
           label: 'Assigner un utilisateur',
           onTriggered: () => {
-            console.log('Assigner un utilisateur au groupe:', item.data as CourseGroup);
-            // Implement your logic to assign a user to a group
+            this.selectedGroup = item.data as CourseGroup;
+            this.showAssignUserPopup = true;
+            // this.groupPopupState.set({ mode: 'edit', courseUnit: item.parent, group: item.data as CourseGroup });
           }
         },
         {
@@ -421,5 +428,10 @@ export class AdminPage implements OnInit, AfterViewChecked {
     });
 
     this.groupPopupState.set(null);
+  }
+
+  onUserAssigned() {
+    this.showAssignUserPopup = false;
+    // Optionally, you can refresh the group data here
   }
 }
