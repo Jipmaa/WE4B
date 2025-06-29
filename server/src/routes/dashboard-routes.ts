@@ -3,8 +3,7 @@ import { authMiddleware } from '../middleware/auth-middleware';
 import { teacherMiddleware } from '../middleware/roles-middleware';
 import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
-import CourseUnit from '../models/course-unit';
-import { CourseActivityModel, FileDepositoryActivity } from '../models/course-activity';
+import { CourseActivityModel } from '../models/course-activity';
 import CourseGroup from '../models/course-group';
 import DepositedFiles from '../models/deposited-files';
 
