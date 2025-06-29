@@ -7,7 +7,7 @@ import {
   ViewChild,
   AfterViewChecked,
   ChangeDetectorRef,
-  signal, computed
+  signal, computed, inject
 } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
@@ -39,8 +39,17 @@ type UnifiedData =
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AdminPage implements OnInit, AfterViewChecked {
+  constructor() {
+    this.getRowActionsCourses = this.getRowActionsCourses.bind(this);
+  }
+
   @ViewChild(TabsComponent) tabsComponent!: TabsComponent;
   activeTab: string = 'ues';
+
+  public servUsers= inject(UsersService)
+  private servCourse= inject(CourseUnitsService)
+  private servCourseGroup= inject(CourseGroupsService)
+  private cdRef= inject(ChangeDetectorRef)
 
   UsersArray !: User[]
 
@@ -61,6 +70,9 @@ export class AdminPage implements OnInit, AfterViewChecked {
   showDeleteUserPopup: boolean = false;
   userToDelete: User | null = null;
 
+  showDeleteCoursePopup: boolean = false;
+  courseToDelete: CourseUnit | null = null;
+
   readonly unifiedCoursesAndGroupsArray =computed(() => {
     // Combine courses and groups into a unified array where all groups are course units is next to their parent course unit
     const unifiedArray: UnifiedData [] = [];
@@ -74,13 +86,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
     });
     return unifiedArray;
   })
-  constructor(
-    public servUsers: UsersService,
-    private servCourse: CourseUnitsService,
-    private servCourseGroup: CourseGroupsService,
-    private cdRef: ChangeDetectorRef,
-    private router: Router
-  ) {
+
+  ngOnInit(): void {
     this.servUsers.getUsers().subscribe(
       response => {
         console.log(response);
@@ -101,9 +108,6 @@ export class AdminPage implements OnInit, AfterViewChecked {
         this.groups.set(response.data.groups);
       }
     )
-  }
-
-  ngOnInit(): void {
   }
 
   ngAfterViewChecked() {
@@ -190,15 +194,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
         {
           label: 'Supprimer',
           onTriggered: () => {
-            console.log('Supprimer un cours:', item.data as CourseUnit);
-            // Implémentez votre logique de suppression ici
-          }
-        },
-        {
-          label: 'Voir détails',
-          onTriggered: () => {
-            console.log('Voir détails des cours:', item.data as CourseUnit);
-            // Implémentez votre logique de visualisation ici
+            this.courseToDelete = item.data as CourseUnit;
+            this.showDeleteCoursePopup = true;
           }
         },
         {
@@ -324,6 +321,26 @@ export class AdminPage implements OnInit, AfterViewChecked {
   cancelDeleteUser(): void {
     this.showDeleteUserPopup = false;
     this.userToDelete = null;
+  }
+
+  confirmDeleteCourse(): void {
+    if (this.courseToDelete) {
+      this.servCourse.deleteCourseUnit(this.courseToDelete._id).subscribe(
+        () => {
+          this.courses.update(courses => courses.filter(cu => cu._id !== this.courseToDelete!._id));
+          this.cancelDeleteCourse();
+        },
+        error => {
+          console.error('Error deleting course:', error);
+          this.cancelDeleteCourse();
+        }
+      );
+    }
+  }
+
+  cancelDeleteCourse(): void {
+    this.showDeleteCoursePopup = false;
+    this.courseToDelete = null;
   }
 
   navigateToRegister() {

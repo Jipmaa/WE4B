@@ -122,6 +122,13 @@
   (confirm)="confirmDeleteUser()"
   (cancel)="cancelDeleteUser()">
 </app-delete-confirmation-popup>
+
+<app-delete-confirmation-popup
+  [isOpen]="showDeleteCoursePopup"
+  message="Êtes vous sûr de vouloir supprimer cette UE? Cette action ne peut pas être annulée."
+  (confirm)="confirmDeleteCourse()"
+  (cancel)="cancelDeleteCourse()">
+</app-delete-confirmation-popup>
 <app-create-group-popup
   [courseUnit]="createdGroupPopUp()"
   (closePopup)="handleClosePopUp()"
