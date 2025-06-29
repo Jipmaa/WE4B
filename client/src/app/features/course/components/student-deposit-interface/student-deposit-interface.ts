@@ -4,7 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { LucideAngularModule } from 'lucide-angular';
 
 import { FileDepositoryActivity } from '@/core/models/course-activity.models';
-import { DepositedFilesWithDetails } from '@/core/models/deposited-files.models';
+import { DepositedFilesWithDetails, MyDepositedFilesResponse } from '@/core/models/deposited-files.models';
 import { DepositedFilesService } from '@/core/services/deposited-files.service';
 
 import { ButtonComponent } from '@/shared/components/ui/button/button';
@@ -47,8 +47,8 @@ export class StudentDepositInterfaceComponent implements OnInit {
     this.error.set(null);
 
     this.depositedFilesService.getMyDeposit(this.activity._id).subscribe({
-      next: (response: any) => {
-        this.currentDeposit.set(response.data.deposit);
+      next: (response: MyDepositedFilesResponse) => {
+        this.currentDeposit.set(response.deposit);
         this.isLoading.set(false);
       },
       error: (error) => {
