@@ -1,6 +1,7 @@
 import {Component, Input, TemplateRef, ContentChild, HostBinding} from '@angular/core';
 import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { Sidebar } from '@/shared/components/ui/sidebar/sidebar';
+import { PreferenceKey } from '@/core/services/user-preferences.service';
 
 export type SidebarPosition = 'left' | 'right' | null;
 
@@ -21,6 +22,8 @@ export class SidebarLayout {
   @Input() rightSidebarOpen: boolean = false;
   @Input() leftSidebarTitle: string = 'Menu';
   @Input() rightSidebarTitle: string = 'Options';
+  @Input() leftSidebarStorageKey?: PreferenceKey;
+  @Input() rightSidebarStorageKey?: PreferenceKey;
   @Input() main2Title: string = '';
   @Input() showMain2: boolean = false;
 

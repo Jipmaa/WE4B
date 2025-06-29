@@ -1,4 +1,4 @@
-import { CourseGroup } from '@/core/models/course-unit.models';
+import { CourseGroup } from '@/core/models/course-group.models';
 import { getCurrentAcademicPeriod } from './academic-period';
 
 /**
@@ -37,7 +37,7 @@ export function isCourseGroupCurrentlyActive(group: CourseGroup): boolean {
   // Check if current time is within the group's time range
   const isActive = isTimeInRange(currentTime, group.from, group.to);
   console.log(`${isActive ? '✅' : '❌'} Time check: ${currentTime} in range ${group.from}-${group.to}? ${isActive}`);
-  
+
   return isActive;
 }
 
@@ -63,7 +63,7 @@ export function isCourseGroupUpcoming(group: CourseGroup): boolean {
   // If it's a future day this week
   const currentDayIndex = now.getDay();
   const groupDayIndex = getDayIndex(group.day);
-  
+
   // Check if the group day is later this week
   return groupDayIndex > currentDayIndex;
 }
@@ -75,26 +75,26 @@ export function getNextCourseGroupOccurrence(group: CourseGroup): Date {
   const now = new Date();
   const currentDayIndex = now.getDay();
   const groupDayIndex = getDayIndex(group.day);
-  
+
   const nextOccurrence = new Date(now);
-  
+
   // Calculate days until next occurrence
   let daysUntilNext = groupDayIndex - currentDayIndex;
   if (daysUntilNext <= 0) {
     daysUntilNext += 7; // Next week
   }
-  
+
   // If it's today but hasn't started yet, use today
   if (group.day === getDayName(now.getDay()) && formatTime(now) < group.from) {
     daysUntilNext = 0;
   }
-  
+
   nextOccurrence.setDate(now.getDate() + daysUntilNext);
-  
+
   // Set the time
   const [hours, minutes] = group.from.split(':').map(Number);
   nextOccurrence.setHours(hours, minutes, 0, 0);
-  
+
   return nextOccurrence;
 }
 
@@ -135,7 +135,7 @@ export function categorizeCourseGroups(groups: CourseGroup[]): {
  */
 function getDayName(dayIndex: number): CourseGroup['day'] {
   const days: CourseGroup['day'][] = [
-    'sunday', 'monday', 'tuesday', 'wednesday', 
+    'sunday', 'monday', 'tuesday', 'wednesday',
     'thursday', 'friday', 'saturday'
   ];
   return days[dayIndex];
@@ -146,7 +146,7 @@ function getDayName(dayIndex: number): CourseGroup['day'] {
  */
 function getDayIndex(dayName: CourseGroup['day']): number {
   const days: CourseGroup['day'][] = [
-    'sunday', 'monday', 'tuesday', 'wednesday', 
+    'sunday', 'monday', 'tuesday', 'wednesday',
     'thursday', 'friday', 'saturday'
   ];
   return days.indexOf(dayName);
@@ -181,15 +181,15 @@ export function getTimeUntilCourseGroup(group: CourseGroup): string {
   const nextOccurrence = getNextCourseGroupOccurrence(group);
   const now = new Date();
   const timeDiff = nextOccurrence.getTime() - now.getTime();
-  
+
   if (timeDiff <= 0) {
     return 'Now';
   }
-  
+
   const hours = Math.floor(timeDiff / (1000 * 60 * 60));
   const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
   const days = Math.floor(hours / 24);
-  
+
   if (days > 0) {
     return `In ${days} day${days > 1 ? 's' : ''}`;
   } else if (hours > 0) {

@@ -5,6 +5,7 @@
       direction="left"
       [title]="leftSidebarTitle"
       [initialOpen]="leftSidebarOpen"
+      [storageKey]="leftSidebarStorageKey"
     >
       <ng-container *ngTemplateOutlet="leftSidebarContent"></ng-container>
     </app-sidebar>
@@ -66,6 +67,7 @@
       direction="right"
       [title]="rightSidebarTitle"
       [initialOpen]="rightSidebarOpen"
+      [storageKey]="rightSidebarStorageKey"
     >
       <ng-container *ngTemplateOutlet="rightSidebarContent"></ng-container>
     </app-sidebar>
