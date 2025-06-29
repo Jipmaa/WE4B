@@ -16,6 +16,7 @@ import {AuthImageComponent} from '@/shared/components/ui/auth-image/auth-image.c
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import {InputComponent} from '@/shared/components/ui/input/input';
+import {TextareaComponent} from '@/shared/components/ui/textarea/textarea';
 import {LucideAngularModule} from 'lucide-angular';
 import {AuthService} from '@/core/services/auth.service';
 import {HttpClient} from '@angular/common/http';
@@ -29,7 +30,7 @@ import slugify from 'slugify';
 @Component({
   selector: 'app-create-group-popup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, IconButtonComponent, InputComponent, LucideAngularModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent, IconButtonComponent, InputComponent, TextareaComponent, LucideAngularModule],
   templateUrl: './create-group-popup.html'
 })
 export class CreateGroupPopupComponent implements OnInit, OnDestroy {
@@ -58,6 +59,7 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy {
 
   myForm = new FormGroup({
     name: new FormControl<string>('', Validators.required),
+    description: new FormControl<string | null>(null), // Added description field
     //slug: new FormControl<string>('', Validators.required),
     kind: new FormControl<GroupKind | null>(null, Validators.required),
     day: new FormControl<Day | null>(null, Validators.required),
@@ -91,6 +93,7 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy {
 
     this.myForm.patchValue({
       name: this.group.name || '',
+      description: this.group.description || '',
       kind: this.group.kind || '',
       day: this.group.day || '',
       from: this.group.from || '',
@@ -146,6 +149,7 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy {
 
     const data = {
       name: this.myForm.value.name || '',
+      description: this.myForm.value.description || undefined, // Added description
       kind: this.myForm.value.kind! as GroupKind,
       day: this.myForm.value.day! as Day,
       from: this.myForm.value.from || '',

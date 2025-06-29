@@ -23,6 +23,7 @@ export interface CourseGroup {
   _id: string;
   slug: string;
   name: string;
+  description?: string; // Added description field
   kind: GroupKind;
   day: Day;
   from: string;
@@ -48,6 +49,7 @@ export interface CourseGroupFilters extends BaseFilters {
 export interface CreateCourseGroupRequest {
   slug: string;
   name: string;
+  description?: string; // Added description field
   kind: GroupKind;
   day: Day;
   from: string;
@@ -59,6 +61,7 @@ export interface CreateCourseGroupRequest {
 export interface UpdateCourseGroupRequest {
   slug?: string;
   name?: string;
+  description?: string; // Added description field
   kind?: GroupKind;
   day?: Day;
   from?: string;

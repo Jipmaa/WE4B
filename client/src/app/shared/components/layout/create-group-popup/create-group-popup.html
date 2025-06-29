@@ -44,11 +44,30 @@
             </div>
           }
 
-          <!-- Nom -->
-          <div class="mb-4">
-            <label for="name" class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom du groupe</label>
-            <app-input type="text" id="name" name="name" placeholder="ex: TP1"
-                       formControlName="name"></app-input>
+          <!-- Name -->
+          <div>
+            <label for="name"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
+            <app-input
+              #firstFocusable
+              type="text"
+              id="name"
+              name="name"
+              placeholder="ex: Groupe A"
+              formControlName="name">
+            </app-input>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label for="description"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Description (optionnel)</label>
+            <app-textarea
+              id="description"
+              name="description"
+              placeholder="ex: Ce groupe est pour les étudiants en première année."
+              formControlName="description">
+            </app-textarea>
           </div>
 
           <!-- Type -->
