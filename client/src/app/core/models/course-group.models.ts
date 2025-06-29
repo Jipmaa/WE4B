@@ -1,11 +1,15 @@
 import { BaseFilters } from '@/core/models/_shared.models';
 import { User } from '@/core/models/user.models';
 
-export interface GroupUser {
+export type GroupKind = 'theoretical' | 'practical' | 'laboratory' | 'other';
+export type Day = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+export type UserRole = 'student' | 'teacher';
+
+export interface CourseGroupUser {
   user: string;
-  role: 'student' | 'teacher';
-  semester: number;
-  year: string;
+  role: UserRole;
+  semester?: 1 | 2;
+  year?: string;
 }
 
 export interface PopulatedGroupUser {
@@ -17,18 +21,21 @@ export interface PopulatedGroupUser {
 
 export interface CourseGroup {
   _id: string;
+  slug: string;
   name: string;
-  description?: string;
+  kind: GroupKind;
+  day: Day;
+  from: string;
+  to: string;
+  semester: 1 | 2;
   courseUnit: string;
-  members: string[];
-  maxMembers?: number;
-  createdBy: string;
+  users: CourseGroupUser[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CourseGroupWithMembers extends Omit<CourseGroup, 'members'> {
-  members: User[];
+export interface CourseGroupWithMembers extends Omit<CourseGroup, 'users'> {
+  users: (Omit<CourseGroupUser, 'user'> & { user: User })[];
 }
 
 export interface CourseGroupFilters extends BaseFilters {
@@ -39,20 +46,31 @@ export interface CourseGroupFilters extends BaseFilters {
 }
 
 export interface CreateCourseGroupRequest {
+  slug: string;
   name: string;
-  description?: string;
+  kind: GroupKind;
+  day: Day;
+  from: string;
+  to: string;
+  semester: 1 | 2;
   courseUnit: string;
-  maxMembers?: number;
 }
 
 export interface UpdateCourseGroupRequest {
+  slug?: string;
   name?: string;
-  description?: string;
-  maxMembers?: number;
+  kind?: GroupKind;
+  day?: Day;
+  from?: string;
+  to?: string;
+  semester?: 1 | 2;
 }
 
 export interface AddUserToCourseGroupRequest {
   userId: string;
+  role: UserRole;
+  semester?: 1 | 2;
+  year?: string;
 }
 
 export interface CourseGroupsResponse {

@@ -157,10 +157,11 @@ export class UsersService {
       formData.append('isEmailVerified', userData.isEmailVerified.toString());
     }
 
-    // Add avatar file if provided
-    if (avatarFile) {
-      formData.append('avatar', avatarFile);
+    if (userData.phone !== undefined && userData.phone !== null) {
+      formData.append('phone', userData.phone);
     }
+
+    
 
     return this.http.post<ApiResponse<CreateUserResponse>>(this.baseUrl, formData)
       .pipe(
@@ -216,6 +217,10 @@ export class UsersService {
 
     if (userData.isEmailVerified !== undefined) {
       formData.append('isEmailVerified', userData.isEmailVerified.toString());
+    }
+
+    if (userData.phone !== undefined && userData.phone !== null) {
+      formData.append('phone', userData.phone);
     }
 
     if (avatarFile) {

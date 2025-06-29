@@ -85,9 +85,9 @@ export class RegisterCourseunits implements OnInit {
       capacity: this.myForm.value.capacity || ''
     };
 
-    console.log('Data to be sent:', data); // Ajoutez ceci pour vérifier les données
+    console.log('Data to be sent:', data);
 
-    // Envoie la requête POST via createUser du user.service.ts avec le fichier avatar
+    // Envoie la requête POST via createCourseUnit du course-unit.service.ts avec l'image
     this.courseUnitService.createCourseUnit(data as any, this.selectedFile || undefined).subscribe({//TODO remove any
       next: res => {
         alert('Ue créé avec succès !');

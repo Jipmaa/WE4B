@@ -104,6 +104,10 @@ export class CoursePage {
     await this.router.navigate(['/courses', this.courseSlug(), 'members']);
   }
 
+  async onAddGroup() {
+    await this.router.navigate(['/courses', this.courseSlug(), 'add-group']);
+  }
+
   onAddActivity() {
     this.showAddActivityPopup.set(true);
   }

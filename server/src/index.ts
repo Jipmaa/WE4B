@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 // Import routes
 import userRoutes from './routes/user-routes';
 import courseUnitRoutes from './routes/course-unit-routes';
+import courseGroupRoutes from "./routes/course-group-routes";
 import courseActivityRoutes from './routes/course-activity-routes';
 import courseGroupRoutes from './routes/course-group-routes';
 import setupRoutes from "./routes/setup-routes";
@@ -180,6 +181,7 @@ class Server {
 		this.app.use('/api/files', fileRoutes);
 		this.app.use('/api/discussions', discussionRoutes);
 		this.app.use('/api/logs', logRoutes);
+		this.app.use('/api/course-groups', courseGroupRoutes);
 
 		// Root endpoint
 		this.app.get('/', (req, res) => {

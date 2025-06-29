@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -18,7 +18,7 @@ import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-but
   templateUrl: './user-register-popup.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class UserRegisterPopup implements OnInit, OnDestroy {
+export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
   @Input() isOpen = false;
   @Input() user: User | null = null; // Pour le mode édition
   @Input() isEditMode = false; // true = édition, false = création
@@ -45,7 +45,7 @@ export class UserRegisterPopup implements OnInit, OnDestroy {
     lastName: new FormControl<string>('', Validators.required),
     birthdate: new FormControl<string>('', Validators.required),
     email: new FormControl<string>('', [Validators.required, Validators.email]),
-    phone: new FormControl<string>('', [Validators.pattern(/^\+?[1-9]\d{1,14}$/)]),
+    phone: new FormControl<string>('', [Validators.pattern(/^\+?\d{7,14}$/)]),
     roles: new FormControl<string[]>([], [rolesValidator]),
     department: new FormControl<string>(''),
     password: new FormControl<string>('', []),
@@ -56,17 +56,19 @@ export class UserRegisterPopup implements OnInit, OnDestroy {
     this.keydownListener = this.onGlobalKeydown.bind(this);
     document.addEventListener('keydown', this.keydownListener);
 
-    // Configurer la validation du mot de passe selon le mode
-    this.updatePasswordValidation();
-
     // Écouter les changements sur les rôles pour ajuster la validation du département
     this.myForm.get('roles')?.valueChanges.subscribe(roles => {
       this.updateDepartmentValidation(roles || []);
     });
+  }
 
-    // Pré-remplir le formulaire si en mode édition
-    if (this.isEditMode && this.user) {
-      this.prefillForm();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && changes['isOpen'].currentValue) {
+      this.resetForm();
+      this.updatePasswordValidation();
+      if (this.isEditMode && this.user) {
+        this.prefillForm();
+      }
     }
   }
 
@@ -124,7 +126,6 @@ export class UserRegisterPopup implements OnInit, OnDestroy {
   }
 
   onClose(): void {
-    this.resetForm();
     this.closePopup.emit();
   }
 
@@ -215,7 +216,7 @@ export class UserRegisterPopup implements OnInit, OnDestroy {
       lastName: this.myForm.value.lastName || '',
       birthdate: this.myForm.value.birthdate || '',
       email: this.myForm.value.email || '',
-      phone: this.myForm.value.phone || undefined,
+      phone: this.myForm.value.phone || null,
       department: getRoles().includes('student') ? (this.myForm.value.department as StudentDepartment) || undefined : undefined,
       roles: getRoles()
     };
@@ -272,19 +273,21 @@ export class UserRegisterPopup implements OnInit, OnDestroy {
   }
 
   private resetForm(): void {
-    this.myForm.reset();
+    this.myForm.reset({
+      firstName: '',
+      lastName: '',
+      birthdate: '',
+      email: '',
+      phone: '',
+      roles: [],
+      department: '',
+      password: '',
+      avatar: ''
+    });
     this.selectedFile = null;
     this.isSubmitting = false;
     this.submitError = '';
     this.iconName = "eye-off";
-
-    // Réinitialiser les validations
-    this.updatePasswordValidation();
-
-    // Repré-remplir si en mode édition
-    if (this.isEditMode && this.user) {
-      setTimeout(() => this.prefillForm(), 0);
-    }
   }
 
   get formTitle(): string {
@@ -306,7 +309,7 @@ function passwordValidator(control: AbstractControl): ValidationErrors | null {
     errors["uppercase"] = 'ok';
   if (!/\d/.test(control.value))
     errors["number"] = 'ok';
-  if ((value.match(/[!@#$%^&*()_+\-=\[\]{} ':"\\|,.<>\/?]/g) || []).length < 2)
+  if ((value.match(/[!@#$%^&*()_+\-=\[\]{} ':\"\\|,.<>\/?]/g) || []).length < 2)
     errors["specialChars"] = 'ok';
 
   return Object.keys(errors).length ? errors : null;
