@@ -139,7 +139,10 @@ async function filterActivitiesByUserRole(
 							activity.actor.data._id && 
 							activity.actor.data._id.toString() === userId.toString();
 						if (isOwnSubmission) {
-							filteredActivities.push(activity);
+							filteredActivities.push({
+								...activity,
+								actor: { kind: 'system' }
+							});
 							activityIds.add(activity._id.toString());
 						}
 						break;
