@@ -94,6 +94,13 @@
   (userSaved)="onUserUpdated($event)">
 </app-user-register-popup>
 
+<app-user-register-popup
+  [isOpen]="showCreateUserPopup"
+  [isEditMode]="false"
+  (closePopup)="onCloseCreateUserPopup()"
+  (userSaved)="onUserCreated($event)">
+</app-user-register-popup>
+
 <app-course-register-popup
   [isOpen]="showEditCourseUnitPopup"
   [isEditMode]="true"

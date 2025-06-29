@@ -42,6 +42,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
   CoursesArray !: CourseUnit[]
 
   showEditUserPopup: boolean = false;
+  showCreateUserPopup: boolean = false;
   showEditCourseUnitPopup: boolean = false;
   showCreateCourseUnitPopup: boolean = false; // New signal for create popup
   selectedUser: User | null = null;
@@ -257,7 +258,20 @@ export class AdminPage implements OnInit, AfterViewChecked {
   }
 
   navigateToRegister() {
-    this.router.navigate(['/register']);
+    this.showCreateUserPopup = true;
+  }
+
+  onUserCreated(newUser: User): void {
+    this.UsersArray = [...this.UsersArray, newUser];
+    this.showCreateUserPopup = false;
+    // Optionally, refresh the users list from the service if needed
+    // this.servUsers.getUsers().subscribe(response => {
+    //   this.UsersArray = response.data.users;
+    // });
+  }
+
+  onCloseCreateUserPopup(): void {
+    this.showCreateUserPopup = false;
   }
 
   navigateToCourse() {
