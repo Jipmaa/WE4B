@@ -11,13 +11,13 @@
     </app-sidebar>
   }
 
-  <div class="grow h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8 flex flex-col overflow-y-auto">
+  <div class="grow h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 pt-8 flex flex-col">
 
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3 grow">
         @if (hasLeadingContent) {
           <div class="flex items-center">
-            <ng-container *ngTemplateOutlet="leadingContent"></ng-container>
+            <ng-container *ngTemplateOutlet="leadingContent"/>
           </div>
         }
         <h2 class="text-2xl font-bold text-black">
@@ -26,14 +26,14 @@
       </div>
       @if (hasActionButtons) {
         <div class="flex items-center gap-2">
-          <ng-container *ngTemplateOutlet="actionButtonsContent"></ng-container>
+            <ng-container *ngTemplateOutlet="actionButtonsContent"/>
         </div>
       }
     </div>
 
-    <div class="flex-1 min-h-0">
+    <div class="flex-1 min-h-0 overflow-y-auto">
       @if (mainContentTemplate) {
-        <ng-container *ngTemplateOutlet="mainContentTemplate"></ng-container>
+        <ng-container *ngTemplateOutlet="mainContentTemplate"/>
       } @else {
         <ng-content></ng-content>
       }
@@ -42,7 +42,7 @@
   </div>
 
   @if (hasMain2) {
-    <div class="w-3/5 h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8 flex flex-col overflow-y-auto">
+    <div class="w-3/5 h-full rounded-t-4xl bg-popover text-popover-foreground border-border px-6 py-8 flex flex-col">
 
       <div class="flex items-center justify-between mb-6">
         <h2 class="grow text-2xl font-bold text-black">
@@ -55,8 +55,9 @@
         }
       </div>
 
-      <div class="flex-1 min-h-0">
+      <div class="flex-1 min-h-0 overflow-y-auto">
         <ng-container *ngTemplateOutlet="main2ContentTemplate"></ng-container>
+        <div class="h-6 w-full"></div>
       </div>
 
     </div>
