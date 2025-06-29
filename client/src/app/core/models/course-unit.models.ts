@@ -2,6 +2,16 @@ import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
 import {CourseActivity} from '@/core/models/course-activity.models';
 
+export interface CourseGroup {
+  _id: string;
+  name: string;
+  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+  from: string; // HH:mm format
+  to: string;   // HH:mm format
+  semester: 1 | 2;
+  kind: 'theoretical' | 'practical' | 'laboratory' | 'other';
+}
+
 export interface CourseUnit {
   _id: string;
   slug: string;
@@ -9,7 +19,7 @@ export interface CourseUnit {
   name: string;
   code: string;
   img?: string;
-  groups?: string[];
+  groups?: CourseGroup[];
   activities: CourseUnitActivitiesCategory[];
   userRole?: 'student' | 'teacher'; // User's role in this specific course
   type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';

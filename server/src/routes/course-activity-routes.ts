@@ -116,7 +116,12 @@ const fileDepositoryValidation = [
 	body('maxFiles')
 		.optional()
 		.isInt({ min: 1, max: 20 })
-		.withMessage('Max files must be between 1 and 20')
+		.withMessage('Max files must be between 1 and 20'),
+	body('dueAt')
+		.optional()
+		.isISO8601()
+		.withMessage('Due date must be a valid ISO 8601 date')
+		.toDate()
 ];
 
 // @route   GET /api/course-activities
@@ -603,7 +608,7 @@ router.put('/file/:id', teacherMiddleware, uploadActivityFile, handleFileUploadE
 // @desc    Create new file depository activity
 // @access  Private (Teacher only)
 router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFileUploadError, fileDepositoryValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { courseUnit, title, content, maxFiles, restrictedGroups, category } = req.body;
+	const { courseUnit, title, content, maxFiles, restrictedGroups, category, dueAt } = req.body;
 	
 	// Parse JSON strings from FormData
 	let instructions, restrictedFileTypes;
@@ -679,7 +684,8 @@ router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFil
 		instructions: instructionsData,
 		restrictedFileTypes: restrictedFileTypes || [],
 		maxFiles: maxFiles || 1,
-		restrictedGroups: restrictedGroups || []
+		restrictedGroups: restrictedGroups || [],
+		dueAt: dueAt || undefined
 	});
 
 	await activity.save();
@@ -757,6 +763,11 @@ router.put('/file-depository/:id', teacherMiddleware, uploadActivityFile, handle
 		.optional()
 		.isInt({ min: 1, max: 20 })
 		.withMessage('Max files must be between 1 and 20'),
+	body('dueAt')
+		.optional()
+		.isISO8601()
+		.withMessage('Due date must be a valid ISO 8601 date')
+		.toDate(),
 	body('category')
 		.optional()
 		.isLength({ max: 50 })
@@ -768,7 +779,7 @@ router.put('/file-depository/:id', teacherMiddleware, uploadActivityFile, handle
 		throw new AppError('File depository activity not found', 404);
 	}
 
-	const { title, content, maxFiles, category } = req.body;
+	const { title, content, maxFiles, category, dueAt } = req.body;
 
 	// Parse JSON strings from FormData
 	let instructions, restrictedFileTypes;
@@ -794,6 +805,7 @@ router.put('/file-depository/:id', teacherMiddleware, uploadActivityFile, handle
 	if (content !== undefined) activity.content = content;
 	if (maxFiles !== undefined) activity.maxFiles = maxFiles;
 	if (restrictedFileTypes !== undefined) activity.restrictedFileTypes = restrictedFileTypes;
+	if (dueAt !== undefined) activity.dueAt = dueAt;
 
 	// Handle instructions update
 	if (instructions !== undefined) {

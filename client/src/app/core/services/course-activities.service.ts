@@ -195,6 +195,10 @@ export class CourseActivitiesService {
       formData.append('restrictedFileTypes', JSON.stringify(activityData.restrictedFileTypes));
     }
 
+    if (activityData.dueAt) {
+      formData.append('dueAt', activityData.dueAt.toISOString());
+    }
+
     if (instructionsFile) {
       formData.append('instructions', JSON.stringify({ type: 'file' }));
       formData.append('file', instructionsFile);
@@ -316,6 +320,14 @@ export class CourseActivitiesService {
 
     if (activityData.restrictedFileTypes && activityData.restrictedFileTypes.length > 0) {
       formData.append('restrictedFileTypes', JSON.stringify(activityData.restrictedFileTypes));
+    }
+
+    if (activityData.dueAt !== undefined) {
+      if (activityData.dueAt) {
+        formData.append('dueAt', activityData.dueAt.toISOString());
+      } else {
+        formData.append('dueAt', '');
+      }
     }
 
     if (instructionsFile) {

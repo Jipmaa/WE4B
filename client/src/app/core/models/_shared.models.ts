@@ -85,6 +85,15 @@ export const MAX_PAGE_SIZE = 100;
 export const DEFAULT_SEARCH_DEBOUNCE = 300;
 export const MAX_SEARCH_LENGTH = 50;
 
+// Dashboard Types
+export interface DepositDetailsForTeacher {
+  name: string;  // `${course.name} — ${activity.name}`
+  url: string;  // /courses/:courseUnit-slug/activity/:activity-id
+  missingStudentDeposits: number;  // From CourseGroup to get the list of students and DepositedFiles for each student work
+  feedbackRate: number;  // in the DepositedFiles
+  dueAt?: Date;  // Due date for the file deposit activity
+}
+
 // Validation Patterns
 export const VALIDATION_PATTERNS = {
   EMAIL: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/,

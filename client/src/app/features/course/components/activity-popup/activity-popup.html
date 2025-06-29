@@ -483,6 +483,30 @@
                 />
               </div>
 
+              <div>
+                <app-input
+                  label="Date limite de dépôt"
+                  type="datetime-local"
+                  [required]="false"
+                  placeholder="Cliquez pour sélectionner une date et heure"
+                  formControlName="dueAt"
+                  [hasError]="hasFieldError('dueAt')"
+                  [errorText]="getFieldError('dueAt')"
+                  helpText="Optionnel - Laissez vide pour aucune date limite. Les étudiants ne pourront plus déposer après cette date et heure."
+                >
+                  @if (fileDepositoryForm.get('dueAt')?.value) {
+                    <app-icon-button
+                      slot="trailing"
+                      icon="x"
+                      size="xs"
+                      variant="ghost"
+                      (buttonClick)="clearDueDate()"
+                      aria-label="Supprimer la date limite"
+                    />
+                  }
+                </app-input>
+              </div>
+
               <!-- File Type Restrictions -->
               <div>
                 <app-select

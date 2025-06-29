@@ -1,5 +1,5 @@
 <app-sidebar-layout
-  title="Mes cours"
+  [title]="`Bonjour ${authService.user()?.firstName ?? 'à toi'}`"
   [leftSidebarOpen]="false"
   [rightSidebarOpen]="true"
   rightSidebarTitle="Activitées récentes"
@@ -10,7 +10,64 @@
     <p>Recent activity content goes here.</p>
   </ng-template>
 
-  <!-- Main content of the dashboard -->
-  <p>Main dashboard content goes here.</p>
+  <div class="space-y-6">
+    <div class="flex max-md:flex-col gap-6">
+
+      @if (currentCourse()) {
+        <div class="grow space-y-2">
+          <h2 class="font-medium">En ce moment</h2>
+          <app-course-box [course]="currentCourse()!"/>
+        </div>
+      }
+
+      <div class="grow space-y-2">
+        <h2 class="font-medium">À venir</h2>
+        @for (course of upcomingCourses(); track course._id) {
+          <app-course-box [course]="course" [showImage]="false"/>
+        }
+        @if (upcomingCourses().length === 0) {
+          <p>Aucun cours à venir.</p>
+        }
+      </div>
+
+    </div>
+
+    <div class="space-y-2">
+      <h2 class="font-medium">Devoirs</h2>
+      <div class="overflow-y-auto">
+        <div class="flex gap-2">
+          @if (isTeacher() && teacherActivities().length > 0) {
+            @for (homework of teacherActivities(); track homework) {
+              <a [href]="homework.url" class="p-4 bg-white hover:bg-accent rounded-xl shadow-md outline outline-offset-[-1px] outline-black/5 inline-flex flex-col justify-start items-start gap-2.5 overflow-hidden">
+                <div class="self-stretch pb-1 inline-flex justify-start items-start gap-2.5">
+                  <p class="justify-start text-sm font-semibold leading-tight">{{homework.name}}</p>
+                </div>
+                <div class="size- inline-flex justify-start items-center gap-2">
+                  <lucide-icon name="clock-fading" class="size-4" [class]="getDueDateStatusClass(homework)"/>
+                  <div class="justify-start text-xs font-normal" [class]="getDueDateStatusClass(homework)">
+                    {{ formatDueAt(homework) }}
+                  </div>
+                </div>
+                <div class="size- inline-flex justify-start items-center gap-2">
+                  <lucide-icon name="octagon-alert" class="size-4"/>
+                  <div class="justify-start text-xs font-normal">{{homework.missingStudentDeposits}} étudiant{{homework.missingStudentDeposits ? 's' : ''}} n’ont pas rendu le devoir </div>
+                </div>
+                <div class="size- inline-flex justify-start items-center gap-2">
+                  <lucide-icon name="badge-check" class="size-4"/>
+                  <div class="justify-start text-xs font-normal">Taux de correction : {{homework.feedbackRate}}%</div>
+                </div>
+              </a>
+            }
+          } @else if (studentActivities().length > 0) {
+            @for (homework of studentActivities(); track homework) {
+              <app-activity [activity]="homework" [courseSlug]="homework.courseSlug" class="block" />
+            }
+          } @else {
+            <p>Aucun devoir à venir.</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
 
 </app-sidebar-layout>

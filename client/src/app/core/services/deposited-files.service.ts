@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { 
   DepositedFilesResponse, 
@@ -24,7 +24,10 @@ export class DepositedFilesService {
   // Student methods
 
   getMyDeposit(activityId: string): Observable<MyDepositedFilesResponse> {
-    return this.http.get<MyDepositedFilesResponse>(`${this.apiUrl}/${activityId}/deposits/my`);
+    return this.http.get<ApiResponse<MyDepositedFilesResponse>>(`${this.apiUrl}/${activityId}/deposits/my`)
+      .pipe(
+        map(response => response.data)
+      );
   }
 
   submitDeposit(activityId: string, data: FileDepositSubmissionRequest): Observable<any> {

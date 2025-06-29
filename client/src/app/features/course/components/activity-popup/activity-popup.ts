@@ -146,6 +146,7 @@ export class ActivityPopup implements OnInit, OnChanges, OnDestroy {
     instructionsText: new FormControl('', [Validators.maxLength(5000)]),
     maxFiles: new FormControl(1, [Validators.required, Validators.min(1), Validators.max(20)]),
     restrictedFileTypes: new FormControl<FileType[]>([]),
+    dueAt: new FormControl(''),
     category: new FormControl('', [Validators.required, Validators.maxLength(50)])
   });
 
@@ -269,6 +270,7 @@ export class ActivityPopup implements OnInit, OnChanges, OnDestroy {
           instructionsText: instructionsText,
           maxFiles: fileDepositoryActivity.maxFiles,
           restrictedFileTypes: fileDepositoryActivity.restrictedFileTypes || [],
+          dueAt: fileDepositoryActivity.dueAt ? this.formatDateForInput(fileDepositoryActivity.dueAt) : '',
           category: category?.name || ''
         });
 
@@ -540,6 +542,7 @@ export class ActivityPopup implements OnInit, OnChanges, OnDestroy {
         content: formValue.content!,
         maxFiles: formValue.maxFiles!,
         restrictedFileTypes: formValue.restrictedFileTypes || [],
+        dueAt: formValue.dueAt ? new Date(formValue.dueAt) : undefined,
         category: formValue.category!
       };
 
@@ -573,6 +576,7 @@ export class ActivityPopup implements OnInit, OnChanges, OnDestroy {
         instructions: this.selectedFile
           ? { type: 'file' as const, file: '' } // The service will handle the file
           : { type: 'text' as const, text: instructionsText },
+        dueAt: formValue.dueAt ? new Date(formValue.dueAt) : undefined,
         category: formValue.category!
       };
 
@@ -616,7 +620,7 @@ export class ActivityPopup implements OnInit, OnChanges, OnDestroy {
   private resetForms() {
     this.messageForm.reset({ level: 'normal' });
     this.fileForm.reset();
-    this.fileDepositoryForm.reset({ maxFiles: 1, restrictedFileTypes: [], instructionsText: '' });
+    this.fileDepositoryForm.reset({ maxFiles: 1, restrictedFileTypes: [], instructionsText: '', dueAt: '' });
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
@@ -801,6 +805,26 @@ export class ActivityPopup implements OnInit, OnChanges, OnDestroy {
       'other': 'bin'
     };
     return extensions[fileType] || 'bin';
+  }
+
+  private formatDateForInput(date: Date | string): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (!dateObj || isNaN(dateObj.getTime())) {
+      return '';
+    }
+    
+    // Format to YYYY-MM-DDTHH:MM format for datetime-local input
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const hours = String(dateObj.getHours()).padStart(2, '0');
+    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  clearDueDate(): void {
+    this.fileDepositoryForm.patchValue({ dueAt: '' });
   }
 
 }

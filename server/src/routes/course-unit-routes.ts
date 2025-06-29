@@ -182,7 +182,7 @@ router.get('/', getCourseUnitsValidation, validateRequest, asyncHandler(async (r
 }));
 
 // @route   GET /api/course-units/my-courses
-// @desc    Get current user's course units based on their group membership
+// @desc    Get current user's course units based on their group membership with schedule data
 // @access  Private (All authenticated users)
 router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
 	const user = await User.findById(req.user?.userId).select('memberOfGroups');
@@ -191,7 +191,7 @@ router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
 		throw new AppError('User not found', 404);
 	}
 
-	// Single aggregation pipeline to get course units from user's memberOfGroups
+	// Get course units with schedule information
 	const courseUnits = await CourseGroup.aggregate([
 		// Match groups that the user is a member of
 		{
@@ -228,7 +228,7 @@ router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
 				}
 			}
 		},
-		// Group by course unit to avoid duplicates and collect roles
+		// Group by course unit and collect schedule information
 		{
 			$group: {
 				_id: '$courseUnitData._id',
@@ -239,7 +239,19 @@ router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
 				capacity: { $first: '$courseUnitData.capacity' },
 				createdAt: { $first: '$courseUnitData.createdAt' },
 				updatedAt: { $first: '$courseUnitData.updatedAt' },
-				userRoles: { $addToSet: '$userRole.role' }
+				userRoles: { $addToSet: '$userRole.role' },
+				// Collect all group schedules for this course unit
+				groups: {
+					$addToSet: {
+						_id: '$_id',
+						name: '$name',
+						day: '$day',
+						from: '$from',
+						to: '$to',
+						semester: '$semester',
+						kind: '$kind'
+					}
+				}
 			}
 		},
 		// Format the output
@@ -253,7 +265,8 @@ router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
 				capacity: 1,
 				createdAt: 1,
 				updatedAt: 1,
-				userRole: { $arrayElemAt: ['$userRoles', 0] } // Take first role if multiple
+				userRole: { $arrayElemAt: ['$userRoles', 0] },
+				groups: 1
 			}
 		},
 		// Sort by name

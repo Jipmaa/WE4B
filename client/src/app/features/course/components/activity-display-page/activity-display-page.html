@@ -78,11 +78,24 @@
             <dt class="text-sm font-medium text-gray-500">Modifié le</dt>
             <dd class="text-sm text-gray-900">{{ activity()!.updatedAt | date:'dd/MM/yyyy à HH:mm' }}</dd>
           </div>
-          @if (activity()!.isPinned) {
+          @if (activity()!.activityType === 'file-depository') {
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Date limite</dt>
+              <dd class="text-sm text-gray-900">
+                @let dueDate = asFileDepositoryActivity(activity()!).dueAt;
+                @if (dueDate) {
+                  {{ getDueDate(dueDate) | date:'dd/MM/yyyy à HH:mm' }}
+                } @else {
+                  <span class="text-gray-500 italic">Aucune date limite</span>
+                }
+              </dd>
+            </div>
+          }
+          @if (activity()!.isPinned && isTeacher()) {
             <div>
               <dt class="text-sm font-medium text-gray-500">Statut</dt>
               <dd class="text-sm text-gray-900 flex items-center space-x-1">
-                <lucide-icon name="pin" class="w-4 h-4 text-blue-600"></lucide-icon>
+                <lucide-icon name="pin" class="size-4"></lucide-icon>
                 <span>Épinglé</span>
               </dd>
             </div>
@@ -182,25 +195,6 @@
               </div>
             }
           </app-collapsible>
-
-          <!-- Due Date Warning -->
-          @if (depositActivity.dueAt) {
-            @let dueDate = getDueDate(depositActivity.dueAt);
-            @let overdue = isOverdue(depositActivity.dueAt);
-
-            <div class="flex items-center space-x-2 px-3 py-2 rounded-lg"
-                 [class]="overdue ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'">
-              <lucide-icon [name]="overdue ? 'triangle-alert' : 'clock'"
-                           [class]="overdue ? 'w-4 h-4 text-red-600' : 'w-4 h-4 text-blue-600'"></lucide-icon>
-              <span [class]="overdue ? 'text-sm font-medium text-red-800' : 'text-sm font-medium text-blue-800'">
-                @if (overdue) {
-                  Date limite dépassée: {{ dueDate | date:'dd/MM/yyyy à HH:mm' }}
-                } @else {
-                  Date limite: {{ dueDate | date:'dd/MM/yyyy à HH:mm' }}
-                }
-              </span>
-            </div>
-          }
 
           <!-- Student/Teacher Interface -->
           @if (isTeacher()) {

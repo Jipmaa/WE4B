@@ -35,6 +35,7 @@ export class Activity {
   @Input({required: true}) activity!: CourseActivity;
   @Input() variant: 'display' | 'quick' = 'quick';
   @Input() showActions: boolean = true;
+  @Input() courseSlug?: string = undefined;
 
   @Output() editActivity = new EventEmitter<CourseActivity>();
 
@@ -88,12 +89,13 @@ export class Activity {
       if (fileDepositoryActivity.dueAt) {
         const now = new Date();
         const dueDate = new Date(fileDepositoryActivity.dueAt);
-        const diffTime = now.getTime() - dueDate.getTime();
+        const diffTime = dueDate.getTime() - now.getTime();
         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto', style: "short" });
         return `À rendre ${rtf.format(diffDays, 'day')}`;
       }
+      return 'Pas de date limite';
     }
     const createdAt = new Date(this.activity.createdAt);
     const updatedAt = new Date(this.activity.updatedAt);
@@ -205,7 +207,7 @@ export class Activity {
 
   navigateToActivity(): void {
     // Get the current course slug from the route
-    const courseSlug = this.route.snapshot.params['slug'] || this.getCourseSlugFromUrl();
+    const courseSlug = this.courseSlug || this.route.snapshot.params['slug'] || this.getCourseSlugFromUrl();
     if (courseSlug) {
       this.router.navigate(['/courses', courseSlug, 'activity', this.activity._id]);
     } else {
