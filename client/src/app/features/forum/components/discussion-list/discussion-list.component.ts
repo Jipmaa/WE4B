@@ -5,11 +5,12 @@ import { Discussion } from '../../../../core/models/discussion.models';
 import { Subscription } from 'rxjs';
 import { AuthService } from '@/core/services/auth.service';
 import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
+import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
 
 @Component({
   selector: 'app-discussion-list',
   standalone: true,
-  imports: [CommonModule, IconButtonComponent],
+  imports: [CommonModule, IconButtonComponent, DeleteConfirmationPopupComponent],
   templateUrl: './discussion-list.component.html',
 })
 export class DiscussionListComponent implements OnInit, OnDestroy {
@@ -23,6 +24,9 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
   discussions: Discussion[] = [];
   error: string | null = null;
   isLoading = true;
+
+  showDeleteDiscussionPopup = false;
+  discussionToDelete: Discussion | null = null;
 
   isAdmin = computed(() => this.authService.isAdmin());
 
@@ -55,19 +59,31 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
     this.discussionSelected.emit(id);
   }
 
-  onDeleteDiscussion(id: string): void {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette discussion ?')) {
-      this.forumService.deleteDiscussion(id).subscribe({
+  onDeleteDiscussion(discussion: Discussion): void {
+    this.discussionToDelete = discussion;
+    this.showDeleteDiscussionPopup = true;
+  }
+
+  confirmDeleteDiscussion(): void {
+    if (this.discussionToDelete) {
+      this.forumService.deleteDiscussion(this.discussionToDelete._id).subscribe({
         next: () => {
           this.loadDiscussions(); // Reload discussions after deletion
-          if (this.selectedDiscussionId === id) {
+          if (this.selectedDiscussionId === this.discussionToDelete!._id) {
             this.discussionSelected.emit(null); // Close the discussion if it was open
           }
+          this.cancelDeleteDiscussion();
         },
         error: (err) => {
           this.error = `Erreur lors de la suppression de la discussion : ${err.message}`;
+          this.cancelDeleteDiscussion();
         }
       });
     }
+  }
+
+  cancelDeleteDiscussion(): void {
+    this.showDeleteDiscussionPopup = false;
+    this.discussionToDelete = null;
   }
 }
