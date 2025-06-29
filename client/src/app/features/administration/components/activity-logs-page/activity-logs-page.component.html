@@ -100,7 +100,7 @@
           <tbody>
             <tr *ngFor="let entry of loginHistory" class="hover:bg-gray-100 even:bg-gray-50">
               <td class="px-4 py-2 text-left border-b text-sm">{{ formatTimestamp(entry.loginTime) }}</td>
-              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.userId?.firstName }} {{ entry.userId?.lastName }} ({{ entry.userId?.email }})</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.userId.firstName }} {{ entry.userId.lastName }} ({{ entry.userId.email }})</td>
               <td class="px-4 py-2 text-left border-b text-sm">{{ entry.ipAddress || 'N/A' }}</td>
               <td class="px-4 py-2 text-left border-b text-sm">{{ entry.userAgent || 'N/A' }}</td>
               <td class="px-4 py-2 text-left border-b text-sm">{{ entry.success ? 'Yes' : 'No' }}</td>

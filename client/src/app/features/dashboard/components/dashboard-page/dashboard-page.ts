@@ -7,6 +7,10 @@ import { DashboardService } from '../../services';
 import {DepositDetailsForTeacher} from '@/core/models/_shared.models';
 import {LucideAngularModule} from 'lucide-angular';
 import {Activity} from '@/shared/components/ui/activity/activity';
+import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-sidebar/recent-activity-sidebar';
+
+
+
 
 @Component({
   selector: 'app-dashboard-page',
@@ -14,9 +18,9 @@ import {Activity} from '@/shared/components/ui/activity/activity';
     CommonModule,
     SidebarLayout,
     CourseBox,
-    CourseBox,
     LucideAngularModule,
     Activity,
+    RecentActivitySidebar,
   ],
   templateUrl: './dashboard-page.html',
 })

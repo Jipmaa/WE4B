@@ -7,8 +7,7 @@
 >
 
   <ng-template #rightSidebar>
-    <!-- Recent activities content -->
-    <p>Recent activity content goes here.</p>
+    <app-recent-activity-sidebar />
   </ng-template>
 
   <div class="space-y-6">
@@ -59,7 +58,7 @@
                 </div>
               </a>
             }
-          } @else if (studentActivities().length > 0) {
+          } @else if (!isTeacher() && studentActivities().length > 0) {
             @for (homework of studentActivities(); track homework) {
               <app-activity [activity]="homework" [courseSlug]="homework.courseSlug" class="block" />
             }

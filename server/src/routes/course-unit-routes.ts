@@ -254,7 +254,8 @@ router.get('/my-courses', asyncHandler(async (req: Request, res: Response) => {
 						day: '$day',
 						from: '$from',
 						to: '$to',
-						semester: '$semester',
+						semester: { $ifNull: ['$semester', null] }, // Conditionally include semester
+						year: { $ifNull: ['$year', null] }, // Conditionally include year
 						kind: '$kind'
 					}
 				}

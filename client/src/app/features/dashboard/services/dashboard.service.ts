@@ -28,6 +28,7 @@ export class DashboardService {
   private readonly _upcomingCourses = signal<CourseUnit[]>([]);
   private readonly _teacherActivities = signal<DepositDetailsForTeacher[]>([]);
   private readonly _studentActivities = signal<(FileDepositoryActivity & {courseSlug: string})[]>([]);
+  private readonly _recentActivities = signal<any[]>([]);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 

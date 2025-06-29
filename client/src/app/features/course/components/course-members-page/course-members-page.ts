@@ -11,6 +11,7 @@ import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-butto
 import {PopulatedGroupUser} from '@/core/models/course-group.models';
 import {getCurrentAcademicPeriod} from '@/shared/utils/academic-period';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
+import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-sidebar/recent-activity-sidebar';
 
 
 @Component({
@@ -21,7 +22,8 @@ import {ButtonComponent} from '@/shared/components/ui/button/button';
     LucideAngularModule,
     UserCard,
     IconButtonComponent,
-    ButtonComponent
+    ButtonComponent,
+    RecentActivitySidebar
   ],
   templateUrl: './course-members-page.html',
 })

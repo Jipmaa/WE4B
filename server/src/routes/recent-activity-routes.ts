@@ -48,8 +48,12 @@ router.get('/',
 		
 		const userGroups = await CourseGroup.find({
 			'users.user': userId,
-			'users.year': year,
-			'users.semester': semester
+			$or: [
+				{ 'users.year': year, 'users.semester': semester },
+				{ 'users.year': null, 'users.semester': null },
+				{ 'users.year': year, 'users.semester': null },
+				{ 'users.year': null, 'users.semester': semester }
+			]
 		}).select('courseUnit').populate('courseUnit', '_id');
 		
 		const userCourseIds = userGroups.map(group => group.courseUnit._id);
@@ -90,7 +94,7 @@ router.get('/',
 		
 		// Get activities with proper population
 		const activities = await RecentActivity.find(query)
-			.populate('course', 'name slug')
+			.populate('course', 'code slug')
 			.populate('activity', '_id title dueAt')
 			.populate('targetUser', 'firstName lastName avatar')
 			.sort({ date: -1 })
@@ -165,7 +169,7 @@ router.get('/course/:courseId',
 		
 		// Get activities for this specific course
 		const activities = await RecentActivity.find({ course: courseId })
-			.populate('course', 'name slug')
+			.populate('course', 'code slug')
 			.populate('activity', '_id title dueAt')
 			.populate('targetUser', 'firstName lastName avatar')
 			.sort({ date: -1 })

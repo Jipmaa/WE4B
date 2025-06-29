@@ -9,6 +9,7 @@ import {AuthService} from '@/core/services/auth.service';
 import { CourseBox } from '@/shared/components/ui/course-box/course-box';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import { UserPreferencesService } from '@/core/services/user-preferences.service';
+import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-sidebar/recent-activity-sidebar';
 
 @Component({
   selector: 'app-courses-page',
@@ -17,7 +18,8 @@ import { UserPreferencesService } from '@/core/services/user-preferences.service
     InputComponent,
     LucideAngularModule,
     CourseBox,
-    IconButtonComponent
+    IconButtonComponent,
+    RecentActivitySidebar
   ],
   templateUrl: './courses-page.html',
 })

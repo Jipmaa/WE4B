@@ -12,6 +12,7 @@ import {Collapsible} from '@/shared/components/ui/collapsible/collapsible';
 import { ActivityPopup } from '../activity-popup/activity-popup';
 import {Activity} from '@/shared/components/ui/activity/activity';
 import { CourseActivity } from '@/core/models/course-activity.models';
+import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-sidebar/recent-activity-sidebar';
 
 @Component({
   selector: 'app-course-page',
@@ -22,7 +23,8 @@ import { CourseActivity } from '@/core/models/course-activity.models';
     IconButtonComponent,
     Collapsible,
     ActivityPopup,
-    Activity
+    Activity,
+    RecentActivitySidebar
   ],
   templateUrl: './course-page.html',
 })

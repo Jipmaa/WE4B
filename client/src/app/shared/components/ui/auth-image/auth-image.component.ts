@@ -38,7 +38,7 @@ import {LucideAngularModule} from 'lucide-angular';
 export class AuthImageComponent implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
 
-  @Input({required: true}) src: string | null = null;
+  @Input({required: true}) src: string | null | undefined = null;
   @Input() alt: string = '';
   @Input() width: number | null = null;
   @Input() height: number | null = null;

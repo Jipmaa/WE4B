@@ -20,6 +20,7 @@ import { StudentDepositInterfaceComponent } from '../student-deposit-interface/s
 import { TeacherDepositsTableComponent } from '../teacher-deposits-table/teacher-deposits-table';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
+import {RecentActivitySidebar} from '@/shared/components/ui/recent-activity-sidebar/recent-activity-sidebar';
 
 @Component({
   selector: 'app-activity-display-page',
@@ -31,7 +32,8 @@ import {ButtonComponent} from '@/shared/components/ui/button/button';
     SidebarLayout,
     StudentDepositInterfaceComponent,
     TeacherDepositsTableComponent,
-    ButtonComponent
+    ButtonComponent,
+    RecentActivitySidebar
   ],
   templateUrl: './activity-display-page.html'
 })
