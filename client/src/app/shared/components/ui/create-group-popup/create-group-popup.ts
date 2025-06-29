@@ -33,8 +33,8 @@ import slugify from 'slugify';
 export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() courseUnit: CourseUnit | null = null;
-  @Input() group: CourseGroup | null = null; // Pour le mode édition
-  @Input() isEditMode = false; // true = édition, false = création
+  @Input() group: CourseGroup | null = null;
+  @Input() isEditMode = false;
   isOpen = computed(
     ()=> this.courseUnit !== null
   );
@@ -160,7 +160,6 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     if (this.isEditMode && this.group) {
-      // Mode édition - mise à jour
       this.courseGroupService.updateGroup(this.group._id!, data).subscribe({
         next: (updatedGroup) => {
           this.isSubmitting = false;
@@ -174,7 +173,6 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
         }
       });
     } else {
-      // Mode création
       this.courseGroupService.createGroup(data as CreateCourseGroupRequest).subscribe({
         next: (newGroup) => {
           this.isSubmitting = false;

@@ -1,4 +1,3 @@
-// Représentation partielle des objets User et CourseUnit pour la clarté du modèle
 export interface PartialUser {
   _id: string;
   firstName: string;
@@ -11,15 +10,13 @@ export interface PartialCourseUnit {
   code: string;
 }
 
-// Interface pour un message individuel
 export interface Message {
   _id: string;
   author: PartialUser;
   content: string;
-  createdAt: string; // Les dates sont généralement transmises comme des chaînes ISO
+  createdAt: string; // ISO string
 }
 
-// Interface pour une discussion complète
 export interface Discussion {
   _id: string;
   title: string;

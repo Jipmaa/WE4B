@@ -64,7 +64,6 @@ export class Login implements OnInit {
     }).subscribe({
       next: () => {
         this.isLoading = false;
-        // Redirige vers la page des cours
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {

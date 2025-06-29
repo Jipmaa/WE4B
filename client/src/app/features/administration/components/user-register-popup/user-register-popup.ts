@@ -18,8 +18,8 @@ import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-but
 })
 export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
   @Input() isOpen = false;
-  @Input() user: User | null = null; // Pour le mode édition
-  @Input() isEditMode = false; // true = édition, false = création
+  @Input() user: User | null = null;
+  @Input() isEditMode = false;
 
   @Output() closePopup = new EventEmitter<void>();
   @Output() userSaved = new EventEmitter<User>();
@@ -52,7 +52,6 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
     this.keydownListener = this.onGlobalKeydown.bind(this);
     document.addEventListener('keydown', this.keydownListener);
 
-    // Écouter les changements sur les rôles pour ajuster la validation du département
     this.myForm.get('roles')?.valueChanges.subscribe(roles => {
       this.updateDepartmentValidation(roles || []);
     });
@@ -78,10 +77,8 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
     const passwordControl = this.myForm.get('password');
 
     if (this.isEditMode) {
-      // En mode édition, le mot de passe est optionnel
       passwordControl?.setValidators([]);
     } else {
-      // En mode création, le mot de passe est requis avec validation
       passwordControl?.setValidators([Validators.required, passwordValidator]);
     }
 
@@ -101,7 +98,7 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
       phone: this.user.phone || '',
       roles: this.user.roles || [],
       department: this.user.department || '',
-      password: '', // Toujours vide en mode édition
+      password: '',
       avatar: ''
     });
   }
@@ -110,10 +107,8 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
     const departmentControl = this.myForm.get('department');
 
     if (roles.includes('student')) {
-      // Si student est sélectionné, le département devient requis
       departmentControl?.setValidators([Validators.required]);
     } else {
-      // Sinon, pas de validation et on vide le champ
       departmentControl?.clearValidators();
       departmentControl?.setValue('');
     }
@@ -189,7 +184,6 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
     } else {
       this.myForm.patchValue({ roles: roles.filter(r => r !== event.target.value) });
     }
-    // Marque le champ comme touché pour déclencher l'affichage des erreurs
     this.myForm.get('roles')?.markAsTouched();
   }
 
@@ -217,14 +211,12 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
       roles: getRoles()
     };
 
-    // Ajouter le mot de passe seulement en mode création ou si renseigné en mode édition
     const data: CreateUserRequest | any = {
       ...formData,
       ...((!this.isEditMode || this.myForm.value.password) && { password: this.myForm.value.password || '' })
     };
 
     if (this.isEditMode && this.user) {
-      // Mode édition - mise à jour
       this.userService.updateUser(this.user._id!, data, this.selectedFile || undefined).subscribe({
         next: (updatedUser) => {
           this.isSubmitting = false;
@@ -238,7 +230,6 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
         }
       });
     } else {
-      // Mode création
       this.userService.createUser(data as CreateUserRequest, this.selectedFile || undefined).subscribe({
         next: (newUser) => {
           this.isSubmitting = false;

@@ -2,14 +2,12 @@ import { Schema, model, Document } from 'mongoose';
 import { IUser } from './user';
 import { CourseUnit } from './course-unit';
 
-// Interface pour un message imbriqué
 export interface IMessage extends Document {
   author: IUser['_id'];
   content: string;
   createdAt: Date;
 }
 
-// Interface pour le document de discussion principal
 export interface IDiscussion extends Document {
   title: string;
   author: IUser['_id'];
@@ -19,7 +17,6 @@ export interface IDiscussion extends Document {
   updatedAt: Date;
 }
 
-// Schéma pour les messages imbriqués
 const messageSchema = new Schema<IMessage>({
   author: { 
     type: Schema.Types.ObjectId, 
@@ -37,7 +34,6 @@ const messageSchema = new Schema<IMessage>({
   }
 });
 
-// Schéma pour la collection de discussions
 const discussionSchema = new Schema<IDiscussion>({
   title: { 
     type: String, 
@@ -56,7 +52,7 @@ const discussionSchema = new Schema<IDiscussion>({
   },
   messages: [messageSchema]
 }, {
-  timestamps: true // Ajoute automatiquement createdAt et updatedAt
+  timestamps: true
 });
 
 export const Discussion = model<IDiscussion>('Discussion', discussionSchema);

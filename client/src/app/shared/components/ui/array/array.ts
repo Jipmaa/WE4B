@@ -107,7 +107,6 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   getHeaderCellClasses(column: Column): string {
     const baseClasses = 'h-12 px-4 text-left text-muted-foreground text-sm font-semibold leading-tight';
 
-    // Définir des largeurs fixes pour les colonnes
     if (column.mapToKey === 'fullName' || column.label.toLowerCase().includes('fullName')) {
       return `w-48 ${baseClasses}`;
     }
@@ -121,7 +120,6 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   getBodyCellClasses(column: Column): string {
     const baseClasses = 'p-4 text-left text-foreground text-sm font-normal leading-normal';
 
-    // Définir des largeurs fixes pour les colonnes
     if (column.mapToKey === 'nom' || column.label.toLowerCase().includes('nom')) {
       return `w-48 ${baseClasses}`;
     }
@@ -134,7 +132,7 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
 
   getRowClasses(index: number, item: T): string {
     const baseClasses = 'border-b border-gray-200';
-    const isEven = index % 2 === 1; // Les lignes paires (0, 2, 4...) n'ont pas de background
+    const isEven = index % 2 === 1;
     const isSelected = this.isItemSelected(item);
 
     let classes = isEven ? `${baseClasses} bg-sky-500/5` : baseClasses;
@@ -147,18 +145,16 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   }
 
   shouldShowMenuUp(index: number): boolean {
-    // Solution simple : vérifier si on est dans la moitié basse de l'écran
     const table = document.querySelector('table');
     if (!table) return false;
 
     const tableRect = table.getBoundingClientRect();
-    const rowHeight = 60; // hauteur approximative d'une ligne
-    const rowTop = tableRect.top + 60 + (index * rowHeight); // 60 pour le header
+    const rowHeight = 60;
+    const rowTop = tableRect.top + 60 + (index * rowHeight);
 
     const windowHeight = window.innerHeight;
     const spaceBelow = windowHeight - rowTop;
 
-    // Si moins de 200px d'espace en bas, afficher vers le haut
     return spaceBelow < 200;
   }
 

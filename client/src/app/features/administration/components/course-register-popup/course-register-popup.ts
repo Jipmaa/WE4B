@@ -40,8 +40,8 @@ import {CourseUnit} from '@/core/models/course-unit.models';
 export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
 
   @Input() isOpen = false;
-  @Input() courseUnit: CourseUnit | null = null; // Pour le mode édition
-  @Input() isEditMode = false; // true = édition, false = création
+  @Input() courseUnit: CourseUnit | null = null;
+  @Input() isEditMode = false;
 
   @Output() closePopup = new EventEmitter<void>();
   @Output() courseUnitsSaved = new EventEmitter<CourseUnit>();
@@ -68,7 +68,6 @@ export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
     this.keydownListener = this.onGlobalKeydown.bind(this);
     document.addEventListener('keydown', this.keydownListener);
 
-    // Pré-remplir le formulaire si en mode édition
     if (this.isEditMode && this.courseUnit) {
       this.prefillForm();
     }
@@ -182,7 +181,6 @@ export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
     };
 
     if (this.isEditMode && this.courseUnit) {
-      // Mode édition - mise à jour
       this.courseUnitsService.updateCourseUnit(this.courseUnit._id!, data).subscribe({
         next: (updatedCourseUnits) => {
           this.isSubmitting = false;
@@ -196,7 +194,6 @@ export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
         }
       });
     } else {
-      // Mode création
       this.courseUnitsService.createCourseUnit(data as any, this.selectedFile || undefined).subscribe({
         next: (newCourseUnits) => {
           this.isSubmitting = false;
@@ -218,7 +215,6 @@ export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
     this.isSubmitting = false;
     this.submitError = '';
 
-    // Repré-remplir si en mode édition
     if (this.isEditMode && this.courseUnit) {
       setTimeout(() => this.prefillForm(), 0);
     }

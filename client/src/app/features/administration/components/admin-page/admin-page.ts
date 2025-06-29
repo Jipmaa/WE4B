@@ -262,13 +262,13 @@ export class AdminPage implements OnInit, AfterViewChecked {
   loadingStateUsers: LoadingState = {
     isLoading: false,
     hasError: false,
-    allLoaded: true // Changez en false si vous voulez tester le chargement infini
+    allLoaded: true
   };
 
   loadingStateCourses: LoadingState = {
     isLoading: false,
     hasError: false,
-    allLoaded: true // Changez en false si vous voulez tester le chargement infini
+    allLoaded: true
   };
 
   loadMoreUsers() {
