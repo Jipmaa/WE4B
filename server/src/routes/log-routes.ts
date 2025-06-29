@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { query } from 'express-validator';
-import { adminMiddleware } from '../middleware/roles-middleware';
 import { validateRequest } from '../middleware/validate-request';
 import { asyncHandler } from '../utils/async-handler';
 import Log from '../models/log';

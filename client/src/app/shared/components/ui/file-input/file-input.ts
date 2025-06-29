@@ -37,7 +37,7 @@ export class FileInputComponent implements ControlValueAccessor {
   selectedFile: File | null = null;
   isDragOver = false;
 
-  private onChange = (value: File | null) => {};
+  private onChange = (_value: File | null) => {};
   private onTouched = () => {};
 
   // ControlValueAccessor implementation
@@ -109,7 +109,7 @@ export class FileInputComponent implements ControlValueAccessor {
 
   onKeyDown(event: KeyboardEvent) {
     if (this.disabled) return;
-    
+
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.triggerFileInput();
@@ -158,14 +158,14 @@ export class FileInputComponent implements ControlValueAccessor {
   getFileSizeDisplay(): string {
     if (!this.selectedFile) return '';
     const sizeInMB = this.selectedFile.size / 1024 / 1024;
-    return sizeInMB < 1 
+    return sizeInMB < 1
       ? `${(sizeInMB * 1024).toFixed(0)} KB`
       : `${sizeInMB.toFixed(2)} MB`;
   }
 
   getMaxSizeDisplay(): string {
     const maxSizeMB = this.maxSizeBytes / 1024 / 1024;
-    return maxSizeMB < 1 
+    return maxSizeMB < 1
       ? `${(maxSizeMB * 1024).toFixed(0)} KB`
       : `${maxSizeMB.toFixed(0)} MB`;
   }

@@ -26,7 +26,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 /**
  * Guard that redirects authenticated users away from accounts pages
  */
-export const guestGuard: CanActivateFn = (route, state) => {
+export const guestGuard: CanActivateFn = (_route, _state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
@@ -102,9 +102,6 @@ export const conditionalGuard: CanActivateFn = (route, state) => {
 
   // Get required roles from route data
   const requiredRoles = route.data?.['roles'] as UserRole[] || [];
-
-  // Get required permissions from route data
-  const requiredPermissions = route.data?.['permissions'] as string[] || [];
 
   // Check roles
   if (requiredRoles.length > 0 && !authService.canAccess(requiredRoles)) {

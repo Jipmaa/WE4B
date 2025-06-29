@@ -210,10 +210,6 @@ export class ActivityDisplayPage implements OnInit, OnDestroy {
     };
   }
 
-  isOverdue(dueAt: Date): boolean {
-    return new Date(dueAt) < new Date();
-  }
-
   getDueDate(dueAt: Date): Date {
     return new Date(dueAt);
   }

@@ -1,15 +1,13 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { User } from '@/core/models/user.models';
-import { CourseGroup } from '@/core/models/course-group.models';
-import { UsersService } from '@/core/services/users.service';
-import { CourseGroupsService } from '@/core/services/course-groups.service';
-import { AuthService } from '@/core/services/auth.service';
-import { CommonModule } from '@angular/common';
-import { ButtonComponent } from '@/shared/components/ui/button/button';
-import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
-import { SelectComponent, SelectOption } from '@/shared/components/ui/select';
-import { getCurrentAcademicPeriod } from '@/shared/utils/academic-period';
-import { FormsModule } from '@angular/forms';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {User} from '@/core/models/user.models';
+import {CourseGroup} from '@/core/models/course-group.models';
+import {CourseGroupsService} from '@/core/services/course-groups.service';
+import {CommonModule} from '@angular/common';
+import {ButtonComponent} from '@/shared/components/ui/button/button';
+import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
+import {SelectComponent, SelectOption} from '@/shared/components/ui/select';
+import {getCurrentAcademicPeriod} from '@/shared/utils/academic-period';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-assign-user-to-group-popup',
@@ -34,36 +32,12 @@ export class AssignUserToGroupPopupComponent {
   error: string | null = null;
 
   constructor(
-    private usersService: UsersService,
     private courseGroupsService: CourseGroupsService,
-    private authService: AuthService
   ) {
     const current = getCurrentAcademicPeriod();
     this.selectedSemester = current.semester;
     this.selectedYear = current.year;
     this.selectedSemesterValue = `${current.semester}-${current.year}`;
-  }
-
-  ngOnChanges() {
-    if (this.isOpen) {
-      this.loadUsers();
-    }
-  }
-
-  loadUsers() {
-    if (!this.group) return;
-
-    this.isLoading = true;
-    this.courseGroupsService.getAvailableUsersForGroup(this.group._id).subscribe({
-      next: (response) => {
-        this.users = response.data.users;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load available users.';
-        this.isLoading = false;
-      },
-    });
   }
 
   get userOptions(): SelectOption[] {
@@ -144,10 +118,9 @@ export class AssignUserToGroupPopupComponent {
   }
 
   private getSemesterDescription(period: { year: string; semester: 1 | 2 }): string {
-    const months = period.semester === 1
+    return period.semester === 1
       ? 'September - January'
       : 'February - June';
-    return months;
   }
 
   onUserSelected(option: SelectOption): void {
@@ -217,7 +190,7 @@ export class AssignUserToGroupPopupComponent {
           this.userAssigned.emit();
           this.onClose();
         },
-        error: (err) => {
+        error: () => {
           this.error = 'Failed to assign user.';
           this.isLoading = false;
         },

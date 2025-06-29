@@ -18,12 +18,8 @@ import {LucideAngularModule} from 'lucide-angular';
 import {NgIf} from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { CourseUnitsService} from '@/core/services/course-units.service';
-import { Router } from '@angular/router';
-import { CreateUserRequest, StudentDepartment, UserRole, User } from '@/core/models/user.models';
-import {CourseUnit, CreateCourseUnitRequest} from '@/core/models/course-unit.models';
-import {UsersService} from '@/core/services/users.service';
+import {CourseUnit} from '@/core/models/course-unit.models';
 
 @Component({
   selector: 'app-course-register-popup',
@@ -52,9 +48,7 @@ export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
 
   @ViewChild('firstFocusable') firstFocusable!: ElementRef<HTMLElement>;
 
-  private readonly http = inject(HttpClient);
   private readonly courseUnitsService = inject(CourseUnitsService);
-  private readonly router = inject(Router);
 
   private keydownListener?: (event: KeyboardEvent) => void;
 

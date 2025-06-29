@@ -35,10 +35,6 @@ export interface CourseGroup {
   updatedAt: Date;
 }
 
-export interface CourseGroupWithMembers extends Omit<CourseGroup, 'users'> {
-  users: (Omit<CourseGroupUser, 'user'> & { user: User })[];
-}
-
 export interface CourseGroupFilters extends BaseFilters {
   courseUnit?: string;
   createdBy?: string;

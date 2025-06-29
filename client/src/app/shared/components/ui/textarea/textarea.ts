@@ -20,6 +20,7 @@ type ValidationState = 'error' | 'warning' | 'success' | null;
 })
 export class TextareaComponent implements ControlValueAccessor, OnInit {
   @Input() label?: string;
+  @Input() name?: string;
   @Input() placeholder?: string;
   @Input() variant: TextareaVariant = 'default';
   @Input() size: TextareaSize = 'md';
@@ -48,7 +49,7 @@ export class TextareaComponent implements ControlValueAccessor, OnInit {
   value = signal('');
   isFocused = signal(false);
 
-  private onChange = (value: string) => {};
+  private onChange = (_value: string) => {};
   private onTouched = () => {};
 
   ngOnInit() {

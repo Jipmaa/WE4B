@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { getPublicUrl, FILE_CONFIGS } from '../services/minio-service';
-import {CourseUnitType} from "./course-unit";
 
 export type UserRole = 'student' | 'teacher' | 'admin';
 

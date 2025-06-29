@@ -74,7 +74,6 @@ export class AdminPage implements OnInit, AfterViewChecked {
   showDeleteCoursePopup: boolean = false;
   courseToDelete: CourseUnit | null = null;
 
-  readonly modifiedGroupPopUp = signal<CourseGroup | null>(null);
   showDeleteGroupPopup: boolean = false;
   groupToDelete: CourseGroup | null = null;
 
@@ -272,9 +271,6 @@ export class AdminPage implements OnInit, AfterViewChecked {
     allLoaded: true // Changez en false si vous voulez tester le chargement infini
   };
 
-  private currentPage = 1;
-  private pageSize = 10;
-
   loadMoreUsers() {
     if (this.loadingStateUsers.isLoading || this.loadingStateUsers.allLoaded) {
       return;
@@ -291,10 +287,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
     this.loadingStateCourses.isLoading = true;
   }
 
-  onUserUpdated(updatedUser: User): void {
-    // Chercher l'index de l'utilisateur mis à jour dans le tableau
-    const index = this.UsersArray.findIndex(u => u._id === updatedUser._id);
-
+  onUserUpdated(_updatedUser: User): void {
     this.servUsers.getUsers().subscribe(
       response => {
         this.UsersArray = response.data.users;

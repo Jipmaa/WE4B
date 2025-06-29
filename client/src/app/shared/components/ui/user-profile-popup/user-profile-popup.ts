@@ -278,38 +278,6 @@ export class UserProfilePopup implements OnInit, OnDestroy {
     }
   }
 
-  get profileFormErrors() {
-    const errors: string[] = [];
-
-    if (this.profileForm.get('firstName')?.invalid && this.profileForm.get('firstName')?.touched) {
-      errors.push('Le prénom est requis (minimum 2 caractères)');
-    }
-
-    if (this.profileForm.get('lastName')?.invalid && this.profileForm.get('lastName')?.touched) {
-      errors.push('Le nom est requis (minimum 2 caractères)');
-    }
-
-    return errors;
-  }
-
-  get passwordFormErrors() {
-    const errors: string[] = [];
-
-    if (this.passwordForm.get('currentPassword')?.invalid && this.passwordForm.get('currentPassword')?.touched) {
-      errors.push('Le mot de passe actuel est requis');
-    }
-
-    if (this.passwordForm.get('newPassword')?.invalid && this.passwordForm.get('newPassword')?.touched) {
-      errors.push('Le nouveau mot de passe est requis (minimum 6 caractères)');
-    }
-
-    if (this.passwordForm.get('confirmPassword')?.invalid && this.passwordForm.get('confirmPassword')?.touched) {
-      errors.push('La confirmation du mot de passe est requise');
-    }
-
-    return errors;
-  }
-
   // Custom validators
   private birthdateValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value) {

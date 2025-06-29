@@ -100,7 +100,7 @@ export function getAcceptAttribute(semanticTypes: string[]): string {
   }
 
   const acceptValues: string[] = [];
-  
+
   for (const semanticType of semanticTypes) {
     const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
     if (mapping) {
@@ -148,78 +148,4 @@ export function getFileTypesDescription(semanticTypes: string[]): string {
   }
 
   return descriptions.slice(0, -1).join(', ') + ' ou ' + descriptions[descriptions.length - 1];
-}
-
-/**
- * Validates if a file type is allowed based on semantic file types
- * This is a client-side helper for immediate feedback
- */
-export function isFileTypeAllowed(file: File, allowedSemanticTypes: string[]): boolean {
-  if (!allowedSemanticTypes || allowedSemanticTypes.length === 0) {
-    return true;
-  }
-
-  const fileName = file.name.toLowerCase();
-  const fileType = file.type;
-
-  for (const semanticType of allowedSemanticTypes) {
-    const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
-    
-    if (!mapping) {
-      continue;
-    }
-
-    // Check by MIME type
-    if (fileType && mapping.mimeTypes.includes(fileType)) {
-      return true;
-    }
-
-    // Check by extension
-    const hasAllowedExtension = mapping.extensions.some(ext => 
-      fileName.endsWith(ext.toLowerCase())
-    );
-    
-    if (hasAllowedExtension) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Gets all allowed extensions for display purposes
- */
-export function getAllowedExtensions(semanticTypes: string[]): string[] {
-  const extensions: string[] = [];
-  
-  for (const semanticType of semanticTypes) {
-    const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
-    if (mapping) {
-      extensions.push(...mapping.extensions);
-    }
-  }
-
-  return [...new Set(extensions)];
-}
-
-/**
- * Formats extensions for user display
- */
-export function formatExtensionsForDisplay(semanticTypes: string[]): string {
-  const extensions = getAllowedExtensions(semanticTypes);
-  
-  if (extensions.length === 0) {
-    return '';
-  }
-  
-  if (extensions.length === 1) {
-    return extensions[0];
-  }
-  
-  if (extensions.length <= 3) {
-    return extensions.join(', ');
-  }
-  
-  return extensions.slice(0, 3).join(', ') + ` et ${extensions.length - 3} autres`;
 }

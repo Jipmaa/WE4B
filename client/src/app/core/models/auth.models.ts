@@ -56,19 +56,3 @@ export interface JwtPayload {
   iat: number; // issued at
   exp: number; // expires at
 }
-
-// Utility types
-export type AuthStatus = 'authenticated' | 'unauthenticated' | 'loading';
-
-// Permission types based on your roles
-export interface Permission {
-  resource: string;
-  action: 'create' | 'read' | 'update' | 'delete';
-  condition?: any;
-}
-
-export interface RolePermissions {
-  student: Permission[];
-  teacher: Permission[];
-  admin: Permission[];
-}

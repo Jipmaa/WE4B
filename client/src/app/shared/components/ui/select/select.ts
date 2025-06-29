@@ -78,7 +78,7 @@ export class SelectComponent implements ControlValueAccessor, OnInit, OnDestroy 
   selectedValue = signal<any>(this.multiple ? [] : null);
   focusedOptionIndex = signal(-1);
 
-  private onChange = (value: any) => {};
+  private onChange = (_value: any) => {};
   private onTouched = () => {};
 
   ngOnInit() {

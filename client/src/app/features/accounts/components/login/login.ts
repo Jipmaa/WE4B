@@ -5,6 +5,7 @@ import {FormsModule} from '@angular/forms';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {LucideAngularModule} from 'lucide-angular';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,7 @@ import {LucideAngularModule} from 'lucide-angular';
     ButtonComponent,
     InputComponent,
     LucideAngularModule,
+    NgOptimizedImage,
   ],
   templateUrl: './login.html',
 })
@@ -60,7 +62,7 @@ export class Login implements OnInit {
       email: this.email,
       password: this.password
     }).subscribe({
-      next: (user) => {
+      next: () => {
         this.isLoading = false;
         // Redirige vers la page des cours
         this.router.navigate(['/dashboard']);

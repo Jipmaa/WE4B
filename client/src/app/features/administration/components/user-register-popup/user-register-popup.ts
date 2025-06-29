@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ValidationErrors, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { UsersService } from '@/core/services/users.service';
 import { AuthService } from '@/core/services/auth.service';
-import { Router } from '@angular/router';
 import { CreateUserRequest, StudentDepartment, UserRole, User } from '@/core/models/user.models';
 import { LucideAngularModule } from "lucide-angular";
-import { ButtonComponent } from "../../../../shared/components/ui/button/button";
-import { InputComponent } from "../../../../shared/components/ui/input/input";
+import { ButtonComponent } from "@/shared/components/ui/button/button";
+import { InputComponent } from "@/shared/components/ui/input/input";
 import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
 
 @Component({
@@ -29,9 +27,7 @@ export class UserRegisterPopup implements OnInit, OnDestroy, OnChanges {
   @ViewChild('firstFocusable') firstFocusable!: ElementRef<HTMLElement>;
 
   protected readonly authService = inject(AuthService);
-  private readonly http = inject(HttpClient);
   private readonly userService = inject(UsersService);
-  private readonly router = inject(Router);
 
   private keydownListener?: (event: KeyboardEvent) => void;
 
@@ -309,7 +305,7 @@ function passwordValidator(control: AbstractControl): ValidationErrors | null {
     errors["uppercase"] = 'ok';
   if (!/\d/.test(control.value))
     errors["number"] = 'ok';
-  if ((value.match(/[!@#$%^&*()_+\-=\[\]{} ':\"\\|,.<>\/?]/g) || []).length < 2)
+  if ((value.match(/[!@#$%^&*()_+\-=\[\]{} ':"\\|,.<>\/?]/g) || []).length < 2)
     errors["specialChars"] = 'ok';
 
   return Object.keys(errors).length ? errors : null;

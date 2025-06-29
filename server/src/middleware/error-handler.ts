@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction, Application} from 'express';
+import {Request, Response, NextFunction} from 'express';
 import mongoose from 'mongoose';
 import { AppError } from '../utils/app-error';
 
@@ -92,7 +92,7 @@ export const errorHandler = (
 	 err: any,
 	 req: Request,
 	 res: Response,
-	 next: NextFunction
+	 _next: NextFunction
 ): void => {
 	// Ensure CORS headers are set even for errors
 	const origin = req.get('Origin');

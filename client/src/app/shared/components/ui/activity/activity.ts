@@ -166,10 +166,6 @@ export class Activity {
     }
   }
 
-  asFileDepositoryActivity(): FileDepositoryActivity {
-    return this.activity as FileDepositoryActivity
-  }
-
   handleEdit(): void {
     this.editActivity.emit(this.activity);
   }

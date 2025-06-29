@@ -81,7 +81,7 @@ export class AddGroupPageComponent implements OnInit {
     }
 
     this.courseGroupService.createGroup(data).subscribe({
-      next: res => {
+      next: () => {
         alert('Groupe créé avec succès !');
         this.myForm.reset();
         this.router.navigate(['/dashboard']);//courses/slug

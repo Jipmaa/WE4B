@@ -29,10 +29,3 @@ export interface Discussion {
   createdAt: string;
   updatedAt: string;
 }
-
-// Interface pour la création d'une discussion
-export interface CreateDiscussionRequest {
-  title: string;
-  message: string;
-  course?: string; // ID du cours
-}

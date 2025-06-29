@@ -4,8 +4,6 @@ import {InputComponent} from '@/shared/components/ui/input/input';
 import {LucideAngularModule} from 'lucide-angular';
 import {CourseUnitsService} from '@/core/services/course-units.service';
 import {CourseUnit} from '@/core/models/course-unit.models';
-import {AuthService} from '@/core/services/auth.service';
-// import {CourseCard} from '@/shared/components/ui/course-card/course-card';
 import { CourseBox } from '@/shared/components/ui/course-box/course-box';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import { UserPreferencesService } from '@/core/services/user-preferences.service';
@@ -26,7 +24,6 @@ import { RecentActivitySidebar } from '@/shared/components/ui/recent-activity-si
 export class CoursesPage implements OnInit {
 
   private readonly coursesService = inject(CourseUnitsService);
-  private readonly authService = inject(AuthService);
   private readonly userPreferencesService = inject(UserPreferencesService);
 
   private userCourses = signal<CourseUnit[] | null>(null);

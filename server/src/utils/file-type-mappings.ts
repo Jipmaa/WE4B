@@ -149,39 +149,3 @@ function getFileExtension(filename: string): string | null {
   }
   return filename.substring(lastDotIndex);
 }
-
-/**
- * Gets human-readable descriptions for semantic file types
- */
-export function getFileTypeDescription(semanticType: string): string {
-  const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
-  return mapping?.description || 'Type de fichier inconnu';
-}
-
-/**
- * Gets all allowed MIME types for semantic file types
- */
-export function getAllowedMimeTypes(semanticTypes: string[]): string[] {
-  const mimeTypes: string[] = [];
-  for (const semanticType of semanticTypes) {
-    const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
-    if (mapping) {
-      mimeTypes.push(...mapping.mimeTypes);
-    }
-  }
-  return [...new Set(mimeTypes)]; // Remove duplicates
-}
-
-/**
- * Gets all allowed extensions for semantic file types
- */
-export function getAllowedExtensions(semanticTypes: string[]): string[] {
-  const extensions: string[] = [];
-  for (const semanticType of semanticTypes) {
-    const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
-    if (mapping) {
-      extensions.push(...mapping.extensions);
-    }
-  }
-  return [...new Set(extensions)]; // Remove duplicates
-}

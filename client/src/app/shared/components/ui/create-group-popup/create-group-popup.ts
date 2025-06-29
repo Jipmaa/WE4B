@@ -13,19 +13,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import {AuthImageComponent} from '@/shared/components/ui/auth-image/auth-image.component';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {TextareaComponent} from '@/shared/components/ui/textarea/textarea';
 import {LucideAngularModule} from 'lucide-angular';
 import {AuthService} from '@/core/services/auth.service';
-import {HttpClient} from '@angular/common/http';
-import {Router} from '@angular/router';
 import {CourseGroup, CreateCourseGroupRequest, Day, GroupKind} from '@/core/models/course-group.models';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseUnit} from '@/core/models/course-unit.models';
-import {User} from '@/core/models/user.models';
 import slugify from 'slugify';
 
 @Component({
@@ -49,9 +45,7 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('firstFocusable') firstFocusable!: ElementRef<HTMLElement>;
 
   protected readonly authService = inject(AuthService);
-  private readonly http = inject(HttpClient);
   private readonly courseGroupService = inject(CourseGroupsService);
-  private readonly router = inject(Router);
 
   private keydownListener?: (event: KeyboardEvent) => void;
 
@@ -209,6 +203,4 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
   get submitButtonText(): string {
     return this.isEditMode ? 'Mettre à jour' : 'Enregistrer';
   }
-
-  protected readonly JSON = JSON;
 }

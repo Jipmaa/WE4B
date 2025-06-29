@@ -18,13 +18,13 @@ import { LucideAngularModule } from 'lucide-angular';
       @if (label) {
         <label class="block text-sm font-medium text-gray-700">{{ label }}</label>
       }
-      
+
       <div class="flex items-center justify-center w-full">
-        <label 
+        <label
           class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
           [class.border-red-300]="hasError"
           [class.bg-red-50]="hasError">
-          
+
           <div class="flex flex-col items-center justify-center pt-5 pb-6">
             <lucide-icon name="upload" class="w-8 h-8 mb-4 text-gray-500"></lucide-icon>
             <p class="mb-2 text-sm text-gray-500">
@@ -37,18 +37,18 @@ import { LucideAngularModule } from 'lucide-angular';
               <p class="text-xs text-gray-500">Maximum {{ maxFiles }} fichiers</p>
             }
           </div>
-          
-          <input 
+
+          <input
             #fileInput
-            type="file" 
-            class="hidden" 
+            type="file"
+            class="hidden"
             [multiple]="multiple"
             [accept]="accept"
             (change)="onFileChange($event)"
           />
         </label>
       </div>
-      
+
       @if (selectedFiles.length > 0) {
         <div class="mt-4">
           <h4 class="text-sm font-medium text-gray-700 mb-2">Fichiers sélectionnés:</h4>
@@ -71,7 +71,7 @@ import { LucideAngularModule } from 'lucide-angular';
           </div>
         </div>
       }
-      
+
       @if (error) {
         <p class="text-sm text-red-600">{{ error }}</p>
       }
@@ -95,14 +95,14 @@ export class FileInputComponent implements ControlValueAccessor {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   selectedFiles: File[] = [];
-  
-  private onChange = (files: File[]) => {};
+
+  private onChange = (_files: File[]) => {};
   private onTouched = () => {};
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files || []);
-    
+
     // Validate files
     const validationError = this.validateFiles(files);
     if (validationError) {
@@ -118,13 +118,13 @@ export class FileInputComponent implements ControlValueAccessor {
           newFiles.push(file);
         }
       }
-      
+
       // Check total file count
       if (this.maxFiles && newFiles.length > this.maxFiles) {
         this.validationError.emit(`Maximum ${this.maxFiles} fichiers autorisés`);
         return;
       }
-      
+
       this.selectedFiles = newFiles;
     } else {
       this.selectedFiles = files.slice(0, 1);
@@ -133,7 +133,7 @@ export class FileInputComponent implements ControlValueAccessor {
     this.onChange(this.selectedFiles);
     this.onTouched();
     this.fileSelected.emit(this.selectedFiles);
-    
+
     // Clear the input
     input.value = '';
   }
@@ -156,7 +156,7 @@ export class FileInputComponent implements ControlValueAccessor {
         const acceptedTypes = this.accept.split(',').map(type => type.trim());
         const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
         const mimeType = file.type;
-        
+
         const isAccepted = acceptedTypes.some(type => {
           if (type.startsWith('.')) {
             return type === fileExtension;
@@ -197,7 +197,7 @@ export class FileInputComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
+  setDisabledState(_isDisabled: boolean): void {
     // Could implement disabled state if needed
   }
 }

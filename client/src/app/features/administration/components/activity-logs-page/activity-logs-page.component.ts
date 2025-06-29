@@ -47,7 +47,6 @@ export class ActivityLogsPageComponent implements OnInit {
   loginHistory: LoginHistoryEntry[] = [];
   activityLogsPagination: Pagination | null = null;
   loginHistoryPagination: Pagination | null = null;
-  activeTab: 'activity' | 'login' = 'activity';
 
   activityLogsColumns: Column[] = [
     { label: 'Timestamp', mapToKey: 'timestamp', render: (item: LogEntry) => this.formatTimestamp(item.timestamp) },
@@ -133,10 +132,6 @@ export class ActivityLogsPageComponent implements OnInit {
           this.loginHistoryLoadingState.hasError = true;
         }
       });
-  }
-
-  changeTab(tab: 'activity' | 'login'): void {
-    this.activeTab = tab;
   }
 
   onActivityLogsLoadMore(): void {

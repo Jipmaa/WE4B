@@ -84,7 +84,7 @@ export class StudentDepositInterfaceComponent implements OnInit {
       : this.depositedFilesService.submitDeposit(this.activity._id, { files });
 
     request.subscribe({
-      next: (response) => {
+      next: () => {
         const message = hasExistingDeposit
           ? 'Fichiers mis à jour avec succès'
           : 'Fichiers déposés avec succès';

@@ -5,7 +5,7 @@
 >
 
   <ng-template #actionButtons>
-    <ng-container *ngIf="activeTab === 'ues'">
+    @if (activeTab === 'ues') {
       <app-input
         type="text"
         placeholder="Chercher une UE ou un groupe..."
@@ -27,9 +27,7 @@
         (buttonClick)="navigateToCourse()">
         Ajouter une UE
       </app-button>
-    </ng-container>
-
-    <ng-container *ngIf="activeTab === 'users'">
+    } @else if (activeTab === 'users') {
       <app-input
         type="text"
         placeholder="Chercher un utilisateur..."
@@ -51,7 +49,7 @@
         (buttonClick)="navigateToRegister()">
         Ajouter un utilisateur
       </app-button>
-    </ng-container>
+    }
   </ng-template>
 
   <app-tabs id="tabs">
@@ -140,7 +138,6 @@
 </app-delete-confirmation-popup>
 
 <app-create-group-popup
-  [isOpen]="groupPopupState() !== null"
   [isEditMode]="groupPopupState()?.mode === 'edit'"
   [courseUnit]="groupPopupState()?.courseUnit ?? null"
   [group]="groupPopupState()?.group ?? null"

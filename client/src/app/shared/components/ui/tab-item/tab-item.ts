@@ -77,11 +77,6 @@ export class TabItemComponent {
     this.elementRef.nativeElement.querySelector('button')?.focus();
   }
 
-  // Getter for checking if this tab is currently focused
-  public get isFocused(): boolean {
-    return document.activeElement === this.elementRef.nativeElement.querySelector('button');
-  }
-
   getClasses() {
     if (this.isActive) {
       return 'w-full min-w-0 px-3 py-1.5 bg-white rounded-sm shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex justify-center items-center gap-2.5 text-black font-medium text-sm';

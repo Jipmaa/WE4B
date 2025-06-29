@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, tap, throwError, forkJoin, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -10,7 +10,7 @@ import { AuthService } from '@/core/services/auth.service';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { CourseActivitiesService } from '@/core/services/course-activities.service';
 import { DepositedFilesService } from '@/core/services/deposited-files.service';
-import { categorizeCourseGroups, isCourseGroupCurrentlyActive } from '@/shared/utils/course-scheduling';
+import { isCourseGroupCurrentlyActive } from '@/shared/utils/course-scheduling';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,6 @@ export class DashboardService {
   private readonly _upcomingCourses = signal<CourseUnit[]>([]);
   private readonly _teacherActivities = signal<DepositDetailsForTeacher[]>([]);
   private readonly _studentActivities = signal<(FileDepositoryActivity & {courseSlug: string})[]>([]);
-  private readonly _recentActivities = signal<any[]>([]);
   private readonly _isLoading = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
 
@@ -39,56 +38,6 @@ export class DashboardService {
   readonly studentActivities = this._studentActivities.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
-
-  // Computed signals
-  readonly hasDashboardData = computed(() => {
-    return this._currentCourse() !== null ||
-           this._upcomingCourses().length > 0 ||
-           this._teacherActivities().length > 0 ||
-           this._studentActivities().length > 0;
-  });
-
-  readonly totalUpcomingCourses = computed(() => this._upcomingCourses().length);
-  readonly totalTeacherActivities = computed(() => this._teacherActivities().length);
-  readonly totalStudentActivities = computed(() => this._studentActivities().length);
-
-  readonly pendingFeedback = computed(() => {
-    return this._teacherActivities().filter(activity => activity.feedbackRate < 100).length;
-  });
-
-  readonly missingDeposits = computed(() => {
-    return this._teacherActivities().reduce((total, activity) => total + activity.missingStudentDeposits, 0);
-  });
-
-  // Computed signal for current course schedule info
-  readonly currentCourseSchedule = computed(() => {
-    const current = this._currentCourse();
-    if (!current || !current.groups || current.groups.length === 0) {
-      return null;
-    }
-
-    // Find the currently active group
-    const activeGroup = current.groups.find(group => isCourseGroupCurrentlyActive(group));
-    return activeGroup || null;
-  });
-
-  // Computed signal for next upcoming course
-  readonly nextUpcomingCourse = computed(() => {
-    const upcoming = this._upcomingCourses();
-    return upcoming.length > 0 ? upcoming[0] : null;
-  });
-
-  // Computed signal for next upcoming course schedule info
-  readonly nextUpcomingCourseSchedule = computed(() => {
-    const nextCourse = this.nextUpcomingCourse();
-    if (!nextCourse || !nextCourse.groups || nextCourse.groups.length === 0) {
-      return null;
-    }
-
-    // Find the next upcoming group
-    const categorized = categorizeCourseGroups(nextCourse.groups);
-    return categorized.upcoming.length > 0 ? categorized.upcoming[0] : null;
-  });
 
   // Categorize courses based on schedule
   private categorizeCourses(courses: CourseUnit[]): void {
@@ -133,7 +82,6 @@ export class DashboardService {
       return Infinity; // Courses without schedule go to the end
     }
 
-    const now = new Date().getTime();
     let nextTime = Infinity;
 
     for (const group of course.groups) {
@@ -302,7 +250,7 @@ export class DashboardService {
     // Check submission status for each activity
     const submissionChecks = activities.map(activity =>
       this.depositedFilesService.getMyDeposit(activity._id).pipe(
-        catchError((error) => {
+        catchError(() => {
           // API error - treat as no submission
           return of({ deposit: null, activity: { id: '', title: '', maxFiles: 0 } } as MyDepositedFilesResponse);
         })
@@ -315,7 +263,7 @@ export class DashboardService {
         const unsubmittedActivities = activities.filter((activity, index) => {
           const submissionResponse = results[index];
           const hasSubmission = submissionResponse && submissionResponse.deposit !== null;
-          
+
           // Only include activities where there's no submission (deposit is null)
           return !hasSubmission;
         });
@@ -327,58 +275,6 @@ export class DashboardService {
         // If there's an error checking submissions, show all activities as fallback
         this._studentActivities.set(activities);
       }
-    });
-  }
-
-  // Refresh dashboard data
-  refreshDashboard(): Observable<ApiResponse<any>> {
-    return this.init();
-  }
-
-  // Clear dashboard data
-  clearDashboardData(): void {
-    this._currentCourse.set(null);
-    this._upcomingCourses.set([]);
-    this._teacherActivities.set([]);
-    this._studentActivities.set([]);
-    this._error.set(null);
-  }
-
-  // Utility methods
-  clearError(): void {
-    this._error.set(null);
-  }
-
-  // Get dashboard stats for teacher
-  getTeacherStats() {
-    return computed(() => ({
-      totalActivities: this.totalTeacherActivities(),
-      pendingFeedback: this.pendingFeedback(),
-      missingDeposits: this.missingDeposits(),
-      totalCourses: this.totalUpcomingCourses() + (this._currentCourse() ? 1 : 0)
-    }));
-  }
-
-  // Get dashboard stats for student
-  getStudentStats() {
-    return computed(() => {
-      const activities = this._studentActivities();
-      const now = new Date();
-
-      const upcomingDeposits = activities.filter(activity => {
-        return activity.dueAt && new Date(activity.dueAt) > now;
-      }).length;
-
-      const overdueDeposits = activities.filter(activity => {
-        return activity.dueAt && new Date(activity.dueAt) < now;
-      }).length;
-
-      return {
-        totalActivities: this.totalStudentActivities(),
-        upcomingDeposits,
-        overdueDeposits,
-        totalCourses: this.totalUpcomingCourses() + (this._currentCourse() ? 1 : 0)
-      };
     });
   }
 

@@ -4,110 +4,119 @@
     <!-- Header -->
     <thead class="bg-sky-500/20 rounded-tl-lg rounded-tr-lg">
     <tr class="bg-sky-500/20">
-      <th
-        *ngFor="let column of columns"
-        [class]="getHeaderCellClasses(column)"
-        [ngClass]="{'hidden sm:table-cell': !column.showOnSmall}"
-      >
-        <div class="text-gray-600 text-sm font-semibold leading-tight">
-          {{ column.label }}
-        </div>
-      </th>
-      <th *ngIf="rowActions?.length || rowActionsFn" class="w-12 h-12 px-4 text-center border-b border-gray-200">
-        <div class="text-gray-600 text-sm font-semibold leading-tight">Actions</div>
-      </th>
+      @for (column of columns; track column.mapToKey) {
+        <th
+          [class]="getHeaderCellClasses(column)"
+          [ngClass]="{'hidden sm:table-cell': !column.showOnSmall}"
+        >
+          <div class="text-gray-600 text-sm font-semibold leading-tight">
+            {{ column.label }}
+          </div>
+        </th>
+      }
+      @if (rowActions?.length || rowActionsFn) {
+        <th class="w-12 h-12 px-4 text-center border-b border-gray-200">
+          <div class="text-gray-600 text-sm font-semibold leading-tight">Actions</div>
+        </th>
+      }
     </tr>
     </thead>
 
     <!-- Body -->
     <tbody>
-    <tr
-      *ngFor="let item of data; let i = index"
-      [class]="getRowClasses(i, item)"
-      (click)="selectRow(item)"
-      class="cursor-pointer hover:bg-muted/50 transition-colors"
-    >
-      <td
-        *ngFor="let column of columns"
-        [class]="getBodyCellClasses(column)"
-        [ngClass]="{'hidden sm:table-cell': !column.showOnSmall}"
-      >
-        <ng-container *ngIf="column.render; else normalCell">
-          <span [innerHTML]="column.render(item)"></span>
-        </ng-container>
-        <ng-template #normalCell>
-          {{ getItemValue(item, column.mapToKey) }}
-        </ng-template>
-      </td>
-
-      <!-- Actions Menu -->
-      <td *ngIf="rowActions?.length || rowActionsFn" class="w-12 p-4 text-center border-b border-gray-200 relative">
-        <ng-container *ngIf="rowActionsFn; else staticActions">
-          <app-icon-button
-            icon="ellipsis-vertical"
-            size="sm"
-            variant="ghost"
-            (click)="$event.stopPropagation(); toggleActionMenu(i)"
-            [attr.aria-expanded]="activeMenuIndex === i"
-          />
-
-          <!-- Dropdown Menu -->
-          <div
-            *ngIf="activeMenuIndex === i"
-            class="dropdown-menu fixed w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-            [style.left.px]="getMenuPosition(i).left"
-            [style.top.px]="getMenuPosition(i).top"
+        <tr
+          *ngFor="let item of data; let i = index"
+          [class]="getRowClasses(i, item)"
+          (click)="selectRow(item)"
+          class="cursor-pointer hover:bg-muted/50 transition-colors"
+        >
+          <td
+            *ngFor="let column of columns"
+            [class]="getBodyCellClasses(column)"
+            [ngClass]="{'hidden sm:table-cell': !column.showOnSmall}"
           >
-            <div class="py-1">
-              <button
-                *ngFor="let action of rowActionsFn(item)"
-                (click)="executeAction(action, item, i)"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-              >
-                {{ action.label }}
-              </button>
-            </div>
-          </div>
-        </ng-container>
-        <ng-template #staticActions>
-          <app-icon-button
-            icon="ellipsis-vertical"
-            size="sm"
-            variant="ghost"
-            (click)="$event.stopPropagation(); toggleActionMenu(i)"
-            [attr.aria-expanded]="activeMenuIndex === i"
-          />
+            @if (column.render) {
+              <span [innerHTML]="column.render(item)"></span>
+            } @else {
+              {{ getItemValue(item, column.mapToKey) }}
+            }
+          </td>
 
-          <!-- Dropdown Menu -->
-          <div
-            *ngIf="activeMenuIndex === i"
-            class="dropdown-menu fixed w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-            [style.left.px]="getMenuPosition(i).left"
-            [style.top.px]="getMenuPosition(i).top"
-          >
-            <div class="py-1">
-              <button
-                *ngFor="let action of rowActions"
-                (click)="executeAction(action, item, i)"
-                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-              >
-                {{ action.label }}
-              </button>
-            </div>
-          </div>
-        </ng-template>
-      </td>
-    </tr>
+          <!-- Actions Menu -->
+          @if (rowActions?.length || rowActionsFn) {
+            <td class="w-12 p-4 text-center border-b border-gray-200 relative">
+              @if (rowActionsFn) {
+                <app-icon-button
+                  icon="ellipsis-vertical"
+                  size="sm"
+                  variant="ghost"
+                  (click)="$event.stopPropagation(); toggleActionMenu(i)"
+                  [attr.aria-expanded]="activeMenuIndex === i"
+                />
+
+                <!-- Dropdown Menu -->
+                @if (activeMenuIndex === i) {
+                  <div
+                    class="dropdown-menu fixed w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+                    [style.left.px]="getMenuPosition(i).left"
+                    [style.top.px]="getMenuPosition(i).top"
+                  >
+                    <div class="py-1">
+                      @for (action of rowActionsFn(item); track action.label) {
+                        <button
+                          (click)="executeAction(action, item, i)"
+                          class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                        >
+                          {{ action.label }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              } @else {
+                <app-icon-button
+                  icon="ellipsis-vertical"
+                  size="sm"
+                  variant="ghost"
+                  (click)="$event.stopPropagation(); toggleActionMenu(i)"
+                  [attr.aria-expanded]="activeMenuIndex === i"
+                />
+
+                <!-- Dropdown Menu -->
+                @if (activeMenuIndex === i) {
+                  <div
+                    class="dropdown-menu fixed w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+                    [style.left.px]="getMenuPosition(i).left"
+                    [style.top.px]="getMenuPosition(i).top"
+                  >
+                    <div class="py-1">
+                      @for (action of rowActions; track action) {
+                        <button
+                          (click)="executeAction(action, item, i)"
+                          class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                        >
+                          {{ action.label }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+            </td>
+          }
+        </tr>
     </tbody>
   </table>
   </div>
 
   <!-- Loading/Status Message -->
-  <div class="w-full py-4 flex justify-center items-center" *ngIf="getCurrentMessage()">
-    <div class="text-muted-foreground text-sm font-normal leading-tight">
-      {{ getCurrentMessage() }}
+  @if (getCurrentMessage()) {
+    <div class="w-full py-4 flex justify-center items-center">
+      <div class="text-muted-foreground text-sm font-normal leading-tight">
+        {{ getCurrentMessage() }}
+      </div>
     </div>
-  </div>
+  }
 
   <!-- Infinite Scroll Trigger -->
   <div #scrollTrigger class="h-1 w-full"></div>

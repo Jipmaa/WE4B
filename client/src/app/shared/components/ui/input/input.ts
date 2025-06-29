@@ -57,7 +57,7 @@ export class InputComponent implements ControlValueAccessor {
   isFocused: boolean = false;
   inputId: string = '';
 
-  private onChange = (value: string) => {};
+  private onChange = (_value: string) => {};
   private onTouched = () => {};
 
   constructor() {
@@ -91,7 +91,7 @@ export class InputComponent implements ControlValueAccessor {
       flushed: 'border-b border-gray-300 rounded-none'
     };
 
-    let stateClasses = '';
+    let stateClasses;
 
     if (this.hasError) {
       stateClasses = this.variant === 'default' ? 'outline-red-500' :

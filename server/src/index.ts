@@ -31,7 +31,7 @@ dotenv.config();
 
 class Server {
 	public app: express.Application;
-	private port: string | number;
+	private readonly port: string | number;
 
 	public static start() {
 		const server = new Server();

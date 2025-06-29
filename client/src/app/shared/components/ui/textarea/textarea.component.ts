@@ -17,7 +17,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       @if (label) {
         <label class="block text-sm font-medium text-gray-700">{{ label }}</label>
       }
-      
+
       <textarea
         #textarea
         [placeholder]="placeholder"
@@ -32,11 +32,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         [class.focus:ring-red-500]="hasError"
         [class.focus:border-red-500]="hasError">
       </textarea>
-      
+
       @if (error || errorText) {
         <p class="text-sm text-red-600">{{ error || errorText }}</p>
       }
-      
+
       @if (hint && !error) {
         <p class="text-sm text-gray-500">{{ hint }}</p>
       }
@@ -56,8 +56,8 @@ export class TextareaComponent implements ControlValueAccessor {
   @ViewChild('textarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
 
   value = '';
-  
-  private onChange = (value: string) => {};
+
+  private onChange = (_value: string) => {};
   private onTouched = () => {};
 
   onInput(event: Event) {

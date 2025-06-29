@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
-import { getPresignedUrl, FILE_CONFIGS } from '../services/minio-service';
+import mongoose, {Document, Schema, Types} from 'mongoose';
+import {FILE_CONFIGS, getPresignedUrl} from '../services/minio-service';
 
 // Interface for the DepositedFiles document
 export interface DepositedFiles extends Document {
@@ -77,12 +77,11 @@ depositedFilesSchema.methods.getFileUrls = async function(this: DepositedFiles):
 	if (!this.files || this.files.length === 0) return [];
 	
 	try {
-		const urls = await Promise.all(
-			this.files.map(fileKey => 
-				getPresignedUrl(FILE_CONFIGS.depositedFile.bucket, fileKey)
-			)
+		return await Promise.all(
+			 this.files.map(fileKey =>
+					getPresignedUrl(FILE_CONFIGS.depositedFile.bucket, fileKey)
+			 )
 		);
-		return urls;
 	} catch (error) {
 		console.warn('Failed to generate file URLs:', error);
 		return [];

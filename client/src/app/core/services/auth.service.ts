@@ -9,7 +9,6 @@ import {
   AuthResponse,
   ProfileUpdateRequest,
   ChangePasswordRequest,
-  AuthState,
   JwtPayload,
   UserRole
 } from '@/core/models/auth.models';
@@ -65,14 +64,6 @@ export class AuthService {
   readonly isStudent = computed(() => {
     return this.userRoles().includes('student');
   });
-
-  readonly authState = computed((): AuthState => ({
-    user: this._user(),
-    token: this._token(),
-    isAuthenticated: this.isAuthenticated(),
-    isLoading: this._isLoading(),
-    error: this._error()
-  }));
 
   getInitiales(): string {
     const user = this._user();
@@ -144,7 +135,7 @@ export class AuthService {
     return logoutRequest.pipe(
       timeout(10000), // 10 second timeout
       tap({
-        next: (response) => {
+        next: () => {
           this.clearAuthData();
           this.router.navigate(['/accounts/login']);
         },
@@ -231,22 +222,6 @@ export class AuthService {
       );
   }
 
-  deleteAccount(): Observable<ApiResponse<any>> {
-    this._isLoading.set(true);
-
-    return this.http.delete<ApiResponse<any>>(`${this.baseUrl}/delete-account`)
-      .pipe(
-        tap(response => {
-          if (response.success) {
-            this.clearAuthData();
-            this.router.navigate(['/']);
-          }
-        }),
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
-  }
-
   updateAvatar(file: File): Observable<ApiResponse<{ user: User }>> {
     this._isLoading.set(true);
     this._error.set(null);
@@ -284,19 +259,9 @@ export class AuthService {
       );
   }
 
-  // Role and Permission Methods
-  hasRole(role: UserRole): boolean {
-    return this.userRoles().includes(role);
-  }
-
   hasAnyRole(roles: UserRole[]): boolean {
     const userRoles = this.userRoles();
     return roles.some(role => userRoles.includes(role));
-  }
-
-  hasAllRoles(roles: UserRole[]): boolean {
-    const userRoles = this.userRoles();
-    return roles.every(role => userRoles.includes(role));
   }
 
   canAccess(requiredRoles: UserRole[]): boolean {
@@ -480,21 +445,5 @@ export class AuthService {
 
     this._error.set(errorMessage);
     return throwError(() => error);
-  }
-
-  // Utility Methods
-  refreshUserData(): void {
-    if (this.isAuthenticated()) {
-      this.getCurrentUser().subscribe();
-    }
-  }
-
-  clearError(): void {
-    this._error.set(null);
-  }
-
-  getId(): string {
-    const user = this._user();
-    return user ? user._id : '';
   }
 }

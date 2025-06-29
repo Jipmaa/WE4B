@@ -81,7 +81,7 @@ export const handleFileUploadError = (
 	 next: NextFunction
 ): void => {
 	if (error instanceof multer.MulterError) {
-		let message = 'File upload error';
+		let message;
 
 		switch (error.code) {
 			case 'LIMIT_FILE_SIZE':

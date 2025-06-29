@@ -119,7 +119,7 @@ export class CoursePage {
     }
   }
 
-  onGroupSaved(group: CourseGroup) {
+  onGroupSaved(_group: CourseGroup) {
     this.groupPopupState.set(null);
     window.location.reload();
   }
@@ -156,8 +156,7 @@ export class CoursePage {
     const currentCourseUnit = this.currentCourseUnit();
     if (currentCourseUnit) {
       const updatedCourseUnit = {
-        ...
-currentCourseUnit,
+        ...currentCourseUnit,
         activities: [...(currentCourseUnit.activities || []), newCategory]
       };
       // Update the signal with the new course unit data

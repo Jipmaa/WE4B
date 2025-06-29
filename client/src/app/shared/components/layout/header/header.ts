@@ -10,7 +10,6 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { HeaderItem } from '@/shared/components/layout/header-item/header-item';
 import { LucideAngularModule } from 'lucide-angular';
 import { UserProfilePopup } from '@/shared/components/ui/user-profile-popup/user-profile-popup';
@@ -32,7 +31,6 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('mobileMenu') mobileMenu!: ElementRef<HTMLElement>;
   @ViewChildren('menuItem') menuItems!: QueryList<HeaderItem>;
 
-  private readonly router = inject(Router);
   readonly authService = inject(AuthService);
   protected readonly user = this.authService.user;
   private isOpen = false;
@@ -82,14 +80,6 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
     // Set up global keydown listener for escape key
     this.keydownListener = this.onGlobalKeydown.bind(this);
     document.addEventListener('keydown', this.keydownListener);
-  }
-
-  async logout() {
-    this.authService.logout().subscribe({
-      next: async () => {
-        await this.router.navigate(['/accounts/login']);
-      }
-    });
   }
 
   ngOnDestroy() {
@@ -157,7 +147,7 @@ export class Header implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onMenuItemKeydown(event: KeyboardEvent, index: number) {
+  onMenuItemKeydown(event: KeyboardEvent, _index: number) {
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();

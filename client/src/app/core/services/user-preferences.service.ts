@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 
 export interface UserPreferences {
   'recent-activities-sidebar': boolean;
@@ -48,8 +48,7 @@ export class UserPreferencesService {
     }
 
     try {
-      const value = JSON.parse(storedValue);
-      return value;
+      return JSON.parse(storedValue);
     } catch {
       return this.defaultPreferences[key];
     }
@@ -83,24 +82,5 @@ export class UserPreferencesService {
         this.setPreference(key, newValue);
       }
     };
-  }
-
-  getAllPreferences(): UserPreferences {
-    return {
-      'recent-activities-sidebar': this.getPreference('recent-activities-sidebar'),
-      'table-of-contents-sidebar': this.getPreference('table-of-contents-sidebar'),
-      'show-course-images': this.getPreference('show-course-images')
-    };
-  }
-
-  resetPreferences(): void {
-    if (!this.isLocalStorageAvailable()) {
-      return;
-    }
-
-    Object.keys(this.defaultPreferences).forEach(key => {
-      const storageKey = this.getStorageKey(key as PreferenceKey);
-      localStorage.removeItem(storageKey);
-    });
   }
 }

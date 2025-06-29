@@ -1,22 +1,21 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, catchError, tap, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import {inject, Injectable, signal} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
+import {catchError, Observable, tap, throwError} from 'rxjs';
+import {environment} from '../../../environments/environment';
 import {
+  CourseActivitiesResponse,
   CourseActivity,
   CourseActivityFilters,
-  CourseActivitiesResponse,
-  CourseActivitySearchResult,
-  CreateMessageActivityRequest,
   CreateFileActivityRequest,
   CreateFileDepositoryActivityRequest,
-  UpdateMessageActivityRequest,
+  CreateMessageActivityRequest,
   UpdateFileActivityRequest,
-  UpdateFileDepositoryActivityRequest
+  UpdateFileDepositoryActivityRequest,
+  UpdateMessageActivityRequest
 } from '../models/course-activity.models';
-import { ApiResponse } from '../models/_shared.models';
+import {ApiResponse} from '../models/_shared.models';
 
-import { CourseUnitsService } from './course-units.service';
+import {CourseUnitsService} from './course-units.service';
 
 @Injectable({
   providedIn: 'root'
@@ -36,28 +35,9 @@ export class CourseActivitiesService {
 
   // Public readonly signals
   readonly activities = this._activities.asReadonly();
-  readonly selectedActivity = this._selectedActivity.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
-  readonly currentFilters = this._currentFilters.asReadonly();
   readonly pagination = this._pagination.asReadonly();
-
-  // Computed signals
-  readonly totalActivities = computed(() => this._pagination()?.totalActivities || 0);
-  readonly hasActivities = computed(() => this._activities().length > 0);
-  readonly messageActivities = computed(() => this._activities().filter(activity => activity.activityType === 'message'));
-  readonly fileActivities = computed(() => this._activities().filter(activity => activity.activityType === 'file'));
-  readonly fileDepositoryActivities = computed(() => this._activities().filter(activity => activity.activityType === 'file-depository'));
-
-  readonly activitiesByType = computed(() => {
-    const activities = this._activities();
-    const types = {
-      message: activities.filter(activity => activity.activityType === 'message'),
-      file: activities.filter(activity => activity.activityType === 'file'),
-      'file-depository': activities.filter(activity => activity.activityType === 'file-depository')
-    };
-    return types;
-  });
 
   // Activity Methods
   getActivities(filters: CourseActivityFilters = {}): Observable<ApiResponse<CourseActivitiesResponse>> {
@@ -360,33 +340,6 @@ export class CourseActivitiesService {
       );
   }
 
-  completeActivity(id: string): Observable<ApiResponse<{ activity: CourseActivity }>> {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    return this.http.put<ApiResponse<{ activity: CourseActivity }>>(`${this.baseUrl}/${id}/complete`, {})
-      .pipe(
-        tap(response => {
-          if (response.success) {
-            // Update the activity in the current list
-            const currentActivities = this._activities();
-            const updatedActivities = currentActivities.map(activity =>
-              activity._id === id ? response.data.activity : activity
-            );
-            this._activities.set(updatedActivities);
-
-            // Update selected activity if it's the same activity
-            if (this._selectedActivity()?._id === id) {
-              this._selectedActivity.set(response.data.activity);
-            }
-            this.courseUnitsService.triggerCourseDataRefresh();
-          }
-        }),
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
-  }
-
   deleteActivity(id: string): Observable<ApiResponse<{ deletedActivity: Partial<CourseActivity> }>> {
     this._isLoading.set(true);
 
@@ -409,74 +362,6 @@ export class CourseActivitiesService {
         catchError(error => this.handleError(error)),
         tap(() => this._isLoading.set(false))
       );
-  }
-
-  searchActivities(term: string, limit: number = 10): Observable<ApiResponse<CourseActivitySearchResult>> {
-    this._isLoading.set(true);
-
-    let params = new HttpParams();
-    if (limit) params = params.set('limit', limit.toString());
-
-    return this.http.get<ApiResponse<CourseActivitySearchResult>>(`${this.baseUrl}/search/${term}`, { params })
-      .pipe(
-        catchError(error => this.handleError(error)),
-        tap(() => this._isLoading.set(false))
-      );
-  }
-
-  // Utility Methods
-  refreshActivities(): void {
-    const currentFilters = this._currentFilters();
-    this.getActivities(currentFilters).subscribe();
-  }
-
-  clearError(): void {
-    this._error.set(null);
-  }
-
-  clearSelectedActivity(): void {
-    this._selectedActivity.set(null);
-  }
-
-  clearActivities(): void {
-    this._activities.set([]);
-    this._pagination.set(null);
-  }
-
-  // Helper methods
-  getActivityTypeDisplay(type: string): string {
-    switch (type) {
-      case 'message': return 'Message';
-      case 'file': return 'File';
-      case 'file-depository': return 'File Depository';
-      default: return type;
-    }
-  }
-
-  getActivityTypeIcon(type: string): string {
-    switch (type) {
-      case 'message': return 'message';
-      case 'file': return 'description';
-      case 'file-depository': return 'cloud_upload';
-      default: return 'help';
-    }
-  }
-
-  getActivityTypeColor(type: string): string {
-    switch (type) {
-      case 'message': return 'text-blue-600';
-      case 'file': return 'text-green-600';
-      case 'file-depository': return 'text-purple-600';
-      default: return 'text-gray-600';
-    }
-  }
-
-  canEditActivity(activity: CourseActivity, currentUserId: string): boolean {
-    return activity.createdBy === currentUserId;
-  }
-
-  canDeleteActivity(activity: CourseActivity, currentUserId: string): boolean {
-    return activity.createdBy === currentUserId;
   }
 
   // Error Handling

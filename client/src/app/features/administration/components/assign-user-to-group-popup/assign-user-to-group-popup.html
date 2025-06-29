@@ -1,92 +1,94 @@
-<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-    <div class="p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Assign User to {{ group?.name }}</h1>
-        <app-icon-button
-          icon="x"
-          [iconSize]="20"
-          variant="ghost"
-          size="sm"
-          ariaLabel="Fermer le popup"
-          (buttonClick)="onClose()">
-        </app-icon-button>
-      </div>
-
-      <div class="space-y-6">
-        @if (isLoading) {
-          <div class="text-center py-4">
-            <p class="text-gray-600">Loading users...</p>
-          </div>
-        }
-
-        @if (error) {
-          <div class="text-red-500 text-sm bg-red-50 p-3 rounded-md">
-            {{ error }}
-          </div>
-        }
-
-        <div class="space-y-4">
-          <!-- User Selection -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Select User
-            </label>
-            <app-select
-              [options]="userOptions"
-              [searchable]="true"
-              [clearable]="true"
-              placeholder="Search and select a user..."
-              (optionSelected)="onUserSelected($event)"
-              [disabled]="isLoading"
-              [(ngModel)]="selectedUserId"
-            />
-          </div>
-
-          <!-- Semester Selection -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Assignment Period
-            </label>
-            <app-select
-              [options]="semesterOptions"
-              placeholder="Select semester..."
-              (optionSelected)="onSemesterSelected($event)"
-              [disabled]="isLoading"
-              [(ngModel)]="selectedSemesterValue"
-            />
-          </div>
-
-          <!-- Role Selection (for teachers only) -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Role in Group
-            </label>
-            <app-select
-              [options]="roleOptions"
-              placeholder="Select role..."
-              (optionSelected)="onRoleSelected($event)"
-              [disabled]="isLoading || roleSelectionDisabled"
-              [(ngModel)]="selectedRole"
-            ></app-select>
-            @if (roleSelectionDisabled && selectedUserId) {
-              <p class="mt-1 text-xs text-gray-500">
-                This user can only be assigned as a student
-              </p>
-            }
-          </div>
+@if (isOpen) {
+  <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-2xl font-bold text-gray-800">Assign User to {{ group?.name }}</h1>
+          <app-icon-button
+            icon="x"
+            [iconSize]="20"
+            variant="ghost"
+            size="sm"
+            ariaLabel="Fermer le popup"
+            (buttonClick)="onClose()">
+          </app-icon-button>
         </div>
 
-        <div class="flex justify-end gap-4 pt-4 border-t">
-          <app-button variant="ghost" (buttonClick)="onClose()">Cancel</app-button>
-          <app-button
-            (buttonClick)="assignUser()"
-            [disabled]="!selectedUserId || (!isForeverAssignment && (!selectedSemester || !selectedYear)) || isLoading"
-          >
-            Assign User
-          </app-button>
+        <div class="space-y-6">
+          @if (isLoading) {
+            <div class="text-center py-4">
+              <p class="text-gray-600">Loading users...</p>
+            </div>
+          }
+
+          @if (error) {
+            <div class="text-red-500 text-sm bg-red-50 p-3 rounded-md">
+              {{ error }}
+            </div>
+          }
+
+          <div class="space-y-4">
+            <!-- User Selection -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Select User
+              </label>
+              <app-select
+                [options]="userOptions"
+                [searchable]="true"
+                [clearable]="true"
+                placeholder="Search and select a user..."
+                (optionSelected)="onUserSelected($event)"
+                [disabled]="isLoading"
+                [(ngModel)]="selectedUserId"
+              />
+            </div>
+
+            <!-- Semester Selection -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Assignment Period
+              </label>
+              <app-select
+                [options]="semesterOptions"
+                placeholder="Select semester..."
+                (optionSelected)="onSemesterSelected($event)"
+                [disabled]="isLoading"
+                [(ngModel)]="selectedSemesterValue"
+              />
+            </div>
+
+            <!-- Role Selection (for teachers only) -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Role in Group
+              </label>
+              <app-select
+                [options]="roleOptions"
+                placeholder="Select role..."
+                (optionSelected)="onRoleSelected($event)"
+                [disabled]="isLoading || roleSelectionDisabled"
+                [(ngModel)]="selectedRole"
+              ></app-select>
+              @if (roleSelectionDisabled && selectedUserId) {
+                <p class="mt-1 text-xs text-gray-500">
+                  This user can only be assigned as a student
+                </p>
+              }
+            </div>
+          </div>
+
+          <div class="flex justify-end gap-4 pt-4 border-t">
+            <app-button variant="ghost" (buttonClick)="onClose()">Cancel</app-button>
+            <app-button
+              (buttonClick)="assignUser()"
+              [disabled]="!selectedUserId || (!isForeverAssignment && (!selectedSemester || !selectedYear)) || isLoading"
+            >
+              Assign User
+            </app-button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+}

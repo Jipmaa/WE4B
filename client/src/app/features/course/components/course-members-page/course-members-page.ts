@@ -94,7 +94,7 @@ export class CourseMembersPage {
     const currentSemesterFilter = this.currentSemesterOnly();
     const currentPeriod = this.currentAcademicPeriod();
 
-    let users: PopulatedGroupUser[] = [];
+    let users: PopulatedGroupUser[];
 
     if (selectedGroup === '$internal_all') {
       // Get all users from all groups

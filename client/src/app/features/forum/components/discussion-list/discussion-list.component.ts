@@ -112,15 +112,11 @@ export class DiscussionListComponent implements OnInit, OnDestroy {
     });
   }
 
-  viewDiscussion(id: string): void {
-    this.discussionSelected.emit(id);
-  }
-
   onDiscussionSelect(discussion: Discussion): void {
     this.discussionSelected.emit(discussion._id);
   }
 
-  getRowActions(discussion: Discussion): RowAction<Discussion>[] {
+  getRowActions(_discussion: Discussion): RowAction<Discussion>[] {
     if (!this.isAdmin()) {
       return [];
     }

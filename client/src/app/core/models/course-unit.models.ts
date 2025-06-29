@@ -1,4 +1,3 @@
-import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
 import {CourseActivity} from '@/core/models/course-activity.models';
 import {CourseGroup} from '@/core/models/course-group.models';
@@ -46,50 +45,6 @@ export interface CourseUnitFilters extends BaseFilters {
   sortBy?: 'createdAt' | 'updatedAt' | 'name' | 'code' | 'type' | 'capacity';
 }
 
-export interface CourseUnitStats {
-  overview: {
-    totalCourseUnits: number;
-    totalCapacity: number;
-    averageCapacity: number;
-    minCapacity: number;
-    maxCapacity: number;
-  };
-  capacityDistribution: Array<{
-    _id: string | number;
-    count: number;
-    courseUnits: Array<{
-      name: string;
-      code: string;
-      capacity: number;
-      type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
-    }>;
-  }>;
-  recentCourseUnits: CourseUnit[];
-  topCapacityCourseUnits: CourseUnit[];
-}
-
-// Search Results
-export interface SearchResult<T> {
-  items: T[];
-  count: number;
-  query?: string;
-}
-
-// Form Data Types
-export interface CreateUserRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  roles: UserRole[];
-  department?: string;
-  birthdate?: Date;
-}
-
-export interface UpdateUserRolesRequest {
-  roles: UserRole[];
-}
-
 export interface CreateCourseUnitRequest {
   name: string;
   code: string;
@@ -120,29 +75,6 @@ export interface CourseUnitsResponse {
   };
 }
 
-export interface CourseUnitSearchResult {
-  courseUnits: CourseUnit[];
-  count: number;
-}
-
-export interface CapacityRangeResponse {
-  courseUnits: CourseUnit[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalCourseUnits: number;
-    limit: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-  capacityRange: {
-    min: number;
-    max: number;
-  };
-}
-
 export interface CreateCourseUnitsResponse {
   course: CourseUnit;
 }
-
-export type CourseUnitSortBy = 'createdAt' | 'updatedAt' | 'name' | 'code' | 'type' | 'capacity';

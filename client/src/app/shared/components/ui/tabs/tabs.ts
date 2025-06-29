@@ -12,19 +12,6 @@ import { TabContentComponent } from '../tab-content/tab-content';
   templateUrl: './tabs.html',
   styles: [`
     @reference "../../../../../styles.css";
-
-    .tabs-container {
-      @apply w-full min-w-0;
-    }
-
-    .tab-list {
-      @apply min-w-0;
-    }
-
-    .tab-content-container {
-      @apply ring-offset-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-    }
-
     :host {
       @apply w-full block min-w-0;
     }
@@ -155,7 +142,7 @@ export class TabsComponent implements OnInit, OnDestroy, AfterContentInit {
     }
   }
 
-  private handleKeyboardNavigation(event: KeyboardEvent, tabValue: string) {
+  private handleKeyboardNavigation(_event: KeyboardEvent, _tabValue: string) {
     // This is handled by the tablist keydown handler
   }
 

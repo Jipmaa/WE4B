@@ -148,36 +148,3 @@ function formatTime(date: Date): string {
 function isTimeInRange(currentTime: string, startTime: string, endTime: string): boolean {
   return currentTime >= startTime && currentTime <= endTime;
 }
-
-/**
- * Gets a human-readable description of when a course group is scheduled
- */
-export function getCourseGroupScheduleDescription(group: CourseGroup): string {
-  const dayName = group.day.charAt(0).toUpperCase() + group.day.slice(1);
-  return `${dayName} ${group.from}-${group.to}`;
-}
-
-/**
- * Gets the time remaining until a course group starts
- */
-export function getTimeUntilCourseGroup(group: CourseGroup): string {
-  const nextOccurrence = getNextCourseGroupOccurrence(group);
-  const now = new Date();
-  const timeDiff = nextOccurrence.getTime() - now.getTime();
-
-  if (timeDiff <= 0) {
-    return 'Now';
-  }
-
-  const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) {
-    return `In ${days} day${days > 1 ? 's' : ''}`;
-  } else if (hours > 0) {
-    return `In ${hours}h ${minutes}m`;
-  } else {
-    return `In ${minutes}m`;
-  }
-}

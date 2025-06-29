@@ -3,8 +3,6 @@ import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { Sidebar } from '@/shared/components/ui/sidebar/sidebar';
 import { PreferenceKey } from '@/core/services/user-preferences.service';
 
-export type SidebarPosition = 'left' | 'right' | null;
-
 @Component({
   selector: 'app-sidebar-layout',
   imports: [

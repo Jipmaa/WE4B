@@ -30,7 +30,7 @@ export const courseAccessGuard: CanActivateFn = (route: ActivatedRouteSnapshot) 
         }
         return true;
       }),
-      catchError((error) => {
+      catchError(() => {
         return of(router.createUrlTree(['/dashboard']));
       })
     );

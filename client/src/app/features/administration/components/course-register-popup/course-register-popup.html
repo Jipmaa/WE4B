@@ -57,14 +57,15 @@
               formControlName="name">
             </app-input>
 
-            <ng-container *ngIf="myForm.get('name')?.dirty || myForm.get('name')?.touched">
-              <div *ngIf="myForm.get('name')?.errors?.['required']; else nameValid">
-                ❌ Nom d'ue requis
-              </div>
-              <ng-template #nameValid>
+            @if (myForm.get('name')?.dirty || myForm.get('name')?.touched) {
+              @if (myForm.get('name')?.errors?.['required']) {
+                <div>
+                  ❌ Nom d'ue requis
+                </div>
+              } @else {
                 <div class="text-success small">✅ Nom d'ue valide</div>
-              </ng-template>
-            </ng-container>
+              }
+          }
           </div>
 
           <!-- Code -->

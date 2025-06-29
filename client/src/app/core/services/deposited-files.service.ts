@@ -2,15 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { 
-  DepositedFilesResponse, 
-  MyDepositedFilesResponse, 
+import {
+  MyDepositedFilesResponse,
   FileDepositSubmissionRequest,
   GradeDepositRequest,
   GradeDepositResponse,
   TeacherDepositsResponse,
   DeleteDepositResponse,
-  DepositStatsResponse 
 } from '@/core/models/deposited-files.models';
 import { ApiResponse } from '@/core/models/_shared.models';
 
@@ -58,30 +56,8 @@ export class DepositedFilesService {
     return this.http.get<ApiResponse<TeacherDepositsResponse>>(`${this.apiUrl}/${activityId}/deposits/teacher-view`);
   }
 
-  getAllDeposits(
-    activityId: string, 
-    page: number = 1, 
-    limit: number = 10,
-    userId?: string
-  ): Observable<DepositedFilesResponse> {
-    let params: any = { page: page.toString(), limit: limit.toString() };
-    if (userId) {
-      params.userId = userId;
-    }
-
-    return this.http.get<DepositedFilesResponse>(`${this.apiUrl}/${activityId}/deposits`, { params });
-  }
-
-  getDepositById(activityId: string, depositId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${activityId}/deposits/${depositId}`);
-  }
-
   gradeDeposit(activityId: string, depositId: string, gradeData: GradeDepositRequest): Observable<GradeDepositResponse> {
     return this.http.put<GradeDepositResponse>(`${this.apiUrl}/${activityId}/deposits/${depositId}/grade`, gradeData);
-  }
-
-  getDepositStats(activityId: string): Observable<DepositStatsResponse> {
-    return this.http.get<DepositStatsResponse>(`${this.apiUrl}/${activityId}/deposits/stats`);
   }
 
   // Download methods

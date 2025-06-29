@@ -1,4 +1,3 @@
-import { BaseFilters } from '@/core/models/_shared.models';
 import { User } from '@/core/models/user.models';
 import { CourseActivity } from '@/core/models/course-activity.models';
 
@@ -21,12 +20,6 @@ export interface DepositedFilesWithDetails extends Omit<DepositedFiles, 'activit
   activity: CourseActivity;
   user: User;
   fileUrls?: string[];
-}
-
-export interface DepositedFilesFilters extends BaseFilters {
-  activity?: string;
-  user?: string;
-  sortBy?: 'createdAt' | 'updatedAt';
 }
 
 export interface FileDepositSubmissionRequest {
