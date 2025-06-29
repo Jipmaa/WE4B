@@ -4,10 +4,11 @@ import {
   EventEmitter,
   inject,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  signal,
+  SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -33,7 +34,7 @@ import slugify from 'slugify';
   imports: [CommonModule, ReactiveFormsModule, ButtonComponent, IconButtonComponent, InputComponent, TextareaComponent, LucideAngularModule],
   templateUrl: './create-group-popup.html'
 })
-export class CreateGroupPopupComponent implements OnInit, OnDestroy {
+export class CreateGroupPopupComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() courseUnit: CourseUnit | null = null;
   @Input() group: CourseGroup | null = null; // Pour le mode édition
@@ -75,16 +76,21 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.keydownListener = this.onGlobalKeydown.bind(this);
     document.addEventListener('keydown', this.keydownListener);
-
-    // Pré-remplir le formulaire si en mode édition
-    if (this.isEditMode && this.group) {
-      this.prefillForm();
-    }
   }
 
   ngOnDestroy(): void {
     if (this.keydownListener) {
       document.removeEventListener('keydown', this.keydownListener);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['group'] || changes['isEditMode']) {
+      if (this.isEditMode && this.group) {
+        this.prefillForm();
+      } else {
+        this.resetForm();
+      }
     }
   }
 
@@ -194,11 +200,6 @@ export class CreateGroupPopupComponent implements OnInit, OnDestroy {
     this.myForm.reset();
     this.isSubmitting = false;
     this.submitError = '';
-
-    // Repré-remplir si en mode édition
-    if (this.isEditMode && this.group) {
-      setTimeout(() => this.prefillForm(), 0);
-    }
   }
 
   get formTitle(): string {
