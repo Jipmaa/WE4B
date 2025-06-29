@@ -9,8 +9,31 @@
 >
 
   <ng-template #leftSidebar>
-    <!-- Table of content goes here -->
-    <p>Table of content's content goes here.</p>
+    @if (!courseUnit) {
+      <div class="flex items-center justify-center p-4">
+        <lucide-icon name="loader-circle" class="animate-spin" size="16" />
+      </div>
+    } @else {
+      <div class="flex flex-col gap-2">
+        @for (category of courseUnit.activities; track category._id) {
+          <app-collapsible [label]="category.name" [defaultOpen]="false">
+            @for (activity of category.activities || []; track activity._id) {
+              <app-activity 
+                [activity]="activity" 
+                variant="quick" 
+                [showActions]="false"
+                [courseSlug]="courseSlug()" />
+            }
+            @if ((category.activities || []).length === 0) {
+              <p class="text-sm text-gray-500 px-2 py-1">Aucune activité</p>
+            }
+          </app-collapsible>
+        }
+        @if ((courseUnit.activities || []).length === 0) {
+          <p class="text-sm text-gray-500 p-2">Aucune catégorie d'activité</p>
+        }
+      </div>
+    }
   </ng-template>
 
   <ng-template #rightSidebar>
@@ -30,7 +53,6 @@
       </app-button>
       <app-icon-button icon="plus" class="md:hidden" size="sm" (buttonClick)="onAddActivity()"/>
     }
-    <!-- Add other actions here -->
   </ng-template>
 
   @if (!courseUnit) {
