@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
+import {LucideAngularModule} from 'lucide-angular';
 
 export interface Messages {
   onLoading: string;
@@ -32,7 +33,7 @@ export interface LoadingState {
 @Component({
   selector: 'app-array',
   standalone: true,
-  imports: [CommonModule, IconButtonComponent],
+  imports: [CommonModule, IconButtonComponent, LucideAngularModule],
   templateUrl: './array.html'
 })
 export class ArrayComponent<T = any> implements OnInit, OnDestroy {

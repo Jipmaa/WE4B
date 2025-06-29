@@ -46,7 +46,6 @@
             size="sm"
             variant="ghost"
             (click)="toggleActionMenu(i)"
-            class="text-gray-600 hover:text-gray-900 focus:outline-none"
             [attr.aria-expanded]="activeMenuIndex === i"
           />
 
@@ -70,11 +69,10 @@
         </ng-container>
         <ng-template #staticActions>
           <app-icon-button
-            name="ellipsis-vertical"
+            icon="ellipsis-vertical"
             size="sm"
             variant="ghost"
             (click)="toggleActionMenu(i)"
-            class="text-gray-600 hover:text-gray-900 focus:outline-none"
             [attr.aria-expanded]="activeMenuIndex === i"
           />
 
