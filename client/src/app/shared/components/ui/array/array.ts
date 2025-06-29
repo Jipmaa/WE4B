@@ -7,10 +7,11 @@ export interface Messages {
   onError: string;
 }
 
-export interface Column {
+export interface Column<T = any> {
   label: string;
   mapToKey: string;
   showOnSmall?: boolean;
+  render?: (item: T) => string; // New optional render function
 }
 
 export interface RowAction<T = any> {

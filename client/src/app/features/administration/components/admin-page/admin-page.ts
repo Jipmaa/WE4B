@@ -149,6 +149,17 @@ export class AdminPage implements OnInit, AfterViewChecked {
       label: 'Description',
       mapToKey: 'name',
       showOnSmall: false
+    },
+    {
+      label: 'Groupes',
+      mapToKey: 'groups',
+      showOnSmall: false,
+      render: (courseUnit: CourseUnit) => {
+        if (courseUnit.groups && courseUnit.groups.length > 0) {
+          return courseUnit.groups.map(group => (group as any).name).join(', ');
+        }
+        return 'Aucun groupe';
+      }
     }
   ];
 

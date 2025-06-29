@@ -160,6 +160,7 @@ router.get('/', getCourseUnitsValidation, validateRequest, asyncHandler(async (r
 			 .sort(sort)
 			 .skip(skip)
 			 .limit(limit)
+			 .populate('groups') // Populate the groups field
 			 .select('-__v'),
 		CourseUnit.countDocuments(filter)
 	]);

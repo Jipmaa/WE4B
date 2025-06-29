@@ -29,7 +29,14 @@
         *ngFor="let column of columns"
         [class]="getBodyCellClasses(column)"
         [ngClass]="{'hidden sm:table-cell': !column.showOnSmall}"
-      >{{ getItemValue(item, column.mapToKey) }}</td>
+      >
+        <ng-container *ngIf="column.render; else normalCell">
+          <span [innerHTML]="column.render(item)"></span>
+        </ng-container>
+        <ng-template #normalCell>
+          {{ getItemValue(item, column.mapToKey) }}
+        </ng-template>
+      </td>
 
       <!-- Actions Menu -->
       <td *ngIf="rowActions && rowActions.length > 0" class="w-12 p-4 text-center border-b border-gray-200 relative">
