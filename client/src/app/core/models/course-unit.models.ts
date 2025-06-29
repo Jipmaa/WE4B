@@ -23,7 +23,7 @@ export interface CourseUnitActivitiesCategory {
   _id: string;
   name: string;
   description: string;
-  activities: string[];
+  activities: string[] | CourseActivity[];
 }
 
 // Populated version for when activities are fully loaded

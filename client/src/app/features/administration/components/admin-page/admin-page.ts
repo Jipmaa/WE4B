@@ -1,5 +1,5 @@
 import {SidebarLayout} from "@/shared/components/layout/sidebar-layout/sidebar-layout";
-import { CreateGroupPopupComponent } from '@/shared/components/layout/create-group-popup/create-group-popup';
+import { CreateGroupPopupComponent } from '@/shared/components/ui/create-group-popup/create-group-popup';
 import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -19,14 +19,14 @@ import { TabContentComponent } from "../../../../shared/components/ui/tab-conten
 import { CourseUnit } from '@/core/models/course-unit.models';
 import { CourseUnitsService } from '@/core/services/course-units.service';
 import { ArrayComponent, Columns, RowActions, Messages, LoadingState} from '@/shared/components/ui/array/array';
-import { UserRegisterPopup} from '@/shared/components/layout/user-register-popup/user-register-popup';
+import { UserRegisterPopup} from '@/features/administration/components/user-register-popup/user-register-popup';
 import {InputComponent} from '@/shared/components/ui/input/input';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import { Router } from '@angular/router';
-import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
+import { DeleteConfirmationPopupComponent } from '@/shared/components/ui/delete-confirmation-popup/delete-confirmation-popup';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
-import {CourseRegisterPopup} from '@/shared/components/layout/course-register-popup/course-register-popup';
+import {CourseRegisterPopup} from '@/features/administration/components/course-register-popup/course-register-popup';
 import { AssignUserToGroupPopupComponent } from '@/shared/components/layout/assign-user-to-group-popup/assign-user-to-group-popup';
 
 type UnifiedData =

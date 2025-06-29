@@ -99,3 +99,13 @@
   (activityUpdated)="onActivityUpdated()"
   (categoryCreated)="onCategoryCreated($event)"
 />
+
+<!--  [isOpen]="groupPopupState() !== null"-->
+
+<app-create-group-popup
+  [isEditMode]="groupPopupState()?.mode === 'edit'"
+  [courseUnit]="groupPopupState()?.courseUnit ?? null"
+  [group]="groupPopupState()?.group ?? null"
+  (closePopup)="groupPopupState.set(null)"
+  (groupSaved)="onGroupSaved($event)">
+</app-create-group-popup>
