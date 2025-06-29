@@ -5,11 +5,12 @@ import { DiscussionViewComponent } from '../discussion-view/discussion-view.comp
 import { DiscussionCreationComponent } from '../discussion-creation/discussion-creation.component';
 import { IconButtonComponent } from '@/shared/components/ui/icon-button/icon-button';
 import { SidebarLayout } from '@/shared/components/layout/sidebar-layout/sidebar-layout';
+import {ButtonComponent} from '@/shared/components/ui/button/button';
 
 @Component({
   selector: 'app-discussion-page',
   standalone: true,
-  imports: [CommonModule, DiscussionListComponent, DiscussionViewComponent, DiscussionCreationComponent, IconButtonComponent, SidebarLayout],
+  imports: [CommonModule, DiscussionListComponent, DiscussionViewComponent, DiscussionCreationComponent, IconButtonComponent, SidebarLayout, ButtonComponent],
   templateUrl: './discussion-page.component.html',
 })
 export class DiscussionPageComponent {

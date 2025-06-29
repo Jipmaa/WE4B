@@ -254,13 +254,15 @@ export class AdminPage implements OnInit, AfterViewChecked {
   messagesUsers: Messages = {
     onLoading: 'Chargement des utilisateurs...',
     onAllLoaded: 'Tous les utilisateurs ont été chargés',
-    onError: 'Erreur lors du chargement des utilisateurs'
+    onError: 'Erreur lors du chargement des utilisateurs',
+    onNoData: 'Aucun utilisateur trouvé'
   };
 
   messagesCourses: Messages = {
     onLoading: 'Chargement des cours...',
     onAllLoaded: 'Tous les cours ont été chargés',
-    onError: 'Erreur lors du chargement des cours'
+    onError: 'Erreur lors du chargement des cours',
+    onNoData: 'Aucun cours trouvé'
   };
 
   loadingStateUsers: LoadingState = {

@@ -23,7 +23,9 @@
     <tbody>
     <tr
       *ngFor="let item of data; let i = index"
-      [class]="getRowClasses(i)"
+      [class]="getRowClasses(i, item)"
+      (click)="selectRow(item)"
+      class="cursor-pointer hover:bg-muted/50 transition-colors"
     >
       <td
         *ngFor="let column of columns"
@@ -45,7 +47,7 @@
             icon="ellipsis-vertical"
             size="sm"
             variant="ghost"
-            (click)="toggleActionMenu(i)"
+            (click)="$event.stopPropagation(); toggleActionMenu(i)"
             [attr.aria-expanded]="activeMenuIndex === i"
           />
 
@@ -72,7 +74,7 @@
             icon="ellipsis-vertical"
             size="sm"
             variant="ghost"
-            (click)="toggleActionMenu(i)"
+            (click)="$event.stopPropagation(); toggleActionMenu(i)"
             [attr.aria-expanded]="activeMenuIndex === i"
           />
 
@@ -101,7 +103,7 @@
   </div>
 
   <!-- Loading/Status Message -->
-  <div class="w-full py-4 flex justify-center items-center">
+  <div class="w-full py-4 flex justify-center items-center" *ngIf="getCurrentMessage()">
     <div class="text-muted-foreground text-sm font-normal leading-tight">
       {{ getCurrentMessage() }}
     </div>

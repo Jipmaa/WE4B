@@ -7,6 +7,7 @@ export interface Messages {
   onLoading: string;
   onAllLoaded: string;
   onError: string;
+  onNoData: string;
 }
 
 export interface Column<T = any> {
@@ -44,8 +45,11 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   @Input() messages: Messages = {
     onLoading: 'Chargement...',
     onAllLoaded: 'Tous les éléments ont été chargés',
-    onError: 'Erreur lors du chargement'
+    onError: 'Erreur lors du chargement',
+    onNoData: 'Aucune donnée disponible'
   };
+  @Input() selectedItem?: T;
+  @Input() compareItems?: (item1: T, item2: T) => boolean;
   @Input() loadingState: LoadingState = {
     isLoading: false,
     hasError: false,
@@ -53,6 +57,7 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   };
 
   @Output() loadMore = new EventEmitter<void>();
+  @Output() onSelect = new EventEmitter<T>();
 
   @ViewChild('scrollTrigger', { static: true }) scrollTrigger!: ElementRef;
 
@@ -127,11 +132,18 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
     return `${baseClasses}`;
   }
 
-  getRowClasses(index: number): string {
+  getRowClasses(index: number, item: T): string {
     const baseClasses = 'border-b border-gray-200';
     const isEven = index % 2 === 1; // Les lignes paires (0, 2, 4...) n'ont pas de background
-
-    return isEven ? `${baseClasses} bg-sky-500/5` : baseClasses;
+    const isSelected = this.isItemSelected(item);
+    
+    let classes = isEven ? `${baseClasses} bg-sky-500/5` : baseClasses;
+    
+    if (isSelected) {
+      classes += ' bg-primary/10 border-primary/20';
+    }
+    
+    return classes;
   }
 
   shouldShowMenuUp(index: number): boolean {
@@ -204,6 +216,23 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
     this.activeMenuIndex = null;
   }
 
+  selectRow(item: T): void {
+    this.onSelect.emit(item);
+  }
+
+  isItemSelected(item: T): boolean {
+    if (!this.selectedItem) {
+      return false;
+    }
+    
+    if (this.compareItems) {
+      return this.compareItems(item, this.selectedItem);
+    }
+    
+    // Default comparison using JSON.stringify
+    return JSON.stringify(item) === JSON.stringify(this.selectedItem);
+  }
+
   getCurrentMessage(): string {
     if (this.loadingState.hasError) {
       return this.messages.onError;
@@ -211,7 +240,10 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
     if (this.loadingState.isLoading) {
       return this.messages.onLoading;
     }
-    if (this.loadingState.allLoaded) {
+    if (this.data.length === 0 && !this.loadingState.isLoading) {
+      return this.messages.onNoData;
+    }
+    if (this.loadingState.allLoaded && this.data.length > 0) {
       return this.messages.onAllLoaded;
     }
     return '';
