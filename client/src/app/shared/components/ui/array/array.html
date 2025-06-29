@@ -13,7 +13,7 @@
           {{ column.label }}
         </div>
       </th>
-      <th *ngIf="rowActions && rowActions.length > 0" class="w-12 h-12 px-4 text-center border-b border-gray-200">
+      <th *ngIf="rowActions?.length || rowActionsFn" class="w-12 h-12 px-4 text-center border-b border-gray-200">
         <div class="text-gray-600 text-sm font-semibold leading-tight">Actions</div>
       </th>
     </tr>
@@ -29,38 +29,77 @@
         *ngFor="let column of columns"
         [class]="getBodyCellClasses(column)"
         [ngClass]="{'hidden sm:table-cell': !column.showOnSmall}"
-      >{{ getItemValue(item, column.mapToKey) }}</td>
+      >
+        <ng-container *ngIf="column.render; else normalCell">
+          <span [innerHTML]="column.render(item)"></span>
+        </ng-container>
+        <ng-template #normalCell>
+          {{ getItemValue(item, column.mapToKey) }}
+        </ng-template>
+      </td>
 
       <!-- Actions Menu -->
-      <td *ngIf="rowActions && rowActions.length > 0" class="w-12 p-4 text-center border-b border-gray-200 relative">
-        <button
-          (click)="toggleActionMenu(i)"
-          class="text-gray-600 hover:text-gray-900 focus:outline-none"
-          [attr.aria-expanded]="activeMenuIndex === i"
-        >
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-          </svg>
-        </button>
+      <td *ngIf="rowActions?.length || rowActionsFn" class="w-12 p-4 text-center border-b border-gray-200 relative">
+        <ng-container *ngIf="rowActionsFn; else staticActions">
+          <button
+            (click)="toggleActionMenu(i)"
+            class="text-gray-600 hover:text-gray-900 focus:outline-none"
+            [attr.aria-expanded]="activeMenuIndex === i"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+            </svg>
+          </button>
 
-        <!-- Dropdown Menu -->
-        <div
-          *ngIf="activeMenuIndex === i"
-          class="dropdown-menu absolute right-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
-          [style.top]="'100%'"
-          [style.transform]="'translateY(' + (shouldShowMenuUp(i) ? '-100%' : '0') + ')'"
-          [style.margin-top]="shouldShowMenuUp(i) ? '-8px' : '4px'"
-        >
-          <div class="py-1">
-            <button
-              *ngFor="let action of rowActions"
-              (click)="executeAction(action, item, i)"
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
-            >
-              {{ action.label }}
-            </button>
+          <!-- Dropdown Menu -->
+          <div
+            *ngIf="activeMenuIndex === i"
+            class="dropdown-menu absolute right-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+            [style.top]="'100%'"
+            [style.transform]="'translateY(' + (shouldShowMenuUp(i) ? '-100%' : '0') + ')'"
+            [style.margin-top]="shouldShowMenuUp(i) ? '-8px' : '4px'"
+          >
+            <div class="py-1">
+              <button
+                *ngFor="let action of rowActionsFn(item)"
+                (click)="executeAction(action, item, i)"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+              >
+                {{ action.label }}
+              </button>
+            </div>
           </div>
-        </div>
+        </ng-container>
+        <ng-template #staticActions>
+          <button
+            (click)="toggleActionMenu(i)"
+            class="text-gray-600 hover:text-gray-900 focus:outline-none"
+            [attr.aria-expanded]="activeMenuIndex === i"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div
+            *ngIf="activeMenuIndex === i"
+            class="dropdown-menu absolute right-0 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+            [style.top]="'100%'"
+            [style.transform]="'translateY(' + (shouldShowMenuUp(i) ? '-100%' : '0') + ')'"
+            [style.margin-top]="shouldShowMenuUp(i) ? '-8px' : '4px'"
+          >
+            <div class="py-1">
+              <button
+                *ngFor="let action of rowActions"
+                (click)="executeAction(action, item, i)"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+              >
+                {{ action.label }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
       </td>
     </tr>
     </tbody>

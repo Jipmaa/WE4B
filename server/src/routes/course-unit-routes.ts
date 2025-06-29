@@ -110,6 +110,10 @@ const updateCourseUnitValidation = [
 		 .optional()
 		 .isInt({ min: 1 })
 		 .withMessage('Capacity must be a positive integer'),
+	body('type')
+		 .optional()
+		 .isIn(['CS', 'TM', 'EC', 'OM', 'QC'])
+		 .withMessage('Invalid course unit type'),
 	// Image will be handled by file upload middleware
 ];
 
@@ -157,6 +161,7 @@ router.get('/', getCourseUnitsValidation, validateRequest, asyncHandler(async (r
 			 .sort(sort)
 			 .skip(skip)
 			 .limit(limit)
+			 .populate('groups') // Populate the groups field
 			 .select('-__v'),
 		CourseUnit.countDocuments(filter)
 	]);
@@ -441,7 +446,7 @@ router.post('/', adminMiddleware, uploadCourseImage, handleFileUploadError, crea
 // @desc    Update course unit
 // @access  Private (Admin only)
 router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseUnitValidation], validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { name, code, slug, capacity } = req.body;
+	const { name, code, slug, capacity, type } = req.body;
 
 	const courseUnit = await CourseUnit.findById(req.params.id);
 
@@ -470,6 +475,7 @@ router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseU
 	if (code !== undefined) courseUnit.code = code;
 	if (slug !== undefined) courseUnit.slug = slug;
 	if (capacity !== undefined) courseUnit.capacity = capacity;
+	if (type !== undefined) courseUnit.type = type;
 
 	await courseUnit.save();
 

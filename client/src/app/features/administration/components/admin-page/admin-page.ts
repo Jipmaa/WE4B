@@ -7,7 +7,7 @@ import {
   ViewChild,
   AfterViewChecked,
   ChangeDetectorRef,
-  signal
+  signal, computed
 } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular';
 import { CommonModule } from '@angular/common';
@@ -26,11 +26,15 @@ import { Router } from '@angular/router';
 import { DeleteConfirmationPopupComponent } from '@/shared/components/layout/delete-confirmation-popup/delete-confirmation-popup';
 import {CourseGroupsService} from '@/core/services/course-groups.service';
 import {CourseGroup} from '@/core/models/course-group.models';
+import {CourseRegisterPopup} from '@/shared/components/layout/course-register-popup/course-register-popup';
 
+type UnifiedData =
+  | { type: 'courseUnit', name: string, description: string, data: CourseUnit }
+  | { type: 'group', name: string, description: string, data: CourseGroup };
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent, DeleteConfirmationPopupComponent],
+  imports: [CommonModule, LucideAngularModule, TabsComponent, TabItemComponent, TabContentComponent, SidebarLayout, ArrayComponent, UserRegisterPopup, InputComponent, ButtonComponent, CreateGroupPopupComponent, CourseRegisterPopup,DeleteConfirmationPopupComponent],
   templateUrl: './admin-page.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -39,9 +43,14 @@ export class AdminPage implements OnInit, AfterViewChecked {
   activeTab: string = 'ues';
 
   UsersArray !: User[]
-  CoursesArray !: CourseUnit[]
+
+  private readonly courses=signal<CourseUnit[]>([]);
+  private readonly groups=signal<CourseGroup[]>([]);
 
   showEditUserPopup: boolean = false;
+  showCreateUserPopup: boolean = false;
+  showEditCourseUnitPopup: boolean = false;
+  showCreateCourseUnitPopup: boolean = false; // New signal for create popup
   selectedUser: User | null = null;
   selectedCourseUnit: CourseUnit | null = null;
   selectedGroup: CourseGroup | null = null;
@@ -52,6 +61,19 @@ export class AdminPage implements OnInit, AfterViewChecked {
   showDeleteUserPopup: boolean = false;
   userToDelete: User | null = null;
 
+  readonly unifiedCoursesAndGroupsArray =computed(() => {
+    // Combine courses and groups into a unified array where all groups are course units is next to their parent course unit
+    const unifiedArray: UnifiedData [] = [];
+    this.courses().forEach(courseUnit => {
+      unifiedArray.push({ type: 'courseUnit', name: courseUnit.code, description: courseUnit.name, data: courseUnit });
+      if (courseUnit.groups?.length) {
+
+        //@ts-ignore -unexpected behavior of client typing against server typing
+        courseUnit.groups.forEach(g=> unifiedArray.push({ type: 'group', name: `--> ${g.name}`, description: g.description??`Groupe ${g.name}`, data: g }));
+      }
+    });
+    return unifiedArray;
+  })
   constructor(
     public servUsers: UsersService,
     private servCourse: CourseUnitsService,
@@ -69,7 +91,14 @@ export class AdminPage implements OnInit, AfterViewChecked {
     this.servCourse.getCourseUnits().subscribe(
       response => {
         console.log(response);
-        this.CoursesArray = response.data.courseUnits;
+        this.courses.set(response.data.courseUnits);
+      }
+    );
+
+    this.servCourseGroup.getGroups().subscribe(
+      response => {
+        console.log(response);
+        this.groups.set(response.data.groups);
       }
     )
   }
@@ -134,51 +163,80 @@ export class AdminPage implements OnInit, AfterViewChecked {
   columnsCourses: Columns = [
     {
       label: 'Nom',
-      mapToKey: 'code',
+      mapToKey: 'name',
       showOnSmall: true
     },
     {
       label: 'Description',
-      mapToKey: 'name',
+      mapToKey: 'description',
       showOnSmall: false
     }
   ];
 
-  rowActionsCourses: RowActions<CourseUnit> = [
-    {
-      label: 'Modifier',
-      onTriggered: (courseUnit: CourseUnit) => {
-        this.servCourse.getCourseUnitById(courseUnit._id).subscribe(
-          response => {
-            this.selectedCourseUnit = response.data.courseUnit;
-            this.showEditUserPopup = true;
+  getRowActionsCourses(item: UnifiedData): RowActions<UnifiedData> {
+    if (item.type === 'courseUnit') {
+      return [
+        {
+          label: 'Modifier',
+          onTriggered: () => {
+            this.servCourse.getCourseUnitById((item.data as CourseUnit)._id).subscribe(
+              response => {
+                this.selectedCourseUnit = response.data.courseUnit;
+                this.showEditCourseUnitPopup = true;
+              }
+            );
           }
-        );
-      }
-    },
-    {
-      label: 'Supprimer',
-      onTriggered: (courseUnit: CourseUnit) => {
-        console.log('Supprimer un cours:', courseUnit);
-        // Implémentez votre logique de suppression ici
-      }
-    },
-    {
-      label: 'Voir détails',
-      onTriggered: (courseUnit: CourseUnit) => {
-        console.log('Voir détails des cours:', courseUnit);
-        // Implémentez votre logique de visualisation ici
-      }
-    },
-    {
-      label: 'Ajouter un groupe',
-      onTriggered: (courseUnit: CourseUnit) => {
-        console.log('Ajouter un groupe au cours:', courseUnit);
-        // Implémentez votre logique de visualisation ici
-        this.createdGroupPopUp.set(courseUnit);
-      }
+        },
+        {
+          label: 'Supprimer',
+          onTriggered: () => {
+            console.log('Supprimer un cours:', item.data as CourseUnit);
+            // Implémentez votre logique de suppression ici
+          }
+        },
+        {
+          label: 'Voir détails',
+          onTriggered: () => {
+            console.log('Voir détails des cours:', item.data as CourseUnit);
+            // Implémentez votre logique de visualisation ici
+          }
+        },
+        {
+          label: 'Ajouter un groupe',
+          onTriggered: () => {
+            console.log('Ajouter un groupe au cours:', item.data as CourseUnit);
+            this.createdGroupPopUp.set(item.data as CourseUnit);
+          }
+        }
+      ];
+    } else if (item.type === 'group') {
+      return [
+        {
+          label: 'Modifier un groupe',
+          onTriggered: () => {
+            console.log('Modifier un groupe:', item.data as CourseGroup);
+            this.selectedGroup = item.data as CourseGroup;
+            // Implement your logic to modify a group
+          }
+        },
+        {
+          label: 'Assigner un utilisateur',
+          onTriggered: () => {
+            console.log('Assigner un utilisateur au groupe:', item.data as CourseGroup);
+            // Implement your logic to assign a user to a group
+          }
+        },
+        {
+          label: 'Supprimer un groupe',
+          onTriggered: () => {
+            console.log('Supprimer un groupe:', item.data as CourseGroup);
+            // Implement your logic to delete a group
+          }
+        }
+      ];
     }
-  ];
+    return [];
+  }
 
   messagesUsers: Messages = {
     onLoading: 'Chargement des utilisateurs...',
@@ -237,6 +295,17 @@ export class AdminPage implements OnInit, AfterViewChecked {
     console.log('Utilisateur mis à jour :', updatedUser);
   }
 
+  onCourseUnitUpdated(updatedCourseUnit: CourseUnit): void {
+    this.courses.update(courses => {
+      const index = courses.findIndex(cu => cu._id === updatedCourseUnit._id);
+      if (index !== -1) {
+        courses[index] = updatedCourseUnit;
+      }
+      return [...courses];
+    });
+    console.log('UE mise à jour :', updatedCourseUnit);
+  }
+
   confirmDeleteUser(): void {
     if (this.userToDelete) {
       this.servUsers.deleteUser(this.userToDelete._id).subscribe(
@@ -258,11 +327,33 @@ export class AdminPage implements OnInit, AfterViewChecked {
   }
 
   navigateToRegister() {
-    this.router.navigate(['/register']);
+    this.showCreateUserPopup = true;
+  }
+
+  onUserCreated(newUser: User): void {
+    this.UsersArray = [...this.UsersArray, newUser];
+    this.showCreateUserPopup = false;
+    // Optionally, refresh the users list from the service if needed
+    // this.servUsers.getUsers().subscribe(response => {
+    //   this.UsersArray = response.data.users;
+    // });
+  }
+
+  onCloseCreateUserPopup(): void {
+    this.showCreateUserPopup = false;
   }
 
   navigateToCourse() {
-    this.router.navigate(['/register/courseunits']);
+    this.showCreateCourseUnitPopup = true;
+  }
+
+  onCourseUnitCreated(newCourseUnit: CourseUnit): void {
+    this.courses.update(courses => [...courses, newCourseUnit]);
+    this.showCreateCourseUnitPopup = false;
+  }
+
+  onCloseCreateCourseUnitPopup(): void {
+    this.showCreateCourseUnitPopup = false;
   }
 
   navigateToGroup() {

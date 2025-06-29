@@ -1,6 +1,7 @@
 import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
 import {CourseActivity} from '@/core/models/course-activity.models';
+import {CourseGroup} from '@/core/models/course-group.models';
 
 export interface CourseUnit {
   _id: string;
@@ -9,7 +10,7 @@ export interface CourseUnit {
   name: string;
   code: string;
   img?: string;
-  groups?: string[];
+  groups?: string[] | CourseGroup[]; // Can be ObjectId strings or populated CourseGroup objects
   activities: CourseUnitActivitiesCategory[];
   userRole?: 'student' | 'teacher'; // User's role in this specific course
   type: 'CS' | 'TM' | 'EC' | 'OM' | 'QC';
@@ -32,9 +33,10 @@ export interface CourseUnitActivitiesCategoryPopulated {
   activities: CourseActivity[];
 }
 
-// CourseUnit with populated activities
-export interface CourseUnitPopulated extends Omit<CourseUnit, 'activities'> {
+// CourseUnit with populated activities and groups
+export interface CourseUnitPopulated extends Omit<CourseUnit, 'activities' | 'groups'> {
   activities: CourseUnitActivitiesCategoryPopulated[];
+  groups: CourseGroup[];
 }
 
 export interface CourseUnitFilters extends BaseFilters {

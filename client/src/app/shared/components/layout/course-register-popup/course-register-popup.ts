@@ -1,4 +1,16 @@
-/*import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+  inject,
+  CUSTOM_ELEMENTS_SCHEMA,
+  OnChanges, SimpleChanges
+} from '@angular/core';
 import {ButtonComponent} from '@/shared/components/ui/button/button';
 import {IconButtonComponent} from '@/shared/components/ui/icon-button/icon-button';
 import {InputComponent} from '@/shared/components/ui/input/input';
@@ -24,12 +36,12 @@ import {UsersService} from '@/core/services/users.service';
     InputComponent,
     LucideAngularModule,
     NgIf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './course-register-popup.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class CourseRegisterPopup implements OnInit, OnDestroy{
+export class CourseRegisterPopup implements OnInit, OnDestroy, OnChanges{
 
   @Input() isOpen = false;
   @Input() courseUnit: CourseUnit | null = null; // Pour le mode édition
@@ -53,7 +65,7 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
   myForm = new FormGroup({
     name: new FormControl<string>('', Validators.required),
     code: new FormControl<string>('', [Validators.required, codeValidator]),
-    capacity: new FormControl(null, [Validators.required, capacityValidator]),
+    capacity: new FormControl(0, [Validators.required, capacityValidator]),
     type: new FormControl<string>('', Validators.required),
     image: new FormControl<string>('')
   });
@@ -65,6 +77,15 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
     // Pré-remplir le formulaire si en mode édition
     if (this.isEditMode && this.courseUnit) {
       this.prefillForm();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isOpen'] && changes['isOpen'].currentValue) {
+      this.resetForm();
+      if (this.isEditMode && this.courseUnit) {
+        this.prefillForm();
+      }
     }
   }
 
@@ -80,9 +101,9 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
     this.myForm.patchValue({
       name: this.courseUnit.name || '',
       code: this.courseUnit.code || '',
-      //capacity: this.myForm.value.capacity ? parseInt(String(this.myForm.value.capacity), 10) : 0,
+      capacity: this.courseUnit.capacity,
       type: this.courseUnit.type || '',
-      image: ''
+      image: this.courseUnit.img || ''
     });
   }
 
@@ -163,7 +184,7 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
       name: this.myForm.value.name || '',
       code: this.myForm.value.code || '',
       capacity: capacityValue ? parseInt(String(capacityValue), 10) : 0,
-      type: this.myForm.value.type || '',
+      type: this.myForm.value.type as "CS" | "TM" | "EC" | "QC" | "OM",
     };
 
     if (this.isEditMode && this.courseUnit) {
@@ -219,14 +240,17 @@ export class CourseRegisterPopup implements OnInit, OnDestroy{
 }
 
 function capacityValidator(control: AbstractControl): ValidationErrors | null {
+  const errors: any = {};
+  const value = control.value;
 
-  const errors: any = {}
-  const value = control.value || '';
-
-  // Vérifie que la valeur est un nombre entier positif (et non vide)
-  if (!/^\d+$/.test(control.value))
-    errors["number"] = 'ok'
-
+  if (value === null || value === undefined || value === '') {
+    errors["required"] = true;
+  } else {
+    const numValue = Number(value);
+    if (isNaN(numValue) || !Number.isInteger(numValue) || numValue <= 0) {
+      errors["invalidCapacity"] = true;
+    }
+  }
   return Object.keys(errors).length ? errors : null;
 }
 
@@ -241,4 +265,4 @@ function codeValidator(control: AbstractControl): ValidationErrors | null {
     errors["codeValid"] = 'ok'
 
   return Object.keys(errors).length ? errors : null;
-}*/
+}

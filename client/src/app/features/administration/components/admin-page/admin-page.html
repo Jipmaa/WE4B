@@ -60,9 +60,9 @@
     <app-tab-content value="ues">
 
       <app-array
-        [data]="CoursesArray"
+        [data]="unifiedCoursesAndGroupsArray()"
         [columns]="columnsCourses"
-        [rowActions]="rowActionsCourses"
+        [rowActionsFn]="getRowActionsCourses"
         [messages]="messagesCourses"
         [loadingState]="loadingStateCourses"
         (loadMore)="loadMoreCourses()"
@@ -94,14 +94,34 @@
   (userSaved)="onUserUpdated($event)">
 </app-user-register-popup>
 
+<app-user-register-popup
+  [isOpen]="showCreateUserPopup"
+  [isEditMode]="false"
+  (closePopup)="onCloseCreateUserPopup()"
+  (userSaved)="onUserCreated($event)">
+</app-user-register-popup>
+
+<app-course-register-popup
+  [isOpen]="showEditCourseUnitPopup"
+  [isEditMode]="true"
+  [courseUnit]="selectedCourseUnit"
+  (closePopup)="showEditCourseUnitPopup = false"
+  (courseUnitsSaved)="onCourseUnitUpdated($event)">
+</app-course-register-popup>
+
+<app-course-register-popup
+  [isOpen]="showCreateCourseUnitPopup"
+  [isEditMode]="false"
+  (closePopup)="onCloseCreateCourseUnitPopup()"
+  (courseUnitsSaved)="onCourseUnitCreated($event)">
+</app-course-register-popup>
+
 <app-delete-confirmation-popup
   [isOpen]="showDeleteUserPopup"
   message="Êtes vous sûr de vouloir supprimer cet utilisateur? Cette action ne peut pas être annulée."
   (confirm)="confirmDeleteUser()"
   (cancel)="cancelDeleteUser()">
 </app-delete-confirmation-popup>
-
-
 <app-create-group-popup
   [courseUnit]="createdGroupPopUp()"
   (closePopup)="handleClosePopUp()"
