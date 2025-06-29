@@ -60,9 +60,9 @@
     <app-tab-content value="ues">
 
       <app-array
-        [data]="CoursesArray"
+        [data]="unifiedCoursesAndGroupsArray()"
         [columns]="columnsCourses"
-        [rowActions]="rowActionsCourses"
+        [rowActionsFn]="getRowActionsCourses"
         [messages]="messagesCourses"
         [loadingState]="loadingStateCourses"
         (loadMore)="loadMoreCourses()"

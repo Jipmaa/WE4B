@@ -38,6 +38,7 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   @Input() data: T[] = [];
   @Input() columns: Columns = [];
   @Input() rowActions?: RowActions<T>;
+  @Input() rowActionsFn?: (item: T) => RowActions<T>;
   @Input() messages: Messages = {
     onLoading: 'Chargement...',
     onAllLoaded: 'Tous les éléments ont été chargés',
