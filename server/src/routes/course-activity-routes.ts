@@ -10,6 +10,7 @@ import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
 import { uploadActivityFile, handleFileUploadError } from '../middleware/file-upload-middleware';
 import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS } from '../services/minio-service';
+import { logActivity } from '../utils/logger';
 
 const router = Router();
 
@@ -184,8 +185,8 @@ router.get('/', getActivitiesValidation, validateRequest, asyncHandler(async (re
 router.get('/:id', activityIdValidation, validateRequest, asyncHandler(async (req: Request, res: Response) => {
 	const activity = await CourseActivityModel.findById(req.params.id)
 		.populate('courseUnit', 'name code slug')
-		.populate('restrictedGroups', 'name slug')
 		.populate('completion.user', 'firstName lastName email')
+		.populate('restrictedGroups', 'name slug')
 		.select('-__v');
 
 	if (!activity) {
@@ -690,6 +691,22 @@ router.post('/file-depository', teacherMiddleware, uploadActivityFile, handleFil
 
 	await activity.save();
 
+	// Log activity creation
+	if (req.user?.userId) {
+		await logActivity({
+			level: 'info',
+			message: `Teacher created a new file depository activity: ${title} (Course Unit: ${courseUnitDoc.name})`,
+			userId: req.user.userId,
+			metadata: {
+				activityId: activity._id.toString(),
+				activityType: 'file-depository',
+				courseUnitId: courseUnitDoc._id.toString(),
+				courseUnitName: courseUnitDoc.name,
+				activityTitle: title
+			}
+		});
+	}
+
 	// Add activity to course unit category
 	if (category) {
 		// Use atomic updates to prevent race conditions and read-modify-write issues.
@@ -953,6 +970,21 @@ router.put('/:id/complete', activityIdValidation, validateRequest, asyncHandler(
 
 	await activity.save();
 
+	// Log activity completion
+	if (req.user?.userId) {
+		await logActivity({
+			level: 'info',
+			message: `User completed activity: ${activity.title} (Type: ${activity.activityType})`,
+			userId: req.user.userId,
+			metadata: {
+				activityId: activity._id.toString(),
+				activityType: activity.activityType,
+				activityTitle: activity.title,
+				courseUnitId: activity.courseUnit.toString()
+			}
+		});
+	}
+
 	const completionRate = await activity.getCompletionRate();
 
 	res.json({
@@ -1035,7 +1067,7 @@ router.delete('/:id', teacherMiddleware, activityIdValidation, validateRequest, 
 			deletedActivity: {
 				id: activity._id,
 				activityType: activity.activityType,
-				title: (activity as any).title
+				title: (activity as any).title || 'N/A'
 			}
 		}
 	});

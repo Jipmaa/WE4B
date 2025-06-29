@@ -7,10 +7,11 @@ export interface Messages {
   onError: string;
 }
 
-export interface Column {
+export interface Column<T = any> {
   label: string;
   mapToKey: string;
   showOnSmall?: boolean;
+  render?: (item: T) => string; // New optional render function
 }
 
 export interface RowAction<T = any> {
@@ -37,6 +38,7 @@ export class ArrayComponent<T = any> implements OnInit, OnDestroy {
   @Input() data: T[] = [];
   @Input() columns: Columns = [];
   @Input() rowActions?: RowActions<T>;
+  @Input() rowActionsFn?: (item: T) => RowActions<T>;
   @Input() messages: Messages = {
     onLoading: 'Chargement...',
     onAllLoaded: 'Tous les éléments ont été chargés',

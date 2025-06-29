@@ -1,0 +1,139 @@
+<app-sidebar-layout>
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6">Activity Logs</h1>
+
+    <div class="tabs mb-6 flex border-b border-gray-300">
+      <button
+        class="px-4 py-2 rounded-t-lg bg-gray-200 text-gray-700 font-semibold"
+        [class.bg-blue-500]="activeTab === 'activity'"
+        [class.text-white]="activeTab === 'activity'"
+        (click)="changeTab('activity')"
+      >
+        Activity Logs
+      </button>
+      <button
+        class="px-4 py-2 rounded-t-lg ml-2 bg-gray-200 text-gray-700 font-semibold"
+        [class.bg-blue-500]="activeTab === 'login'"
+        [class.text-white]="activeTab === 'login'"
+        (click)="changeTab('login')"
+      >
+        Login History
+      </button>
+    </div>
+
+    <div *ngIf="activeTab === 'activity'" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Recent Activity Logs</h2>
+      <div *ngIf="activityLogs.length > 0; else noActivityLogs" class="overflow-x-auto max-h-[calc(100vh-250px)]">
+        <table class="w-full border-collapse bg-white border border-gray-300">
+          <thead>
+            <tr>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Timestamp</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Level</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Message</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">User ID</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Metadata</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of activityLogs" class="hover:bg-gray-100 even:bg-gray-50">
+              <td class="px-4 py-2 text-left border-b text-sm">{{ formatTimestamp(log.timestamp) }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ log.level }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ log.message }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ log.metadata?.userId || 'N/A' }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">
+                <div *ngIf="log.metadata && getMetadataKeys(log.metadata).length > 0">
+                  <ul class="list-disc list-inside">
+                    <li *ngFor="let key of getMetadataKeys(log.metadata)">
+                      <ng-container *ngIf="key !== 'userId'">
+                        <strong>{{ key }}:</strong> {{ log.metadata[key] }}
+                      </ng-container>
+                    </li>
+                  </ul>
+                </div>
+                <span *ngIf="!log.metadata || getMetadataKeys(log.metadata).length === 0">N/A</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noActivityLogs>
+        <p class="text-center text-gray-500">No activity logs found.</p>
+      </ng-template>
+
+      <div *ngIf="activityLogsPagination" class="pagination mt-4 flex justify-center items-center space-x-2">
+        <button
+          class="px-3 py-1 border rounded-md bg-blue-500 text-white"
+          [class.bg-gray-300]="!activityLogsPagination.hasPrevPage"
+          [class.cursor-not-allowed]="!activityLogsPagination.hasPrevPage"
+          [disabled]="!activityLogsPagination.hasPrevPage"
+          (click)="onActivityPageChange(activityLogsPagination.currentPage - 1)"
+        >
+          Previous
+        </button>
+        <span class="text-sm">Page {{ activityLogsPagination.currentPage }} of {{ activityLogsPagination.totalPages }}</span>
+        <button
+          class="px-3 py-1 border rounded-md bg-blue-500 text-white"
+          [class.bg-gray-300]="!activityLogsPagination.hasNextPage"
+          [class.cursor-not-allowed]="!activityLogsPagination.hasNextPage"
+          [disabled]="!activityLogsPagination.hasNextPage"
+          (click)="onActivityPageChange(activityLogsPagination.currentPage + 1)"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'login'" class="tab-content">
+      <h2 class="text-2xl font-semibold mb-4">Recent Login History</h2>
+      <div *ngIf="loginHistory.length > 0; else noLoginHistory" class="overflow-x-auto max-h-[calc(100vh-250px)]">
+        <table class="w-full border-collapse bg-white border border-gray-300">
+          <thead>
+            <tr>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Login Time</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">User</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">IP Address</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">User Agent</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Success</th>
+              <th class="px-4 py-2 text-left border-b bg-gray-100 font-semibold text-gray-700">Logout Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entry of loginHistory" class="hover:bg-gray-100 even:bg-gray-50">
+              <td class="px-4 py-2 text-left border-b text-sm">{{ formatTimestamp(entry.loginTime) }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.userId?.firstName }} {{ entry.userId?.lastName }} ({{ entry.userId?.email }})</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.ipAddress || 'N/A' }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.userAgent || 'N/A' }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.success ? 'Yes' : 'No' }}</td>
+              <td class="px-4 py-2 text-left border-b text-sm">{{ entry.logoutTime ? formatTimestamp(entry.logoutTime) : 'N/A' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noLoginHistory>
+        <p class="text-center text-gray-500">No login history found.</p>
+      </ng-template>
+
+      <div *ngIf="loginHistoryPagination" class="pagination mt-4 flex justify-center items-center space-x-2">
+        <button
+          class="px-3 py-1 border rounded-md bg-blue-500 text-white"
+          [class.bg-gray-300]="!loginHistoryPagination.hasPrevPage"
+          [class.cursor-not-allowed]="!loginHistoryPagination.hasPrevPage"
+          [disabled]="!loginHistoryPagination.hasPrevPage"
+          (click)="onLoginHistoryPageChange(loginHistoryPagination.currentPage - 1)"
+        >
+          Previous
+        </button>
+        <span class="text-sm">Page {{ loginHistoryPagination.currentPage }} of {{ loginHistoryPagination.totalPages }}</span>
+        <button
+          class="px-3 py-1 border rounded-md bg-blue-500 text-white"
+          [class.bg-gray-300]="!loginHistoryPagination.hasNextPage"
+          [class.cursor-not-allowed]="!loginHistoryPagination.hasNextPage"
+          [disabled]="!loginHistoryPagination.hasNextPage"
+          (click)="onLoginHistoryPageChange(loginHistoryPagination.currentPage + 1)"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</app-sidebar-layout>

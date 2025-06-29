@@ -1,0 +1,179 @@
+<!-- Backdrop overlay -->
+@if (isOpen) {
+  <div
+    (click)="onOverlayClick()"
+    (keydown)="onOverlayKeydown($event)"
+    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    [attr.aria-hidden]="!isOpen"
+    tabindex="-1">
+
+    <!-- Register Course popup -->
+    <div
+      (click)="$event.stopPropagation()"
+      (keydown)="onPopupKeydown($event)"
+      class="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto focus:outline-none"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="isEditMode ? 'edit-user-title' : 'create-user-title'"
+      tabindex="-1">
+
+      <div class="p-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <h1 [id]="isEditMode ? 'edit-user-title' : 'create-user-title'"
+              class="text-2xl font-bold text-gray-800">
+            {{ formTitle }}
+          </h1>
+          <app-icon-button
+            icon="x"
+            [iconSize]="20"
+            variant="ghost"
+            size="sm"
+            ariaLabel="Fermer le popup"
+            (buttonClick)="onClose()">
+          </app-icon-button>
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+          <!-- Error Message -->
+          @if (submitError) {
+            <div class="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p class="text-sm text-red-600">{{ submitError }}</p>
+            </div>
+          }
+
+          <!-- Name -->
+          <div>
+            <label for="name"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
+            <app-input
+              #firstFocusable
+              type="text"
+              id="name"
+              name="name"
+              placeholder="ex: Technologies web"
+              formControlName="name">
+            </app-input>
+
+            <ng-container *ngIf="myForm.get('name')?.dirty || myForm.get('name')?.touched">
+              <div *ngIf="myForm.get('name')?.errors?.['required']; else nameValid">
+                ❌ Nom d'ue requis
+              </div>
+              <ng-template #nameValid>
+                <div class="text-success small">✅ Nom d'ue valide</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Code -->
+          <div class="col-12">
+            <label for="inputCode"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Code</label>
+            <app-input
+              #firstFocusable
+              type="text"
+              id="inputCode"
+              name="inputCode"
+              placeholder="ex: WE4A"
+              formControlName="code">
+            </app-input>
+
+            <ng-container *ngIf="myForm.get('code')?.dirty || myForm.get('code')?.touched">
+              <div *ngIf="myForm.get('code')?.errors?.['minLengthCode']; else minLengthCodeValid">
+                ❌ Code must be between 2 and 20 characters
+              </div>
+              <ng-template #minLengthCodeValid>
+                <div class="text-success small">✅ Length OK</div>
+              </ng-template>
+
+              <div *ngIf="myForm.get('code')?.errors?.['codeValid']; else codeValid">
+                ❌ Code must contain only uppercase letters and numbers
+              </div>
+              <ng-template #codeValid>
+                <div class="text-success small">✅ Code valide</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Type -->
+          <div class="mb-3">
+            <label for="inputType" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Type</label>
+            <select id="inputType" class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example" formControlName="type">
+              <option value="" selected>Sélectionner une option</option>
+              <option value="CS">CS</option>
+              <option value="TM">TM</option>
+              <option value="EC">EC</option>
+              <option value="QC">QC</option>
+              <option value="OM">OM</option>
+            </select>
+            <ng-container *ngIf="myForm.get('type')?.dirty || myForm.get('type')?.touched">
+              <div *ngIf="myForm.get('type')?.errors?.['required']; else typeValid">
+                ❌ Type requis
+              </div>
+              <ng-template #typeValid>
+                <div class="text-success small">✅ Type valide</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Capacité -->
+          <div class="col-12">
+            <label for="inputCapacity"
+                   class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Capacité</label>
+            <input type="number" class="form-control" id="inputCapacity" name="capacity"
+                   placeholder="Veuillez entrer un nombre" formControlName="capacity"
+                   class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center">
+            <ng-container *ngIf="myForm.get('capacity')?.dirty || myForm.get('capacity')?.touched">
+              <div *ngIf="myForm.get('capacity')?.errors?.['invalidCapacity']; else capacityValid">
+                ❌ Capacité invalide (doit être un nombre entier positif)
+              </div>
+              <ng-template #capacityValid>
+                <div class="text-success small">✅ Capacité valide</div>
+              </ng-template>
+            </ng-container>
+          </div>
+
+          <!-- Image de l'Ue -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">
+                Choisir une image
+                @if (isEditMode) {
+                  <span class="text-gray-500 text-xs">(optionnel - remplacera l'avatar actuel)</span>
+                }
+              </label>
+              <input type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                     class="cursor-pointer block w-full text-sm text-gray-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-full file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-blue-50 file:text-blue-700
+                          hover:file:bg-blue-100"
+                     (change)="onFileSelected($event)">
+            </div>
+
+          <!-- Boutons d'action -->
+          <div class="flex gap-3 pt-4">
+            <app-button
+              type="button"
+              variant="ghost"
+              [fullWidth]="true"
+              (buttonClick)="onClose()">
+              Annuler
+            </app-button>
+            <app-button
+              type="submit"
+              [fullWidth]="true"
+              [disabled]="myForm.invalid || isSubmitting">
+              @if (isSubmitting) {
+                <lucide-icon name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+              }
+              {{ submitButtonText }}
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

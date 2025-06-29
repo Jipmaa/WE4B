@@ -14,6 +14,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/administration/administration.routes').then(m => m.administrationRoutes)
   },
   {
+    path: 'activity-logs',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./features/administration/administration.routes').then(m => m.administrationRoutes)
+  },
+  {
     path: 'dashboard',
     canActivate: [authGuard],
     loadChildren: () => import('./features/dashboard/dashboard.routes').then(m => m.dashboardRoutes)

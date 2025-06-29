@@ -11,6 +11,7 @@ export interface CourseGroup extends Document {
 	_id: Types.ObjectId;
 	slug: string;
 	name: string;
+	description?: string; // Added description field
 	kind: typeof groupKindValues[number];
 	day: typeof dayValues[number];
 	from: string;
@@ -40,6 +41,12 @@ const courseGroupSchema = new Schema<CourseGroup>({
 		required: [true, 'Group name is required.'],
 		trim: true,
 		maxlength: [100, 'Group name cannot be more than 100 characters.'],
+	},
+	description: {
+		type: String,
+		trim: true,
+		maxlength: [500, 'Description cannot be more than 500 characters.'],
+		required: false, // Optional
 	},
 	kind: {
 		type: String,

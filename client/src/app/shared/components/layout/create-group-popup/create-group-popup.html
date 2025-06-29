@@ -1,0 +1,142 @@
+<!-- Backdrop overlay -->
+@if (courseUnit) {
+  <div
+    (click)="onOverlayClick()"
+    (keydown)="onOverlayKeydown($event)"
+    class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+    [attr.aria-hidden]="!courseUnit"
+    tabindex="-1">
+
+    <!-- Group Register popup -->
+    <div
+      (click)="$event.stopPropagation()"
+      (keydown)="onPopupKeydown($event)"
+      class="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto focus:outline-none"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="isEditMode ? 'edit-group-title' : 'create-group-title'"
+      tabindex="-1">
+
+      <div class="p-6">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <h1 [id]="isEditMode ? 'edit-group-title' : 'create-group-title'"
+              class="text-2xl font-bold text-gray-800">
+            {{ formTitle }}
+          </h1>
+          <app-icon-button
+            icon="x"
+            [iconSize]="20"
+            variant="ghost"
+            size="sm"
+            ariaLabel="Fermer le popup"
+            (buttonClick)="onClose()">
+          </app-icon-button>
+        </div>
+
+        <!-- Form -->
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+          <!-- Error Message -->
+          @if (submitError) {
+            <div class="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p class="text-sm text-red-600">{{ submitError }}</p>
+            </div>
+          }
+
+          <!-- Name -->
+          <div>
+            <label for="name"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Nom</label>
+            <app-input
+              #firstFocusable
+              type="text"
+              id="name"
+              name="name"
+              placeholder="ex: Groupe A"
+              formControlName="name">
+            </app-input>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label for="description"
+                   class="block text-sm font-medium text-gray-700 pt-[0.5em] pb-[0.5em]">Description (optionnel)</label>
+            <app-textarea
+              id="description"
+              name="description"
+              placeholder="ex: Ce groupe est pour les étudiants en première année."
+              formControlName="description">
+            </app-textarea>
+          </div>
+
+          <!-- Type -->
+          <div class="mb-4">
+            <label for="kind" class="block text-sm font-medium text-gray-700 pt-[1em] pb-[0.5em]">Type</label>
+            <select id="kind" name="kind" formControlName="kind" required class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+              <option value="theoretical">Cours Magistraux</option>
+              <option value="practical">Travaux Dirigés</option>
+              <option value="laboratory">Travaux Pratiques</option>
+              <option value="other">Autres</option>
+            </select>
+          </div>
+
+          <!-- Jour -->
+          <div class="mb-4">
+            <label for="day" class="block text-sm font-medium text-gray-700">Jour</label>
+            <select id="day" name="day" formControlName="day" required class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+              <option value="monday">Lundi</option>
+              <option value="tuesday">Mardi</option>
+              <option value="wednesday">Mercredi</option>
+              <option value="thursday">Jeudi</option>
+              <option value="friday">Vendredi</option>
+              <option value="saturday">Samedi</option>
+              <option value="sunday">Dimanche</option>
+            </select>
+          </div>
+
+          <!-- Début -->
+          <div class="mb-4">
+            <label for="from" class="block text-sm font-medium text-gray-700">De</label>
+            <input type="time" id="from" name="from" formControlName="from" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+          </div>
+
+          <!-- Fin -->
+          <div class="mb-4">
+            <label for="to" class="block text-sm font-medium text-gray-700">À</label>
+            <input type="time" id="to" name="to" formControlName="to" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+          </div>
+
+          <!-- Semestre -->
+          <div class="mb-4">
+            <label for="semester" class="block text-sm font-medium text-gray-700">Semestre</label>
+            <select id="semester" name="semester" formControlName="semester" required class="w-full self-stretch pl-3 pr-14 py-2 rounded-md outline outline-1 outline-input inline-flex justify-start items-center" aria-label="Disabled select example">
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div class="flex gap-3 pt-4">
+            <app-button
+              type="button"
+              variant="ghost"
+              [fullWidth]="true"
+              (buttonClick)="onClose()">
+              Annuler
+            </app-button>
+            <app-button
+              type="submit"
+              [fullWidth]="true"
+              [disabled]="myForm.invalid || isSubmitting">
+              @if (isSubmitting) {
+                <lucide-icon name="loader-2" class="w-4 h-4 mr-2 animate-spin"></lucide-icon>
+              }
+              {{ submitButtonText }}
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}

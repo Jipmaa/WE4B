@@ -1,16 +1,8 @@
 import {UserRole} from '@/core/models/user.models';
 import {BaseFilters} from '@/core/models/_shared.models';
 import {CourseActivity} from '@/core/models/course-activity.models';
+import {CourseGroup} from '@/core/models/course-group.models';
 
-export interface CourseGroup {
-  _id: string;
-  name: string;
-  day: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
-  from: string; // HH:mm format
-  to: string;   // HH:mm format
-  semester: 1 | 2;
-  kind: 'theoretical' | 'practical' | 'laboratory' | 'other';
-}
 
 export interface CourseUnit {
   _id: string;
@@ -42,9 +34,10 @@ export interface CourseUnitActivitiesCategoryPopulated {
   activities: CourseActivity[];
 }
 
-// CourseUnit with populated activities
-export interface CourseUnitPopulated extends Omit<CourseUnit, 'activities'> {
+// CourseUnit with populated activities and groups
+export interface CourseUnitPopulated extends Omit<CourseUnit, 'activities' | 'groups'> {
   activities: CourseUnitActivitiesCategoryPopulated[];
+  groups: CourseGroup[];
 }
 
 export interface CourseUnitFilters extends BaseFilters {

@@ -10,6 +10,7 @@ import { AppError } from '../utils/app-error';
 import { asyncHandler } from '../utils/async-handler';
 import { uploadCourseImage, handleFileUploadError } from '../middleware/file-upload-middleware';
 import { uploadFile, generateFileName, deleteFile, FILE_CONFIGS, getPublicUrl } from '../services/minio-service';
+import { logActivity } from '../utils/logger';
 
 const router = Router();
 
@@ -109,6 +110,10 @@ const updateCourseUnitValidation = [
 		 .optional()
 		 .isInt({ min: 1 })
 		 .withMessage('Capacity must be a positive integer'),
+	body('type')
+		 .optional()
+		 .isIn(['CS', 'TM', 'EC', 'OM', 'QC'])
+		 .withMessage('Invalid course unit type'),
 	// Image will be handled by file upload middleware
 ];
 
@@ -156,6 +161,7 @@ router.get('/', getCourseUnitsValidation, validateRequest, asyncHandler(async (r
 			 .sort(sort)
 			 .skip(skip)
 			 .limit(limit)
+			 .populate('groups') // Populate the groups field
 			 .select('-__v'),
 		CourseUnit.countDocuments(filter)
 	]);
@@ -359,6 +365,21 @@ router.get('/:id', courseUnitIdValidation, validateRequest, asyncHandler(async (
 		throw new AppError('Course unit not found', 404);
 	}
 
+	// Log course consultation
+	if (req.user?.userId) {
+		await logActivity({
+			level: 'info',
+			message: `User viewed course unit: ${courseUnit.name} (${courseUnit.code})`,
+			userId: req.user.userId,
+			metadata: {
+				courseUnitId: courseUnit._id.toString(),
+				courseUnitName: courseUnit.name,
+				courseUnitCode: courseUnit.code,
+				consultationType: 'view'
+			}
+		});
+	}
+
 	res.json({
 		success: true,
 		data: {
@@ -438,7 +459,7 @@ router.post('/', adminMiddleware, uploadCourseImage, handleFileUploadError, crea
 // @desc    Update course unit
 // @access  Private (Admin only)
 router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseUnitValidation], validateRequest, asyncHandler(async (req: Request, res: Response) => {
-	const { name, code, slug, capacity } = req.body;
+	const { name, code, slug, capacity, type } = req.body;
 
 	const courseUnit = await CourseUnit.findById(req.params.id);
 
@@ -467,6 +488,7 @@ router.put('/:id', adminMiddleware, [...courseUnitIdValidation, ...updateCourseU
 	if (code !== undefined) courseUnit.code = code;
 	if (slug !== undefined) courseUnit.slug = slug;
 	if (capacity !== undefined) courseUnit.capacity = capacity;
+	if (type !== undefined) courseUnit.type = type;
 
 	await courseUnit.save();
 

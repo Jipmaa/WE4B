@@ -5,12 +5,10 @@
       <app-header-item [label]="'Accueil'" [link]="'/dashboard'"/>
       <app-header-item [label]="'Mes cours'" [link]="'/courses'"/>
       <app-header-item [label]="'Forum'" [link]="'/forum'"/>
-      <app-header-item [label]="'Administration'" [link]="'/administration'"/>
-      <!-- TODO: À supprimer, pout tests uniquement -->
-      <div class="w-4 h-1"></div>
-      <app-header-item [label]="'Add user'" [link]="'/register'"/>
-      <app-header-item [label]="'Add ue'" [link]="'/register/courseunits'"/>
-      <!-- Fin À supprimer, pout tests uniquement -->
+      @if (authService.isAdmin()) {
+        <app-header-item [label]="'Administration'" [link]="'/administration'"/>
+        <app-header-item [label]="'Activity Logs'" [link]="'/administration/activity-logs'"/>
+      }
     </nav>
   </div>
   <div class="flex justify-center items-center gap-4">
@@ -126,16 +124,29 @@
     (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
     (menuActivate)="onMenuItemActivate()"/>
 
-  <app-header-item
-    #menuItem
-    [label]="'Administration'"
-    [link]="'/administration'"
-    [variant]="'mobile'"
-    [menuRole]="'menuitem'"
-    [menuIndex]="3"
-    (menuFocus)="onMenuItemFocus($event)"
-    (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
-    (menuActivate)="onMenuItemActivate()"/>
+  @if (authService.isAdmin()) {
+    <app-header-item
+      #menuItem
+      [label]="'Administration'"
+      [link]="'/administration'"
+      [variant]="'mobile'"
+      [menuRole]="'menuitem'"
+      [menuIndex]="3"
+      (menuFocus)="onMenuItemFocus($event)"
+      (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
+      (menuActivate)="onMenuItemActivate()"/>
+
+    <app-header-item
+      #menuItem
+      [label]="'Activity Logs'"
+      [link]="'/administration/activity-logs'"
+      [variant]="'mobile'"
+      [menuRole]="'menuitem'"
+      [menuIndex]="4"
+      (menuFocus)="onMenuItemFocus($event)"
+      (menuKeydown)="onMenuItemKeydown($event.event, $event.index)"
+      (menuActivate)="onMenuItemActivate()"/>
+  }
 </nav>
 
 <!-- User Profile Popup - Moved outside nav -->
