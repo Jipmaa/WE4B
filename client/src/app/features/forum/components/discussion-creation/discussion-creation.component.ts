@@ -41,23 +41,9 @@ export class DiscussionCreationComponent implements OnInit {
     });
   }
 
-  // onSubmit(): void {
-  //   if (this.discussionForm.valid) {
-  //     this.forumService.createDiscussion(this.discussionForm.value).subscribe({
-  //       next: (newDiscussion) => {
-  //         this.router.navigate(['/forum/discussions', newDiscussion.data._id]);
-  //       },
-  //       error: (err) => {
-  //         console.error('Error creating discussion:', err);
-  //       }
-  //     });
-  //   }
-  // }
-
   async onSubmit(): Promise<void> {
     if (this.discussionForm.valid) {
-      // Supposons que tu as un userService avec la méthode getCurrentUser()
-      const currentUserId = this.user()?.['_id']; // Récupère l'ID de l'utilisateur actuel
+      const currentUserId = this.user()?.['_id'];
       const formValue = {
         ...this.discussionForm.value,
         author: currentUserId,
