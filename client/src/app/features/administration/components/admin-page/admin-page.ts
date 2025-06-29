@@ -43,6 +43,7 @@ export class AdminPage implements OnInit, AfterViewChecked {
 
   showEditUserPopup: boolean = false;
   showEditCourseUnitPopup: boolean = false;
+  showCreateCourseUnitPopup: boolean = false; // New signal for create popup
   selectedUser: User | null = null;
   selectedCourseUnit: CourseUnit | null = null;
   selectedGroup: CourseGroup | null = null;
@@ -260,7 +261,20 @@ export class AdminPage implements OnInit, AfterViewChecked {
   }
 
   navigateToCourse() {
-    this.router.navigate(['/register/courseunits']);
+    this.showCreateCourseUnitPopup = true;
+  }
+
+  onCourseUnitCreated(newCourseUnit: CourseUnit): void {
+    this.CoursesArray = [...this.CoursesArray, newCourseUnit];
+    this.showCreateCourseUnitPopup = false;
+    // Optionally, refresh the course units list from the service if needed
+    // this.servCourse.getCourseUnits().subscribe(response => {
+    //   this.CoursesArray = response.data.courseUnits;
+    // });
+  }
+
+  onCloseCreateCourseUnitPopup(): void {
+    this.showCreateCourseUnitPopup = false;
   }
 
   navigateToGroup() {

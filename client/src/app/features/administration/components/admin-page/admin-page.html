@@ -102,6 +102,13 @@
   (courseUnitsSaved)="onCourseUnitUpdated($event)">
 </app-course-register-popup>
 
+<app-course-register-popup
+  [isOpen]="showCreateCourseUnitPopup"
+  [isEditMode]="false"
+  (closePopup)="onCloseCreateCourseUnitPopup()"
+  (courseUnitsSaved)="onCourseUnitCreated($event)">
+</app-course-register-popup>
+
 <app-create-group-popup
   [courseUnit]="createdGroupPopUp()"
   (closePopup)="handleClosePopUp()"
