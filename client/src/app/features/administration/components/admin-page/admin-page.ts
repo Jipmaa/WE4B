@@ -73,6 +73,9 @@ export class AdminPage implements OnInit, AfterViewChecked {
   showDeleteCoursePopup: boolean = false;
   courseToDelete: CourseUnit | null = null;
 
+  showDeleteGroupPopup: boolean = false;
+  groupToDelete: CourseGroup | null = null;
+
   readonly unifiedCoursesAndGroupsArray =computed(() => {
     // Combine courses and groups into a unified array where all groups are course units is next to their parent course unit
     const unifiedArray: UnifiedData [] = [];
@@ -226,8 +229,8 @@ export class AdminPage implements OnInit, AfterViewChecked {
         {
           label: 'Supprimer un groupe',
           onTriggered: () => {
-            console.log('Supprimer un groupe:', item.data as CourseGroup);
-            // Implement your logic to delete a group
+            this.groupToDelete = item.data as CourseGroup;
+            this.showDeleteGroupPopup = true;
           }
         }
       ];
@@ -341,6 +344,34 @@ export class AdminPage implements OnInit, AfterViewChecked {
   cancelDeleteCourse(): void {
     this.showDeleteCoursePopup = false;
     this.courseToDelete = null;
+  }
+
+  confirmDeleteGroup(): void {
+    if (this.groupToDelete) {
+      this.servCourseGroup.deleteGroup(this.groupToDelete._id).subscribe(
+        () => {
+          this.courses.update(courses => {
+            for (const course of courses) {
+              if (course.groups) {
+                //@ts-ignore
+                course.groups = course.groups.filter(g => g._id !== this.groupToDelete!._id);
+              }
+            }
+            return [...courses];
+          });
+          this.cancelDeleteGroup();
+        },
+        error => {
+          console.error('Error deleting group:', error);
+          this.cancelDeleteGroup();
+        }
+      );
+    }
+  }
+
+  cancelDeleteGroup(): void {
+    this.showDeleteGroupPopup = false;
+    this.groupToDelete = null;
   }
 
   navigateToRegister() {
