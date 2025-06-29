@@ -379,7 +379,6 @@ export class AuthService {
     }
   }
 
-  // Enhanced Error Handling
   private handleLoginError(error: HttpErrorResponse): Observable<never> {
     console.error('🚫 Login error details:', error);
 

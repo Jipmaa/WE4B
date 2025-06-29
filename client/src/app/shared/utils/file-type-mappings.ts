@@ -104,9 +104,7 @@ export function getAcceptAttribute(semanticTypes: string[]): string {
   for (const semanticType of semanticTypes) {
     const mapping = FILE_TYPE_MAPPINGS[semanticType as SemanticFileType];
     if (mapping) {
-      // Add MIME types
       acceptValues.push(...mapping.mimeTypes);
-      // Add extensions
       acceptValues.push(...mapping.extensions);
     }
   }

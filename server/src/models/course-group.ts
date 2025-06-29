@@ -11,7 +11,7 @@ export interface CourseGroup extends Document {
 	_id: Types.ObjectId;
 	slug: string;
 	name: string;
-	description?: string; // Added description field
+	description?: string;
 	kind: typeof groupKindValues[number];
 	day: typeof dayValues[number];
 	from: string;
