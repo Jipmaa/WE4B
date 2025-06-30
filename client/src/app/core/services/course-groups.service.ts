@@ -221,8 +221,6 @@ export class CourseGroupsService {
       .pipe(
         tap(response => {
           if (response.success) {
-            // You might want to merge these with existing groups or handle separately
-            // For now, we'll just trigger a refresh of the current groups
           }
         }),
         catchError(error => this.handleError(error)),
